@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - NSGAII_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - test",
             "request": "launch",
             "mainClass": "test"
