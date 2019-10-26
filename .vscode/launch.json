@@ -9,7 +9,8 @@
             "name": "CodeLens (Launch) - NSGAII_main",
             "request": "launch",
             "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
-            "projectName": "momfo_gupta"
+            "projectName": "momfo_gupta",
+            "args": "CIHS"
         },
         {
             "type": "java",

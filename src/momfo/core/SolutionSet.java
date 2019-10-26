@@ -129,6 +129,10 @@ public class SolutionSet implements Serializable {
 		Collections.sort(solutionsList_, comparator);
 	} // sort
 
+	public void shuffle(){
+		Collections.shuffle(solutionsList_);
+	}
+
 	/**
 	 * Returns the index of the best Solution using a <code>Comparator</code>.
 	 * If there are more than one occurrences, only the index of the first one

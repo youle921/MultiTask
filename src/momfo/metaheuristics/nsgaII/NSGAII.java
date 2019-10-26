@@ -155,6 +155,7 @@ public class NSGAII extends Algorithm {
 			// Remain is less than front(index).size, insert only the best one
 			if (remain > 0) { // front contains individuals to insert
 				distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
+				front.shuffle();
 				front.sort(new CrowdingComparator());
 				for (int k = 0; k < remain; k++) {
 					population.add(front.get(k));
