@@ -15,14 +15,17 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-// 
+//
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package momfo.metaheuristics.nsgaII;
 
-import momfo.core.*;
-import momfo.qualityIndicator.QualityIndicator;
+import momfo.core.Algorithm;
+import momfo.core.Operator;
+import momfo.core.ProblemSet;
+import momfo.core.Solution;
+import momfo.core.SolutionSet;
 import momfo.util.Distance;
 import momfo.util.JMException;
 import momfo.util.Ranking;
@@ -40,7 +43,7 @@ import momfo.util.comparators.CrowdingComparator;
 public class NSGAII extends Algorithm {
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param problem
 	 *            Problem to solve
 	 */
@@ -51,7 +54,7 @@ public class NSGAII extends Algorithm {
 
 	/**
 	 * Runs the NSGA-II algorithm.
-	 * 
+	 *
 	 * @return a <code>SolutionSet</code> that is a set of non dominated
 	 *         solutions as a result of the algorithm execution
 	 * @throws JMException
@@ -166,9 +169,11 @@ public class NSGAII extends Algorithm {
 
 		} // while
 
-		Ranking ranking = new Ranking(population);
+//		Ranking ranking = new Ranking(population);
 
-		return ranking.getSubfront(0);
-		
+//		return ranking.getSubfront(0);
+
+		return population;
+
 	} // execute
 } // NSGA-II

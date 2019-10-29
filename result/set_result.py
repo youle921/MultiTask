@@ -8,7 +8,7 @@ Created on Mon Oct 28 15:58:18 2019
 import numpy as np
 import itertools
 
-first = ["CI", "NI", "PI"]
+first = ["CI", "PI", "NI"]
 last = ["HS", "MS", "LS"]
 resultname = ["mean", "stdev"]
 
@@ -22,3 +22,5 @@ for n, name in zip(range(len(first) * len(last)), names):
         d = np.loadtxt(name[0] + name[1] + str(i + 1) + "_IGD.csv", delimiter = ",", usecols =[0])
         result[n * 2 + i, 0] = d.mean()
         result[n * 2 + i, 1] = d.std()
+        
+np.savetxt('result_NSGAII.csv', result, delimiter = ',')
