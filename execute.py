@@ -12,7 +12,7 @@ def multi(l):
 
 if __name__ == "__main__":
     
-    first = ["CI", "NI", "PI"]
+    first = ["CI", "PI", "NI"]
     last = ["HS", "MS", "LS"] 
     namelist = []
     names = itertools.product(first, last)
