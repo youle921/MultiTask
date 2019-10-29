@@ -22,3 +22,5 @@ for n, name in zip(range(len(first) * len(last)), names):
         d = np.loadtxt(name[0] + name[1] + str(i + 1) + "_IGD.csv", delimiter = ",", usecols =[0])
         result[n * 2 + i, 0] = d.mean()
         result[n * 2 + i, 1] = d.std()
+        
+np.savetxt('result_NSGAII.csv', result, delimiter = ',')
