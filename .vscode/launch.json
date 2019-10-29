@@ -6,11 +6,19 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - MOMFEA_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main",
+            "projectName": "momfo_gupta",
+            "args": ["CIHS", "0.9"]
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - NSGAII_main",
             "request": "launch",
             "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
             "projectName": "momfo_gupta",
-            "args": "CIHS"
+            "args": "NIHS"
         },
         {
             "type": "java",

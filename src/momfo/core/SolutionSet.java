@@ -23,8 +23,10 @@ package momfo.core;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import momfo.util.Configuration;
+import momfo.util.PseudoRandom;
 
 /**
  * Class representing a SolutionSet (a set of solutions)
@@ -129,8 +131,10 @@ public class SolutionSet implements Serializable {
 		Collections.sort(solutionsList_, comparator);
 	} // sort
 
-	public void shuffle(){
-		Collections.shuffle(solutionsList_);
+	public void shuffle() {
+		
+		Collections.shuffle(solutionsList_, new Random(0));
+
 	}
 
 	/**

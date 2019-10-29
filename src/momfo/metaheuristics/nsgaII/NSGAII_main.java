@@ -1,13 +1,13 @@
 package momfo.metaheuristics.nsgaII;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
-import momfo.core.Algorithm;
 import momfo.core.Operator;
 import momfo.core.ProblemSet;
 import momfo.core.SolutionSet;
@@ -17,15 +17,16 @@ import momfo.operators.selection.SelectionFactory;
 import momfo.problems.ProblemSetFactory;
 import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
+import momfo.util.PseudoRandom;
+import momfo.util.RandomGenerator;
 
 public class NSGAII_main {
 	public static void main(String args[]) throws IOException, JMException, ClassNotFoundException {
 		ProblemSet problemSet; // The problem to solve
-		Algorithm algorithm; // The algorithm to use
+		NSGAII algorithm; // The algorithm to use
 		Operator crossover; // Crossover operator
 		Operator mutation; // Mutation operator
 		Operator selection;
-
 
 		HashMap parameters; // Operator parameters
 
@@ -36,8 +37,8 @@ public class NSGAII_main {
 			problemSet = new ProblemSet();
 			problemSet.add(problemSets.get(problem_no));
 
-/* 			problemSet.setUnifiedLowerLimit(-50);
-			problemSet.setUnifiedUpperLimit(50); */
+//			problemSet.setUnifiedLowerLimit(-50);
+//			problemSet.setUnifiedUpperLimit(50);
 
 			algorithm = new NSGAII(problemSet);
 
@@ -76,10 +77,21 @@ public class NSGAII_main {
 			int times = 30;
 			double aveIGD = 0;
 			double[] aveIGDArray = new double[times];
+
+			File init_file = new File("result/" + problemSet.get(0).getName() + "/init_pops");
+			init_file.mkdirs();
+			File final_file = new File("result/" + problemSet.get(0).getName() + "/final_pops");
+			final_file.mkdirs();
+
 			for (int i = 1; i <= times; i++) {
+
+				RandomGenerator defaultGenerator_ = new RandomGenerator(i);
+				PseudoRandom.setRandomGenerator(defaultGenerator_);
+
+				algorithm.setPath("result/" + problemSet.get(0).getName(), i);
 				SolutionSet population = algorithm.execute();
-/*				Ranking ranking = new Ranking(population);
-				population = ranking.getSubfront(0);*/
+				// Ranking ranking = new Ranking(population);
+				// population = ranking.getSubfront(0);
 				double igd = indicator.getIGD(population);
 				aveIGD += igd;
 				aveIGDArray[i - 1] = igd;
@@ -95,7 +107,6 @@ public class NSGAII_main {
 
 			for(int t = 0; t<aveIGDArray.length;t++){
 				bw_1.write(String.valueOf(aveIGDArray[t]));
-				bw_1.write(",");
 				bw_1.newLine();
 			}
 			bw_1.close();

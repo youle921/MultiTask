@@ -31,25 +31,27 @@ import momfo.util.JMException;
 import momfo.util.Ranking;
 import momfo.util.comparators.CrowdingComparator;
 
+
 /**
  * Implementation of NSGA-II. This implementation of NSGA-II makes use of a
  * QualityIndicator object to obtained the convergence speed of the algorithm.
  * This version is used in the paper: A.J. Nebro, J.J. Durillo, C.A. Coello
- * Coello, F. Luna, E. Alba
- * "A Study of Convergence Speed in Multi-Objective Metaheuristics." To be
- * presented in: PPSN'08. Dortmund. September 2008.
+ * Coello, F. Luna, E. Alba "A Study of Convergence Speed in Multi-Objective
+ * Metaheuristics." To be presented in: PPSN'08. Dortmund. September 2008.
  */
 
 public class NSGAII extends Algorithm {
 	/**
 	 * Constructor
 	 *
-	 * @param problem
-	 *            Problem to solve
+	 * @param problem Problem to solve
 	 */
+
+	private String[] path = new String[2];
+
 	public NSGAII(ProblemSet problemSet) {
 		super(problemSet);
-	//	System.out.println("sup: " + problemSet_.get(0).getHType());
+		// System.out.println("sup: " + problemSet_.get(0).getHType());
 	} // NSGAII
 
 	/**
@@ -83,7 +85,6 @@ public class NSGAII extends Algorithm {
 		population = new SolutionSet(populationSize);
 		evaluations = 0;
 
-
 		// Read the operators
 		mutationOperator = operators_.get("mutation");
 		crossoverOperator = operators_.get("crossover");
@@ -98,6 +99,8 @@ public class NSGAII extends Algorithm {
 			evaluations++;
 			population.add(newSolution);
 		} // for
+
+		// population.printVariablesToFile(path[0] + "/init_pops/pops" + path[1] + ".dat");
 
 		// Generations
 		while (evaluations < maxEvaluations) {
@@ -158,7 +161,7 @@ public class NSGAII extends Algorithm {
 			// Remain is less than front(index).size, insert only the best one
 			if (remain > 0) { // front contains individuals to insert
 				distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
-				front.shuffle();
+				// front.shuffle();
 				front.sort(new CrowdingComparator());
 				for (int k = 0; k < remain; k++) {
 					population.add(front.get(k));
@@ -173,7 +176,14 @@ public class NSGAII extends Algorithm {
 
 //		return ranking.getSubfront(0);
 
+		population.printVariablesToFile(path[0] + "/final_pops/pops" + path[1] + ".dat");
 		return population;
 
 	} // execute
+
+	public void setPath(String p, int no) {
+		path[0] = p;
+		path[1] = String.valueOf(no);
+ 	}
+
 } // NSGA-II
