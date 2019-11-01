@@ -23,10 +23,8 @@ package momfo.core;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import momfo.util.Configuration;
-import momfo.util.PseudoRandom;
 
 /**
  * Class representing a SolutionSet (a set of solutions)

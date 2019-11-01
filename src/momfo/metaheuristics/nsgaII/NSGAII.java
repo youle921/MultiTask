@@ -100,7 +100,8 @@ public class NSGAII extends Algorithm {
 			population.add(newSolution);
 		} // for
 
-		// population.printVariablesToFile(path[0] + "/init_pops/pops" + path[1] + ".dat");
+		// population.printVariablesToFile(path[0] + "/init_pops/var/pops" + path[1] + ".dat");
+		// population.printObjectivesToFile(path[0] + "/init_pops/obj/pops" + path[1] + ".dat");
 
 		// Generations
 		while (evaluations < maxEvaluations) {
@@ -176,7 +177,9 @@ public class NSGAII extends Algorithm {
 
 //		return ranking.getSubfront(0);
 
-		population.printVariablesToFile(path[0] + "/final_pops/pops" + path[1] + ".dat");
+		// population.printVariablesToFile(path[0] + "/final_pops/var/pops" + path[1] + ".dat");
+		// population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] + ".dat");
+
 		return population;
 
 	} // execute

@@ -32,7 +32,7 @@ public class NSGAII_main {
 
 		ProblemSet problemSets = ProblemSetFactory.getProblem(args[0]);
 
-		for(int problem_no = 0; problem_no < 2; problem_no++){
+		for(int problem_no = 0; problem_no < 1; problem_no++){
 
 			problemSet = new ProblemSet();
 			problemSet.add(problemSets.get(problem_no));
@@ -78,14 +78,18 @@ public class NSGAII_main {
 			double aveIGD = 0;
 			double[] aveIGDArray = new double[times];
 
-			File init_file = new File("result/" + problemSet.get(0).getName() + "/init_pops");
-			init_file.mkdirs();
-			File final_file = new File("result/" + problemSet.get(0).getName() + "/final_pops");
-			final_file.mkdirs();
+			File init_var_file = new File("result/" + problemSet.get(0).getName() + "/init_pops/var");
+			init_var_file.mkdirs();
+			File final_var_file = new File("result/" + problemSet.get(0).getName() + "/final_pops/var");
+			final_var_file.mkdirs();
+			File init_obj_file = new File("result/" + problemSet.get(0).getName() + "/init_pops/obj");
+			init_obj_file.mkdirs();
+			File final_obj_file = new File("result/" + problemSet.get(0).getName() + "/final_pops/obj");
+			final_obj_file.mkdirs();
 
 			for (int i = 1; i <= times; i++) {
 
-				RandomGenerator defaultGenerator_ = new RandomGenerator(i);
+				RandomGenerator defaultGenerator_ = new RandomGenerator(30+i);
 				PseudoRandom.setRandomGenerator(defaultGenerator_);
 
 				algorithm.setPath("result/" + problemSet.get(0).getName(), i);
