@@ -143,7 +143,7 @@ public class NSGAII extends Algorithm {
 
 			while ((remain > 0) && (remain >= front.size())) {
 				// Assign crowding distance to individuals
-				distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
+				// distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
 				// Add the individuals of this front
 				for (int k = 0; k < front.size(); k++) {
 					population.add(front.get(k));
@@ -162,7 +162,7 @@ public class NSGAII extends Algorithm {
 			// Remain is less than front(index).size, insert only the best one
 			if (remain > 0) { // front contains individuals to insert
 				distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
-				// front.shuffle();
+				front.shuffle();
 				front.sort(new CrowdingComparator());
 				for (int k = 0; k < remain; k++) {
 					population.add(front.get(k));
@@ -173,14 +173,14 @@ public class NSGAII extends Algorithm {
 
 		} // while
 
-//		Ranking ranking = new Ranking(population);
+		Ranking ranking = new Ranking(population);
 
-//		return ranking.getSubfront(0);
+		return ranking.getSubfront(0);
 
 		// population.printVariablesToFile(path[0] + "/final_pops/var/pops" + path[1] + ".dat");
 		// population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] + ".dat");
 
-		return population;
+		// return population;
 
 	} // execute
 

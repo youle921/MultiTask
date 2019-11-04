@@ -32,7 +32,7 @@ public class NSGAII_main {
 
 		ProblemSet problemSets = ProblemSetFactory.getProblem(args[0]);
 
-		for(int problem_no = 0; problem_no < 1; problem_no++){
+		for(int problem_no = 0; problem_no < 2; problem_no++){
 
 			problemSet = new ProblemSet();
 			problemSet.add(problemSets.get(problem_no));
@@ -62,7 +62,7 @@ public class NSGAII_main {
 
 			// Selection Operator
 			parameters = null ;
-			selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;
+			selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
 
 
 			// Add the operators to the algorithm
@@ -89,7 +89,7 @@ public class NSGAII_main {
 
 			for (int i = 1; i <= times; i++) {
 
-				RandomGenerator defaultGenerator_ = new RandomGenerator(30+i);
+				RandomGenerator defaultGenerator_ = new RandomGenerator(i);
 				PseudoRandom.setRandomGenerator(defaultGenerator_);
 
 				algorithm.setPath("result/" + problemSet.get(0).getName(), i);
