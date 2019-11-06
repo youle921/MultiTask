@@ -36,7 +36,7 @@ public class GFunctions {
 		int k = 1;
 
 		double sum = 0;
-		double prod = 1;
+		double prod = 1; 
 
 		for (int i = 0; i < x.length; i++) {
 			sum += (x[i] * x[i]);
@@ -47,33 +47,6 @@ public class GFunctions {
 
 	}
 
-	public static double getBentcigar(double[] x) {
-		int startPos = 0;
-		int endPos = x.length - 1;
-		double sum = x[startPos] * x[startPos];
-		for (int i = startPos + 1; i <= endPos; i++)
-			sum += (Math.pow(10, 6) * x[i] * x[i]);
-
-		return sum;
-	}
-
-	public static double getHappycat(double x[]) {
-		int startPos = 0;
-		int endPos = x.length - 1;
-		int D = endPos - startPos + 1;
-
-		double sum1 = 0;
-		double sum2 = 0;
-
-		for (int i = startPos; i <= endPos; i++) {
-			sum1 += x[i];
-			sum2 += (x[i] * x[i]);
-		}
-
-		double res = Math.pow(Math.abs(sum2 - D), 0.25) + (0.5 * sum2 + sum1) / D + 0.5;
-
-		return res;
-	}
 
 	public static double getRastrigin(double x[]) {
 
@@ -88,6 +61,7 @@ public class GFunctions {
 
 		return result;
 	}
+
 
 	public static double getMean(double x[]) {
 		double mean = 0;

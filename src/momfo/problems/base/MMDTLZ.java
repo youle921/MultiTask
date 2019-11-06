@@ -130,10 +130,6 @@ public class MMDTLZ extends Problem {
 			return GFunctions.getRastrigin(xII);
 		else if (gType_.equalsIgnoreCase("mean"))
 			return GFunctions.getMean(xII);
-		else if (gType_.equalsIgnoreCase("bentcigar"))
-			return GFunctions.getBentcigar(xII);
-		else if (gType_.equalsIgnoreCase("happycat"))
-			return GFunctions.getHappycat(xII);
 		else {
 			System.out.println("Error: g function type " + gType_ + " invalid");
 			return Double.NaN;

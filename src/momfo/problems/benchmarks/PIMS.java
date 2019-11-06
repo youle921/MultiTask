@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import momfo.core.Problem;
 import momfo.core.ProblemSet;
-import momfo.problems.base.IO;
-import momfo.problems.base.MMDTLZ;
-import momfo.problems.base.MMZDT;
+import momfo.problems.base.*;
 
 public class PIMS {
 

@@ -15,15 +15,11 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-//
+// 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package momfo.operators.crossover;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import momfo.core.Solution;
 import momfo.encodings.solutionType.RealSolutionType;
@@ -31,6 +27,10 @@ import momfo.util.Configuration;
 import momfo.util.JMException;
 import momfo.util.PseudoRandom;
 import momfo.util.wrapper.XReal;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This class allows to apply a SBX crossover operator using two parent
@@ -66,7 +66,7 @@ public class SBXCrossover extends Crossover {
 
 	/**
 	 * Perform the crossover operation.
-	 *
+	 * 
 	 * @param probability
 	 *            Crossover probability
 	 * @param parent1
@@ -148,9 +148,13 @@ public class SBXCrossover extends Crossover {
 						if (c2 > yu)
 							c2 = yu;
 
-						offs1.setValue(i, c1);
-						offs2.setValue(i, c2);
-
+						if (PseudoRandom.randDouble() <= 0.5) {
+							offs1.setValue(i, c2);
+							offs2.setValue(i, c1);
+						} else {
+							offs1.setValue(i, c1);
+							offs2.setValue(i, c2);
+						} // if
 					} else {
 						offs1.setValue(i, valueX1);
 						offs2.setValue(i, valueX2);
@@ -167,7 +171,7 @@ public class SBXCrossover extends Crossover {
 
 	/**
 	 * Executes the operation
-	 *
+	 * 
 	 * @param object
 	 *            An object containing an array of two parents
 	 * @return An object containing the offSprings

@@ -30,7 +30,7 @@ public class PseudoRandom {
 	 * generator used to obtain the random values
 	 */
 	private static IRandomGenerator random_ = null;
-	private static RandomGenerator defaultGenerator_ = new RandomGenerator(1995);
+	private static RandomGenerator defaultGenerator_ = new RandomGenerator();
 
 	/**
 	 * Constructor. Creates a new instance of PseudoRandom.
@@ -106,9 +106,4 @@ public class PseudoRandom {
 		return minBound + random_.nextDouble() * (maxBound - minBound);
 		// return minBound + (maxBound - minBound)*randomJava.nextDouble();
 	} // randDouble
-	
-	public static void main(String[] args) {
-		System.out.println(randInt(0,0)+"");
-	}
-	
 } // PseudoRandom

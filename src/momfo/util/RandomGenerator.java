@@ -44,12 +44,11 @@ public class RandomGenerator implements IRandomGenerator {
 		this.randomize();
 	} // RandomGenerator
 
-	public RandomGenerator(int t) {
-		this.seed = (new Random(t)).nextDouble();
+	public RandomGenerator(int seed) {
+		this.seed = (new Random(seed)).nextDouble();
 		this.randomize();
 	} // RandomGenerator
 
-	
 	/* Get seed number for random and start it up */
 	void randomize() {
 		int j1;

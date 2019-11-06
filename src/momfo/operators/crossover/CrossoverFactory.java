@@ -15,7 +15,7 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-//
+// 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,7 +33,7 @@ public class CrossoverFactory {
 
 	/**
 	 * Gets a crossover operator through its name.
-	 *
+	 * 
 	 * @param name
 	 *            Name of the operator
 	 * @return The operator
@@ -41,14 +41,10 @@ public class CrossoverFactory {
 	public static Crossover getCrossoverOperator(String name, HashMap parameters) throws JMException {
 		if (name.equalsIgnoreCase("SBXCrossover"))
 			return new SBXCrossover(parameters);
-		else if (name.equalsIgnoreCase("SBXCrossoverWithOther"))
-			return new SBXCrossoverWithOther(parameters);
 		else if (name.equalsIgnoreCase("PMXCrossover"))
 			return new PMXCrossover(parameters);
 		else if (name.equalsIgnoreCase("TwoPointsCrossover"))
 			return new TwoPointsCrossover(parameters);
-		else if (name.equalsIgnoreCase("MyTwoPointCrossover"))
-			return new MyTwoPointCrossover(parameters);
 		else if (name.equalsIgnoreCase("DifferentialEvolutionCrossover"))
 			return new DifferentialEvolutionCrossover(parameters);
 		else {

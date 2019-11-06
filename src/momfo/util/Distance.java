@@ -15,7 +15,7 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-//
+// 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -42,7 +42,7 @@ public class Distance {
 	/**
 	 * Returns a matrix with distances between solutions in a
 	 * <code>SolutionSet</code>.
-	 *
+	 * 
 	 * @param solutionSet
 	 *            The <code>SolutionSet</code>.
 	 * @return a matrix with distances.
@@ -66,10 +66,10 @@ public class Distance {
 		// ->Return the matrix of distances
 		return distance;
 	} // distanceMatrix
-
-
-
-
+	
+	
+	
+	
 	public double[][] distanceMatrix(SolutionSet solutionSet, Solution objSet) {
 		Solution solutionI, solutionJ;
 
@@ -89,7 +89,7 @@ public class Distance {
 		// ->Return the matrix of distances
 		return distance;
 	}
-
+	
 	public double[][] distanceMatrix(SolutionSet solutionSet, boolean[] isChosen) {
 		Solution solutionI, solutionJ;
 
@@ -113,7 +113,7 @@ public class Distance {
 	/**
 	 * Returns the minimum distance from a <code>Solution</code> to a
 	 * <code>SolutionSet according to the objective values</code>.
-	 *
+	 * 
 	 * @param solution
 	 *            The <code>Solution</code>.
 	 * @param solutionSet
@@ -139,7 +139,7 @@ public class Distance {
 	/**
 	 * Returns the minimum distance from a <code>Solution</code> to a
 	 * <code>SolutionSet according to the encodings.variable values</code>.
-	 *
+	 * 
 	 * @param solution
 	 *            The <code>Solution</code>.
 	 * @param solutionSet
@@ -164,7 +164,7 @@ public class Distance {
 
 	/**
 	 * Returns the distance between two solutions in the search space.
-	 *
+	 * 
 	 * @param solutionI
 	 *            The first <code>Solution</code>.
 	 * @param solutionJ
@@ -178,7 +178,7 @@ public class Distance {
 		 * && (solutionJ.getDecisionVariables() != null)) { Variable[]
 		 * decisionVariableI = solutionI.getDecisionVariables(); Variable[]
 		 * decisionVariableJ = solutionJ.getDecisionVariables();
-		 *
+		 * 
 		 * double diff; //Auxiliar var //-> Calculate the Euclidean distance for
 		 * (int i = 0; i < decisionVariableI.length; i++){ diff =
 		 * decisionVariableI[i].getValue() - decisionVariableJ[i].getValue();
@@ -201,7 +201,7 @@ public class Distance {
 
 	/**
 	 * Returns the distance between two solutions in objective space.
-	 *
+	 * 
 	 * @param solutionI
 	 *            The first <code>Solution</code>.
 	 * @param solutionJ
@@ -220,8 +220,8 @@ public class Distance {
 		// Return the euclidean distance
 		return Math.sqrt(distance);
 	} // distanceBetweenObjectives.
-
-
+	
+	
 	public double distanceBetweenObjectives(Solution solutionI, Solution solutionJ,  boolean[] isChosen) {
 		double diff; // Auxiliar var
 		double distance = 0.0;
@@ -236,7 +236,7 @@ public class Distance {
 		// Return the euclidean distance
 		return Math.sqrt(distance);
 	} // distanceBetweenObjectives.
-
+	
 	public double distanceBetweenObjectives(Solution solutionI, Solution solutionJ,  Solution objSet) {
 		double diff; // Auxiliar var
 		double distance = 0.0;
@@ -252,13 +252,13 @@ public class Distance {
 		// Return the euclidean distance
 		return Math.sqrt(distance);
 	} // distanceBetweenObjectives.
-
-
+	
+	
 
 	/**
 	 * Return the index of the nearest solution in the solution set to a given
 	 * solution
-	 *
+	 * 
 	 * @param solution
 	 * @param solutionSet
 	 * @return The index of the nearest solution; -1 if the solutionSet is empty
@@ -284,12 +284,12 @@ public class Distance {
 	/**
 	 * Assigns crowding distances to all solutions in a <code>SolutionSet</code>
 	 * .
-	 *
+	 * 
 	 * @param solutionSet
 	 *            The <code>SolutionSet</code>.
 	 * @param nObjs
 	 *            Number of objectives.
-	 *
+	 * 
 	 */
 	public void crowdingDistanceAssignment(SolutionSet solutionSet, int nObjs) {
 		int size = solutionSet.size();
@@ -323,7 +323,6 @@ public class Distance {
 
 		for (int i = 0; i < nObjs; i++) {
 			// Sort the population by Obj n
-			front.sort(new ObjectiveComparator(0));
 			front.sort(new ObjectiveComparator(i));
 			objetiveMinn = front.get(0).getObjective(i);
 			objetiveMaxn = front.get(front.size() - 1).getObjective(i);
@@ -435,18 +434,11 @@ public class Distance {
 			objetiveMinn = front.get(0).getObjective(i);
 			objetiveMaxn = front.get(front.size() - 1).getObjective(i);
 
-
 			// Set de crowding distance
 			front.get(0).setCrowdingDistance(Double.POSITIVE_INFINITY);
 			front.get(size - 1).setCrowdingDistance(Double.POSITIVE_INFINITY);
-			if(objetiveMaxn - objetiveMinn < 1.0E-14){
-//				System.out.println("");
-				continue;
-			}
 
 			for (int j = 1; j < size - 1; j++) {
-
-
 				distance = front.get(j + 1).getObjective(i) - front.get(j - 1).getObjective(i);
 				distance = distance / (objetiveMaxn - objetiveMinn);
 				distance += front.get(j).getCrowdingDistance();
@@ -455,9 +447,9 @@ public class Distance {
 		} // for
 
 	}
-
-
-
+	
+	
+	
 	//this is used in Shift-Based Density Estimation
 	public double distanceBetweenObjectivesSDE(Solution ind1, Solution ind2) {
 		int i;
@@ -471,7 +463,7 @@ public class Distance {
 		}
 		return Math.sqrt(d);
 	}
-
+	
 	//this is used in Shift-Based Density Estimation
 	public double distanceBetweenObjectivesSDE(Solution ind1, Solution ind2, boolean[] isChosen) {
 		int i;
@@ -488,7 +480,7 @@ public class Distance {
 		return Math.sqrt(d);
 	}
 
-
+	
 	//this is used in Shift-Based Density Estimation
 	public double distanceBetweenObjectivesSDE(Solution ind1, Solution ind2, Solution objSet) {
 		int i;
@@ -505,7 +497,7 @@ public class Distance {
 		}
 		return Math.sqrt(d);
 	}
-
+	
 	public double[][] distanceMatrixSDE(SolutionSet solutionSet) {
 		// The matrix of distances
 		double[][] distance = new double[solutionSet.size()][solutionSet.size()];
@@ -523,9 +515,9 @@ public class Distance {
 		// ->Return the matrix of distances
 		return distance;
 	} // distanceMatrix
-
-
-
+	
+	
+	
 	public double[][] distanceMatrixSDE(SolutionSet solutionSet, boolean[] isChosen) {
 		// The matrix of distances
 		double[][] distance = new double[solutionSet.size()][solutionSet.size()];
@@ -543,7 +535,7 @@ public class Distance {
 		// ->Return the matrix of distances
 		return distance;
 	} // distanceMatrix
-
+	
 	public double[][] distanceMatrixSDE(SolutionSet solutionSet, Solution objSet) {
 		// The matrix of distances
 		double[][] distance = new double[solutionSet.size()][solutionSet.size()];

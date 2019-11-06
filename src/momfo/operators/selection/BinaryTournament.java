@@ -15,19 +15,19 @@
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU Lesser General Public License for more details.
-//
+// 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package momfo.operators.selection;
 
-import java.util.Comparator;
-import java.util.HashMap;
-
 import momfo.core.Solution;
 import momfo.core.SolutionSet;
 import momfo.util.PseudoRandom;
 import momfo.util.comparators.DominanceComparator;
+
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * This class implements an binary tournament selection operator
@@ -54,7 +54,7 @@ public class BinaryTournament extends Selection {
 
 	/**
 	 * Performs the operation
-	 *
+	 * 
 	 * @param object
 	 *            Object representing a SolutionSet
 	 * @return the selected solution
@@ -72,13 +72,11 @@ public class BinaryTournament extends Selection {
 		int flag = comparator_.compare(solution1, solution2);
 		if (flag == -1)
 			return solution1;
-		else
+		else if (flag == 1)
 			return solution2;
-		/*		else  (flag == 1)
-			return solution2;
-/*		else if (PseudoRandom.randDouble() < 0.5)
+		else if (PseudoRandom.randDouble() < 0.5)
 			return solution1;
 		else
 			return solution2;
-*/	} // execute
+	} // execute
 } // BinaryTournament

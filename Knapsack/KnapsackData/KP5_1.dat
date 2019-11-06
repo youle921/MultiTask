@@ -1,0 +1,19 @@
+knapsack problem specification (2 knapsacks, 5 items)
+=
+knapsack 1:
+ capacity: +2732
+ item 1:
+  weight: +94
+  profit: +57
+ item 2:
+  weight: +74
+  profit: +94
+ item 3:
+  weight: +77
+  profit: +59
+ item 4:
+  weight: +74
+  profit: +83
+ item 5:
+  weight: +29
+  profit: +82
