@@ -19,7 +19,10 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package momfo.metaheuristics.nsgaII;
+package momfo.metaheuristics.EMOMT_island;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import momfo.core.Algorithm;
 import momfo.core.Operator;
@@ -28,8 +31,11 @@ import momfo.core.Solution;
 import momfo.core.SolutionSet;
 import momfo.util.Distance;
 import momfo.util.JMException;
+import momfo.util.PseudoRandom;
 import momfo.util.Ranking;
 import momfo.util.comparators.CrowdingComparator;
+import momfo.util.offspring.Offspring;
+import momfo.util.RandomGenerator;
 
 /**
  * Implementation of NSGA-II. This implementation of NSGA-II makes use of a
@@ -39,12 +45,7 @@ import momfo.util.comparators.CrowdingComparator;
  * Metaheuristics." To be presented in: PPSN'08. Dortmund. September 2008.
  */
 
-public class NSGAII extends Algorithm {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
+public class NSGAII_for_island extends Algorithm {
 	/**
 	 * Constructor
 	 *
@@ -57,6 +58,9 @@ public class NSGAII extends Algorithm {
 	private int evaluations;
 	private int maxEvaluations;
 
+	private int interval;
+	private int size;
+
 	private SolutionSet population;
 
 	private Operator mutationOperator;
@@ -65,7 +69,7 @@ public class NSGAII extends Algorithm {
 
 	private Distance distance = new Distance();
 
-	public NSGAII(ProblemSet problemSet) {
+	public NSGAII_for_island(ProblemSet problemSet) {
 		super(problemSet);
 		// System.out.println("sup: " + problemSet_.get(0).getHType());
 	} // NSGAII
@@ -78,35 +82,7 @@ public class NSGAII extends Algorithm {
 	 * @throws JMException
 	 */
 
-	// GA execution methods
-	public SolutionSet execute() throws JMException, ClassNotFoundException {
-
-		SolutionSet offspringPopulation;
-		SolutionSet union;
-
-		// Generations
-		while (evaluations < maxEvaluations) {
-
-			offspringPopulation = get_offspring(population);
-			// Create the solutionSet union of solutionSet and offSpring
-			union = ((SolutionSet) population).union(offspringPopulation);
-
-			environmental_selection(union);
-		} // while
-
-		// population.printVariablesToFile(path[0] + "/final_pops/var/pops" + path[1] +
-		// ".dat");
-		// population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] +
-		// ".dat");
-
-		Ranking ranking = new Ranking(population);
-		return ranking.getSubfront(0);
-
-	} // execute
-	
-	// GA oprators 
-
-	public void initialize() throws ClassNotFoundException, JMException {
+	public void initialize_island() throws JMException, ClassNotFoundException {
 
 		populationSize = ((Integer) getInputParameter("populationSize")).intValue();
 		maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
@@ -115,6 +91,10 @@ public class NSGAII extends Algorithm {
 		mutationOperator = operators_.get("mutation");
 		crossoverOperator = operators_.get("crossover");
 		selectionOperator = operators_.get("selection");
+
+		// Read migration parameters
+		interval = ((Integer) getInputParameter("migration_interval")).intValue();
+		size = ((Integer) getInputParameter("migration_size")).intValue();
 
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
@@ -134,8 +114,60 @@ public class NSGAII extends Algorithm {
 		// ".dat");
 		// population.printObjectivesToFile(path[0] + "/init_pops/obj/pops" + path[1] +
 		// ".dat");
+
 	}
 
+	// GA execution methods
+	public SolutionSet execute() throws JMException, ClassNotFoundException {
+
+		SolutionSet offspringPopulation;
+		SolutionSet union;
+
+		// Generations
+		int g = 1;
+		while (evaluations < maxEvaluations & g < interval) {
+
+			offspringPopulation = get_offspring(population);
+			// Create the solutionSet union of solutionSet and offSpring
+			union = ((SolutionSet) population).union(offspringPopulation);
+
+			environmental_selection(union);
+			g++;
+		} // while
+
+		// population.printVariablesToFile(path[0] + "/final_pops/var/pops" + path[1] +
+		// ".dat");
+		// population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] +
+		// ".dat");
+
+		return population;
+
+	} // execute
+
+	public void migration_gen(SolutionSet migrated_pop) throws JMException {
+
+		SolutionSet parent_pool = new SolutionSet(populationSize);
+
+		for (int s = 0; s < populationSize - size; s++) {
+			parent_pool.add(population.get(s));
+		}
+		for (int ms = 0; ms < size; ms++){
+			// problemSet_.get(0).evaluate(migrated_pop.get(ms));
+			// problemSet_.get(0).evaluateConstraints(migrated_pop.get(ms));
+			parent_pool.add(migrated_pop.get(ms));
+		}
+
+		// set rank and crowding distance for each solutions in parent_pool 
+		// new Ranking(parent_pool);
+		// distance.crowdingDistanceAssignment(parent_pool, problemSet_.get(0).getNumberOfObjectives());
+
+		SolutionSet offsprings = get_offspring(parent_pool);
+		SolutionSet union = ((SolutionSet) population).union(offsprings);
+		environmental_selection(union);
+
+	}
+
+	// GA oprators
 	private SolutionSet get_offspring(SolutionSet parent_pop) throws JMException {
 
 		SolutionSet offs = new SolutionSet(populationSize);
@@ -179,6 +211,7 @@ public class NSGAII extends Algorithm {
 		while ((remain > 0) && (remain >= front.size())) {
 
 			// Add the individuals of this front
+			distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
 			for (int k = 0; k < front.size(); k++) {
 				population.add(front.get(k));
 			} // for
@@ -198,19 +231,48 @@ public class NSGAII extends Algorithm {
 			distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
 			front.shuffle();
 			front.sort(new CrowdingComparator());
+
+			SolutionSet f = new SolutionSet(remain);
 			for (int k = 0; k < remain; k++) {
-				population.add(front.get(k));
+				f.add(front.get(k));
+			} // for
+
+			distance.crowdingDistanceAssignment(f, problemSet_.get(0).getNumberOfObjectives());
+			f.sort(new CrowdingComparator());
+			for (int k = 0; k < remain; k++) {
+				population.add(f.get(k));
 			} // for
 
 		} // if
 
-		distance.crowdingDistanceAssignment(population, problemSet_.get(0).getNumberOfObjectives());
 	}
 
 	// Other operation
+	public SolutionSet get_migrated_pop() {
+
+		List<Integer> index = new ArrayList<Integer>();
+		for (int i = 0; i < populationSize; i++) {
+			index.add(i);
+		}
+
+		SolutionSet chosen_solution = new SolutionSet();
+		for (int n = 0; n < size; n++) {
+			int rand_index = PseudoRandom.randInt(0, index.size() - 1);
+			chosen_solution.add(population.get(index.remove(rand_index)));
+		}
+
+		return chosen_solution;
+
+	}
+
 	public void setPath(String p, int no) {
 		path[0] = p;
 		path[1] = String.valueOf(no);
+	}
+
+	public SolutionSet get_front() {
+		Ranking ranking = new Ranking(population);
+		return ranking.getSubfront(0);
 	}
 
 } // NSGA-II

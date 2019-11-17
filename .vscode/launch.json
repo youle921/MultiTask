@@ -1,0 +1,169 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-MOMFEA_main<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-NSGAII_main<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
+            "projectName": "momfo_gupta",
+            "args": "CIHS"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SolutionTest<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.operators.crossover.SolutionTest",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ProblemSetFactory<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.ProblemSetFactory",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-IO<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.base.IO",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Knapsack<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.base.Knapsack",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-CIHS3<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.benchmarks.CIHS3",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-NIHS3<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.benchmarks.NIHS3",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PIHS3<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.problems.benchmarks.PIHS3",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Epsilon<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.Epsilon",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GeneralizedSpread<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.GeneralizedSpread",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GenerationalDistance<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.GenerationalDistance",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Hypervolume<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.Hypervolume",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-InvertedGenerationalDistance<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.InvertedGenerationalDistance",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-R2<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.R2",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Spread<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.Spread",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-WFGHV<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.qualityIndicator.fastHypervolume.wfg.WFGHV",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Correlation<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.util.Correlation",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ExtractParetoFront<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.util.ExtractParetoFront",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-MersenneTwisterFast<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.util.MersenneTwisterFast",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PropUtils<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.util.PropUtils",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-TwoLevelWeightVectorGenerator<momfo_gupta>",
+            "request": "launch",
+            "mainClass": "momfo.util.vector.TwoLevelWeightVectorGenerator",
+            "projectName": "momfo_gupta"
+        }
+    ]
+}

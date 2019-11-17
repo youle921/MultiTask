@@ -1,5 +1,6 @@
 import subprocess
 import multiprocessing as mp
+import itertools
 
 def function(name):
 	subprocess.call(name)
@@ -11,12 +12,12 @@ def multi(l):
 
 if __name__ == "__main__":
 
-    first = ["CI", "PI", "NI"]
-    last = ["HS", "MS", "LS"]
-    namelist = []
-    names = [f + l for f in first for l in last]
+    names = [f + l for f in ["CI", "PI", "NI"] for l in ["HS", "MS", "LS"]]
 
-    for n in names:
-        namelist.append(["java", "-jar", "NSGAII-main.jar", n])
+    interval = ["5", "10"]
+    size = ["10", "20"]
 
-    multi(namelist)
+    args = [["java", "-jar", "NSGAII-main.jar"] \
+            + list(elem) for elem in itertools.product(names, interval, size)]
+
+    multi(args)

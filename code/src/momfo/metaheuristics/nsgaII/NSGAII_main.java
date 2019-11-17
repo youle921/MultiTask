@@ -42,7 +42,6 @@ public class NSGAII_main {
 
 			algorithm = new NSGAII(problemSet);
 
-
 			String pf = "PF/" + problemSet.get(0).getHType() + ".pf";
 		//	System.out.println(pf);
 
@@ -63,7 +62,6 @@ public class NSGAII_main {
 			// Selection Operator
 			parameters = null ;
 			selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
-
 
 			// Add the operators to the algorithm
 			algorithm.addOperator("crossover", crossover);
@@ -89,6 +87,8 @@ public class NSGAII_main {
 
 			for (int i = 1; i <= times; i++) {
 
+				algorithm.initialize();
+
 				RandomGenerator defaultGenerator_ = new RandomGenerator(i);
 				PseudoRandom.setRandomGenerator(defaultGenerator_);
 
@@ -105,7 +105,7 @@ public class NSGAII_main {
 			System.out.println();
 			System.out.println("Average IGD for " + problemSet.get(0).getName() + ": " + form.format(aveIGD / times));
 
-			FileOutputStream fos_1 = new FileOutputStream("result/" + problemSet.get(0).getName()+ "_IGD.csv");
+			FileOutputStream fos_1 = new FileOutputStream("result/" + problemSet.get(0).getName()+ "_IGD_v2.csv");
 			OutputStreamWriter osw_1 = new OutputStreamWriter(fos_1);
 			BufferedWriter bw_1 = new BufferedWriter(osw_1);
 
