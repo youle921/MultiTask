@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
-import momfo.core.Algorithm;
 import momfo.core.Operator;
 import momfo.core.ProblemSet;
 import momfo.core.SolutionSet;
@@ -48,8 +47,7 @@ public class island_main {
 		QualityIndicator indicator1 = new QualityIndicator(problemSets.get(0), pf1);
 		QualityIndicator indicator2 = new QualityIndicator(problemSets.get(1), pf2);
 
-		int num = 100000 / (Integer.parseInt(args[1]));
-		int times = 2;
+		int times = 31;
 		double[] aveIGD = { 0, 0 };
 		double[][] IGDArray = new double[2][times];
 
@@ -69,6 +67,9 @@ public class island_main {
 		SolutionSet migrated_to1;
 		SolutionSet migrated_to2;
 
+		boolean criterion1;
+		boolean criterion2;
+
 		for (int i = 1; i <= times; i++) {
 
 			RandomGenerator defaultGenerator_ = new RandomGenerator(i);
@@ -77,7 +78,10 @@ public class island_main {
 			algorithm1.initialize_island();
 			algorithm2.initialize_island();
 
-			for (int n = 0; n < num; n++) {
+			criterion1 = algorithm1.get_criterion();
+			criterion2 = algorithm2.get_criterion();
+
+			while (criterion1 == false & criterion2 == false) {
 
 				algorithm1.execute();
 				algorithm2.execute();
@@ -85,6 +89,9 @@ public class island_main {
 				migrated_to1 = algorithm2.get_migrated_pop();
 				algorithm1.migration_gen(migrated_to1);
 				algorithm2.migration_gen(migrated_to2);
+
+				criterion1 = algorithm1.get_criterion();
+				criterion2 = algorithm2.get_criterion();
 			}
 
 			double igd1 = indicator1.getIGD(algorithm1.get_front());

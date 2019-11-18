@@ -34,8 +34,6 @@ import momfo.util.JMException;
 import momfo.util.PseudoRandom;
 import momfo.util.Ranking;
 import momfo.util.comparators.CrowdingComparator;
-import momfo.util.offspring.Offspring;
-import momfo.util.RandomGenerator;
 
 /**
  * Implementation of NSGA-II. This implementation of NSGA-II makes use of a
@@ -60,6 +58,7 @@ public class NSGAII_for_island extends Algorithm {
 
 	private int interval;
 	private int size;
+	private boolean criterion;
 
 	private SolutionSet population;
 
@@ -99,6 +98,7 @@ public class NSGAII_for_island extends Algorithm {
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
 		evaluations = 0;
+		criterion = false;
 
 		// Create the initial solutionSet
 		Solution newSolution;
@@ -131,7 +131,7 @@ public class NSGAII_for_island extends Algorithm {
 			// Create the solutionSet union of solutionSet and offSpring
 			union = ((SolutionSet) population).union(offspringPopulation);
 
-			environmental_selection(union);
+			population = environmental_selection(union, populationSize);
 			g++;
 		} // while
 
@@ -146,24 +146,29 @@ public class NSGAII_for_island extends Algorithm {
 
 	public void migration_gen(SolutionSet migrated_pop) throws JMException {
 
-		SolutionSet parent_pool = new SolutionSet(populationSize);
+		SolutionSet parent_pool = environmental_selection(population, populationSize - size);
 
-		for (int s = 0; s < populationSize - size; s++) {
-			parent_pool.add(population.get(s));
-		}
-		for (int ms = 0; ms < size; ms++){
-			// problemSet_.get(0).evaluate(migrated_pop.get(ms));
-			// problemSet_.get(0).evaluateConstraints(migrated_pop.get(ms));
+		for (int ms = 0; ms < size; ms++) {
+
+			if (evaluations >= maxEvaluations) {
+				criterion = true;
+				return;
+			}
+
+			problemSet_.get(0).evaluate(migrated_pop.get(ms));
+			problemSet_.get(0).evaluateConstraints(migrated_pop.get(ms));
 			parent_pool.add(migrated_pop.get(ms));
+
+			evaluations++;
 		}
 
-		// set rank and crowding distance for each solutions in parent_pool 
-		// new Ranking(parent_pool);
-		// distance.crowdingDistanceAssignment(parent_pool, problemSet_.get(0).getNumberOfObjectives());
+		// set rank and crowding distance to each solution in parent_pool
+		new Ranking(parent_pool);
+		distance.crowdingDistanceAssignment(parent_pool, problemSet_.get(0).getNumberOfObjectives());
 
 		SolutionSet offsprings = get_offspring(parent_pool);
 		SolutionSet union = ((SolutionSet) population).union(offsprings);
-		environmental_selection(union);
+		population = environmental_selection(union, populationSize);
 
 	}
 
@@ -189,21 +194,23 @@ public class NSGAII_for_island extends Algorithm {
 				offs.add(offSpring[0]);
 				offs.add(offSpring[1]);
 				evaluations += 2;
+			} else {
+				criterion = true;
 			} // if
 		} // for
 
 		return offs;
 	}
 
-	private void environmental_selection(SolutionSet union) {
+	private SolutionSet environmental_selection(SolutionSet union, int pop_size) {
 
 		// Ranking the union
 		Ranking ranking = new Ranking(union);
 
-		int remain = populationSize;
+		int remain = pop_size;
 		int index = 0;
 		SolutionSet front = null;
-		population.clear();
+		SolutionSet selected_solutions = new SolutionSet();
 
 		// Obtain the next front
 		front = ranking.getSubfront(index);
@@ -213,7 +220,7 @@ public class NSGAII_for_island extends Algorithm {
 			// Add the individuals of this front
 			distance.crowdingDistanceAssignment(front, problemSet_.get(0).getNumberOfObjectives());
 			for (int k = 0; k < front.size(); k++) {
-				population.add(front.get(k));
+				selected_solutions.add(front.get(k));
 			} // for
 
 			// Decrement remain
@@ -240,10 +247,12 @@ public class NSGAII_for_island extends Algorithm {
 			distance.crowdingDistanceAssignment(f, problemSet_.get(0).getNumberOfObjectives());
 			f.sort(new CrowdingComparator());
 			for (int k = 0; k < remain; k++) {
-				population.add(f.get(k));
+				selected_solutions.add(f.get(k));
 			} // for
 
 		} // if
+
+		return selected_solutions;
 
 	}
 
@@ -275,4 +284,7 @@ public class NSGAII_for_island extends Algorithm {
 		return ranking.getSubfront(0);
 	}
 
+	public boolean get_criterion() {
+		return criterion;
+	}
 } // NSGA-II

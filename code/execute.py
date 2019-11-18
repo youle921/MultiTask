@@ -17,7 +17,7 @@ if __name__ == "__main__":
     interval = ["5", "10"]
     size = ["10", "20"]
 
-    args = [["java", "-jar", "NSGAII-main.jar"] \
+    args = [["java", "-jar", "island_no_evaluate.jar"] \
             + list(elem) for elem in itertools.product(names, interval, size)]
 
     multi(args)
