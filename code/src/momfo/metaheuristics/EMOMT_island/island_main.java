@@ -85,8 +85,8 @@ public class island_main {
 
 				algorithm1.execute();
 				algorithm2.execute();
-				migrated_to2 = algorithm1.get_migrated_pop();
-				migrated_to1 = algorithm2.get_migrated_pop();
+				migrated_to2 = algorithm1.get_migrate_pop();
+				migrated_to1 = algorithm2.get_migrate_pop();
 				algorithm1.migration_gen(migrated_to1);
 				algorithm2.migration_gen(migrated_to2);
 

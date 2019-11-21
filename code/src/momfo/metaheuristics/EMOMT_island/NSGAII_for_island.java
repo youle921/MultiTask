@@ -155,9 +155,9 @@ public class NSGAII_for_island extends Algorithm {
 				return;
 			}
 
-			problemSet_.get(0).evaluate(migrated_pop.get(ms));
+			parent_pool.add(new Solution(problemSet_, migrated_pop.get(ms).getDecisionVariables()));
+			problemSet_.get(0).evaluate(parent_pool.get(populationSize - size + ms));
 			problemSet_.get(0).evaluateConstraints(migrated_pop.get(ms));
-			parent_pool.add(migrated_pop.get(ms));
 
 			evaluations++;
 		}
@@ -257,7 +257,7 @@ public class NSGAII_for_island extends Algorithm {
 	}
 
 	// Other operation
-	public SolutionSet get_migrated_pop() {
+	public SolutionSet get_migrate_pop() {
 
 		List<Integer> index = new ArrayList<Integer>();
 		for (int i = 0; i < populationSize; i++) {

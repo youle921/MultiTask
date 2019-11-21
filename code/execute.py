@@ -14,10 +14,10 @@ if __name__ == "__main__":
 
     names = [f + l for f in ["CI", "PI", "NI"] for l in ["HS", "MS", "LS"]]
 
-    interval = ["5", "10"]
-    size = ["10", "20"]
+    interval = ["250"]
+    size = ["80"]
 
-    args = [["java", "-jar", "island_no_evaluate.jar"] \
+    args = [["java", "-jar", "island_main.jar"] \
             + list(elem) for elem in itertools.product(names, interval, size)]
 
     multi(args)

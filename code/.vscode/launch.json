@@ -11,7 +11,7 @@
             "mainClass": "momfo.metaheuristics.EMOMT_island.island_main",
             "projectName": "momfo_gupta",
             "args": [
-                "PILS",
+                "NIMS",
                 "5",
                 "10"
             ]
