@@ -53,7 +53,7 @@ public class NeighborSelection extends MigrationSelection {
         for (int n = 0; n < MigrationSize; n++) {
             minIndex = minList.indexOf(Collections.min(minList));
             minList.set(minIndex, Double.MAX_VALUE);
-            chosenSolution.add(MigrationSolution.get(minIndex))
+            chosenSolution.add(MigrationSolution.get(minIndex));
         }
 
 		return chosenSolution;

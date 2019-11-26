@@ -72,7 +72,7 @@ public class NSGAII_for_shortnote extends Algorithm {
 
 	private Distance distance = new Distance();
 
-	Function <Solution, Solution> migrationParentSelection;
+	Function<Solution, Solution> migrationParentSelection;
 
 	public NSGAII_for_shortnote(ProblemSet problemSet) {
 		super(problemSet);
@@ -99,8 +99,13 @@ public class NSGAII_for_shortnote extends Algorithm {
 		migrationOperator = operators_.get("migration");
 
 		// Read migration parameters
-		interval = ((Integer) getInputParameter("migration_interval")).intValue();
-		size = ((Integer) getInputParameter("migration_size")).intValue();
+		interval = ((Integer) getInputParameter("MigrationInterval")).intValue();
+		size = ((Integer) getInputParameter("MigrationSize")).intValue();
+		if (getInputParameter("MigrationParentSelection").equalsIgnoreCase("Random")) {
+			migrationParentSelection = this::RandomMating;
+		} else if (getInputParameter("MigrationParentSelection").equalsIgnoreCase("Nearest")) {
+			migrationParentSelection = this::NearestMating;
+		}
 
 		// Initialize the variables
 		population = new SolutionSet(populationSize);
@@ -160,24 +165,24 @@ public class NSGAII_for_shortnote extends Algorithm {
 
 		SolutionSet chosenPopulation = (SolutionSet) migrationOperator.execute(migrated_pop);
 
-		for (int ms = 0; ms < chosenPopulation.size(); ms++){
+		for (int ms = 0; ms < chosenPopulation.size(); ms++) {
 
 			offspring.add(migration_crossover(chosenPopulation.get(ms), parent_pool));
 
 		}
-		
+
 		SolutionSet union = ((SolutionSet) population).union(offspring);
 		population = environmental_selection(union, populationSize);
 
 	}
 
 	// GA oprators
-	private SolutionSet get_offspring(SolutionSet parent_pop) throws JMException{
+	private SolutionSet get_offspring(SolutionSet parent_pop) throws JMException {
 
 		return get_offspring(parent_pop, populationSize);
 	}
 
-	private SolutionSet get_offspring(SolutionSet parent_pop, int offspring_size) throws JMException{
+	private SolutionSet get_offspring(SolutionSet parent_pop, int offspring_size) throws JMException {
 
 		SolutionSet offspring_population = new SolutionSet(offspring_size);
 
@@ -262,7 +267,7 @@ public class NSGAII_for_shortnote extends Algorithm {
 	}
 
 	// migration crossover
-	public Solution migration_crossover(Solution parent1, SolutionSet candidate){
+	public Solution migration_crossover(Solution parent1, SolutionSet candidate) {
 
 		Solution[] parents = new Solution[2];
 
@@ -272,14 +277,10 @@ public class NSGAII_for_shortnote extends Algorithm {
 			parents[1] = migrationParentSelection.apply(parent1);
 			Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
 			mutationOperator.execute(offSpring[0]);
-			mutationOperator.execute(offSpring[1]);
 			problemSet_.get(0).evaluate(offSpring[0]);
 			problemSet_.get(0).evaluateConstraints(offSpring[0]);
-			problemSet_.get(0).evaluate(offSpring[1]);
-			problemSet_.get(0).evaluateConstraints(offSpring[1]);
 			offspring_population.add(offSpring[0]);
-			offspring_population.add(offSpring[1]);
-			evaluations += 2;
+			evaluations ++;
 		} else {
 			criterion = true;
 		} // if
@@ -287,13 +288,13 @@ public class NSGAII_for_shortnote extends Algorithm {
 		return offspring_population;
 	}
 
-	public Solution RandomMating(Solution query){
+	public Solution RandomMating(Solution query) {
 
 		int index = PseudoRandom.randInt(0, populationSize - 1);
 		return population.get(index);
 	}
 
-	public Solution NearestMating(Solution query){
+	public Solution NearestMating(Solution query) {
 
 		int index = distance.indexToNearestSolutionInSolutionSpace(query, population);
 		return population.get(index);
@@ -327,7 +328,7 @@ public class NSGAII_for_shortnote extends Algorithm {
 		return ranking.getSubfront(0);
 	}
 
-	public SolutionSet get_all_pop(){
+	public SolutionSet get_all_pop() {
 
 		return population;
 	}
