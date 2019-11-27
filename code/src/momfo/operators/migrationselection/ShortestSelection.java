@@ -1,30 +1,24 @@
 package momfo.operators.migrationselection;
 
-import momfo.core.Solution;
 import momfo.core.SolutionSet;
 import momfo.util.Distance;
-import momfo.util.PseudoRandom;
-import momfo.util.comparators.DominanceComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.management.JMException;
 
 /**
  * This class implements an binary tournament selection operator
  */
-public class NeighborSelection extends MigrationSelection {
+public class ShortestSelection extends MigrationSelection {
 
     private int MigrationSize;
     private SolutionSet DestinationSolution;
-    
+
     private Distance distance = new Distance();
 
-    public NeighborSelection(HashMap<String, Object> parameters) {
+    public ShortestSelection(HashMap<String, Object> parameters) {
         super(parameters);
         MigrationSize = (int) parameters.get("MigrationSize");
     } // NeighborSelection

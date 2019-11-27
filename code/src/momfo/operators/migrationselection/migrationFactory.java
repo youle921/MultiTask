@@ -21,8 +21,8 @@ public class migrationFactory {
 	public static MigrationSelection getSelectionOperator(String name, HashMap parameters) throws JMException {
 		if (name.equalsIgnoreCase("Random"))
 			return new RandomSelection(parameters);
-		else if (name.equalsIgnoreCase("Neighbor"))
-			return new NeighborSelection(parameters);
+		else if (name.equalsIgnoreCase("Shortest"))
+			return new ShortestSelection(parameters);
 		else {
 			Configuration.logger_.severe("Operator '" + name + "' not found ");
 			throw new JMException("Exception in " + name + ".getSelectionOperator()");

@@ -152,7 +152,7 @@ public class NSGAII_for_island extends Algorithm {
 
 			if (evaluations >= maxEvaluations) {
 				criterion = true;
-				return;
+				break;
 			}
 
 			parent_pool.add(new Solution(problemSet_, migrated_pop.get(ms).getDecisionVariables()));

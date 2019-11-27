@@ -6,14 +6,28 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - island_shortnote_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.island_shortnote.island_shortnote_main",
+            "projectName": "momfo_gupta",
+            "args": [
+                "CIHS",
+                "1",
+                "30",
+                "Random",
+                "Random"
+            ]
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - island_main",
             "request": "launch",
             "mainClass": "momfo.metaheuristics.EMOMT_island.island_main",
             "projectName": "momfo_gupta",
             "args": [
-                "NIMS",
-                "5",
-                "10"
+                "PIHS",
+                "250",
+                "80"
             ]
         },
         {

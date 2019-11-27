@@ -12,10 +12,9 @@ import momfo.core.Operator;
 import momfo.core.ProblemSet;
 import momfo.core.SolutionSet;
 import momfo.operators.crossover.CrossoverFactory;
-import momfo.operators.migrationselection.MigrationSelection;
+import momfo.operators.migrationselection.migrationFactory;
 import momfo.operators.mutation.MutationFactory;
 import momfo.operators.selection.SelectionFactory;
-import momfo.operators.migrationselection.migrationFactory;
 import momfo.problems.ProblemSetFactory;
 import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
@@ -26,8 +25,8 @@ public class island_shortnote_main {
 	public static void main(String args[]) throws IOException, JMException, ClassNotFoundException {
 
 		// args[0]: problems, args[1]: interval, args[2]: size
-		// args[3]: choice migrate populaion method("Random" or "Neighbor")
-		// args[4]: choice mating solution method("Random" or "Nearest")
+		// args[3]: choice migration populaion operator("Random" or "Shortest")
+		// args[4]: choice mating solution operator("Random" or "Neighbor")
 
 		NSGAII_for_shortnote algorithm1; // The algorithm to use
 		NSGAII_for_shortnote algorithm2; // The algorithm to use
@@ -89,8 +88,10 @@ public class island_shortnote_main {
 
 				algorithm1.execute();
 				algorithm2.execute();
-				migrated_to2 = algorithm1.get_migrate_pop();
-				migrated_to1 = algorithm2.get_migrate_pop();
+
+				migrated_to1 = algorithm2.get_all_pop();
+				migrated_to2 = algorithm1.get_all_pop();
+
 				algorithm1.migration_gen(migrated_to1);
 				algorithm2.migration_gen(migrated_to2);
 
@@ -114,11 +115,11 @@ public class island_shortnote_main {
 		System.out.println("Average IGD for " + problemSets.get(0).getName() + ": " + form.format(aveIGD[0] / times));
 		System.out.println("Average IGD for " + problemSets.get(1).getName() + ": " + form.format(aveIGD[1] / times));
 
-		File result_dir = new File("result/island/" + args[1] + "-" + args[2] + "/");
+		String filepath = "result/island_shortnote/200gen/" + args[3] + "+" + args[4] + "/";
+		File result_dir = new File(filepath);
 		result_dir.mkdirs();
 
-		FileOutputStream fos_1 = new FileOutputStream(
-				"result/island/" + args[1] + "-" + args[2] + "/" + args[0] + "_IGD.csv");
+		FileOutputStream fos_1 = new FileOutputStream(filepath + args[0] + "_IGD.csv");
 		OutputStreamWriter osw_1 = new OutputStreamWriter(fos_1);
 		BufferedWriter bw_1 = new BufferedWriter(osw_1);
 
@@ -130,13 +131,12 @@ public class island_shortnote_main {
 
 	}
 
-	public static NSGAII_for_shortnote algorithm_setting(ProblemSet problemSet, String... params)
-			throws JMException {
+	public static NSGAII_for_shortnote algorithm_setting(ProblemSet problemSet, String... params) throws JMException {
 
 		NSGAII_for_shortnote algorithm = new NSGAII_for_shortnote(problemSet);
 
 		algorithm.setInputParameter("populationSize", 100);
-		algorithm.setInputParameter("maxEvaluations", 100 * 1000);
+		algorithm.setInputParameter("maxEvaluations", 100 * 201);
 
 		algorithm.setInputParameter("MigrationInterval", Integer.parseInt(params[1]));
 		algorithm.setInputParameter("MigrationSize", Integer.parseInt(params[2]));

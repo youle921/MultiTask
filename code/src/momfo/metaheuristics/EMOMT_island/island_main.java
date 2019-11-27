@@ -47,7 +47,7 @@ public class island_main {
 		QualityIndicator indicator1 = new QualityIndicator(problemSets.get(0), pf1);
 		QualityIndicator indicator2 = new QualityIndicator(problemSets.get(1), pf2);
 
-		int times = 31;
+		int times = 100;
 		double[] aveIGD = { 0, 0 };
 		double[][] IGDArray = new double[2][times];
 
@@ -110,11 +110,11 @@ public class island_main {
 		System.out.println("Average IGD for " + problemSets.get(0).getName() + ": " + form.format(aveIGD[0] / times));
 		System.out.println("Average IGD for " + problemSets.get(1).getName() + ": " + form.format(aveIGD[1] / times));
 
-		File result_dir = new File("result/island/" + args[1] + "-" + args[2] + "/");
+		File result_dir = new File("result/island/100trial/" + args[1] + "-" + args[2] + "/");
 		result_dir.mkdirs();
 
 		FileOutputStream fos_1 = new FileOutputStream(
-				"result/island/" + args[1] + "-" + args[2] + "/" + args[0] + "_IGD.csv");
+				"result/island/100trial/" + args[1] + "-" + args[2] + "/" + args[0] + "_IGD.csv");
 		OutputStreamWriter osw_1 = new OutputStreamWriter(fos_1);
 		BufferedWriter bw_1 = new BufferedWriter(osw_1);
 

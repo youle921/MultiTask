@@ -37,6 +37,7 @@ import momfo.util.JMException;
 import momfo.util.PseudoRandom;
 import momfo.util.Ranking;
 import momfo.util.comparators.CrowdingComparator;
+import momfo.util.offspring.Offspring;
 
 /**
  * Implementation of NSGA-II. This implementation of NSGA-II makes use of a
@@ -101,10 +102,10 @@ public class NSGAII_for_shortnote extends Algorithm {
 		// Read migration parameters
 		interval = ((Integer) getInputParameter("MigrationInterval")).intValue();
 		size = ((Integer) getInputParameter("MigrationSize")).intValue();
-		if (getInputParameter("MigrationParentSelection").equalsIgnoreCase("Random")) {
+		if (((String) getInputParameter("MigrationParentSelection")).equalsIgnoreCase("Random")) {
 			migrationParentSelection = this::RandomMating;
-		} else if (getInputParameter("MigrationParentSelection").equalsIgnoreCase("Nearest")) {
-			migrationParentSelection = this::NearestMating;
+		} else if (((String) getInputParameter("MigrationParentSelection")).equalsIgnoreCase("Neighbor")) {
+			migrationParentSelection = this::NeighborMating;
 		}
 
 		// Initialize the variables
@@ -167,7 +168,13 @@ public class NSGAII_for_shortnote extends Algorithm {
 
 		for (int ms = 0; ms < chosenPopulation.size(); ms++) {
 
-			offspring.add(migration_crossover(chosenPopulation.get(ms), parent_pool));
+			if (evaluations >= maxEvaluations) {
+				criterion = true;
+				break;
+			}
+
+			Solution parent1 = (new Solution(problemSet_, chosenPopulation.get(ms).getDecisionVariables()));
+			offspring.add(migration_crossover(parent1, parent_pool));
 
 		}
 
@@ -184,7 +191,7 @@ public class NSGAII_for_shortnote extends Algorithm {
 
 	private SolutionSet get_offspring(SolutionSet parent_pop, int offspring_size) throws JMException {
 
-		SolutionSet offspring_population = new SolutionSet(offspring_size);
+		SolutionSet offspring_population = new SolutionSet();
 
 		Solution[] parents = new Solution[2];
 
@@ -267,25 +274,25 @@ public class NSGAII_for_shortnote extends Algorithm {
 	}
 
 	// migration crossover
-	public Solution migration_crossover(Solution parent1, SolutionSet candidate) {
+	public Solution migration_crossover(Solution parent1, SolutionSet candidate) throws JMException {
 
 		Solution[] parents = new Solution[2];
+		Solution[] offSpring = new Solution[2];
 
 		if (evaluations < maxEvaluations) {
 			// obtain parents
-			parents[0] = parent1;
-			parents[1] = migrationParentSelection.apply(parent1);
-			Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
+			parents[1] = parent1;
+			parents[0] = migrationParentSelection.apply(parent1);
+			offSpring = (Solution[]) crossoverOperator.execute(parents);
 			mutationOperator.execute(offSpring[0]);
 			problemSet_.get(0).evaluate(offSpring[0]);
 			problemSet_.get(0).evaluateConstraints(offSpring[0]);
-			offspring_population.add(offSpring[0]);
 			evaluations ++;
 		} else {
 			criterion = true;
 		} // if
 
-		return offspring_population;
+		return offSpring[0];
 	}
 
 	public Solution RandomMating(Solution query) {
@@ -294,7 +301,7 @@ public class NSGAII_for_shortnote extends Algorithm {
 		return population.get(index);
 	}
 
-	public Solution NearestMating(Solution query) {
+	public Solution NeighborMating(Solution query) {
 
 		int index = distance.indexToNearestSolutionInSolutionSpace(query, population);
 		return population.get(index);
@@ -330,7 +337,13 @@ public class NSGAII_for_shortnote extends Algorithm {
 
 	public SolutionSet get_all_pop() {
 
-		return population;
+		SolutionSet allPopulation = new SolutionSet(populationSize);
+
+		for (int i = 0; i < populationSize; i++) {
+			allPopulation.add(population.get(i));
+		}
+
+		return allPopulation;
 	}
 
 	public boolean get_criterion() {
