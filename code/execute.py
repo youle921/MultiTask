@@ -14,10 +14,17 @@ if __name__ == "__main__":
 
     names = [f + l for f in ["CI", "PI", "NI"] for l in ["HS", "MS", "LS"]]
 
-    interval = ["250"]
-    size = ["80"]
+    interval = ["1"]
+    size = ["30"]
+    migration_operator = ["Random", "Shortest"]
+    mating_operator = ["Random", "Neighbor"]
 
-    args = [["java", "-jar", "island_main.jar"] \
-            + list(elem) for elem in itertools.product(names, interval, size)]
+    args1 = [["java", "-jar", "island_shortnote_200gen.jar"] \
+            + list(elem) for elem in itertools.product(names, interval, size, migration_operator, mating_operator)]
 
-    multi(args)
+    multi(args1)
+    
+    args2 = [["java", "-jar", "island_shortnote_500gen.jar"] \
+            + list(elem) for elem in itertools.product(names, interval, size, migration_operator, mating_operator)]
+
+    multi(args2)
