@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Knapsack",
+            "request": "launch",
+            "mainClass": "momfo.problems.base.Knapsack",
+            "projectName": "momfo_gupta"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - island_shortnote_main",
             "request": "launch",
             "mainClass": "momfo.metaheuristics.island_shortnote.island_shortnote_main",

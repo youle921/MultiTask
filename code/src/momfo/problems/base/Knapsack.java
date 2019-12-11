@@ -48,37 +48,40 @@ public class Knapsack extends Problem {
 		} // for
 	}
 
-	public static void main(String[] args) {
+	// public static void main(String[] args) throws JMException {
 
-		Knapsack a = new Knapsack(8);
+	// 	Knapsack a = new Knapsack(8);
+	// 	Solution d = new Solution();
 
-		Solution d = new Solution();
 
-		for (int i = 0; i < 250; i++) {
-			// d.setValue(i*2, 1);
-			// d.setValue(i*2+1, 1);
-		}
-		a.subscript();
-		// a.repair(d,null);
-		// a.evaluate(d);
-		for (int i = 0; i < 2; i++) {
-			System.out.print(d.getObjective(i) + "	");
-		}
-	}
+	// 	for (int i = 0; i < 250; i++) {
+	// 		// d.setIth(i*2, 1);
+	// 		// d.setValue(i*2+1, 0);
+	// 	}
+
+	// 	a.subscript();
+	// 	a.repair(d,null);
+	// 	a.evaluate(d);
+	// 	for (int i = 0; i < 2; i++) {
+	// 		System.out.print(d.getObjective(i) + "	");
+	// 	}
+	// }
 
 	public int[] decodeSolution(Solution sol) throws JMException {
+
 		Variable[] decisionVariables = sol.getDecisionVariables();
 		int[] x = new int[numberOfVariables_];
 
-		for (int i = 0; i < numberOfVariables_; i++)
+		for (int i = 0; i < numberOfVariables_; i++){
+
 			if (decisionVariables[i].getValue() < 0.5) {
 				x[i] = 0;
 			} else if (decisionVariables[i].getValue() >= 0.5) {
 				x[i] = 1;
 			}
-
+		}
+			
 		return x;
-
 	}
 
 	public void evaluate(Solution solution) throws JMException {
@@ -89,13 +92,11 @@ public class Knapsack extends Problem {
 		int sum;
 		for (int i = 0; i < numberOfObjectives_; i++) {
 			sum = 0;
-			for (int j = 0; j < numberOfVariabes_; j++) {
+			for (int j = 0; j < numberOfVariables_; j++) {
 				sum += profit_[i][j] * val[j];
 			}
 			f[i] = sum;
 		}
-
-		break_knapsack(val);
 
 		for (int i = 0; i < numberOfObjectives_; i++)
 			solution.setObjective(i, f[i]);
