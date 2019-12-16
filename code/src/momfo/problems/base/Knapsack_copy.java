@@ -10,10 +10,9 @@ import momfo.core.Solution;
 import momfo.core.Variable;
 import momfo.util.JMException;
 
-public class Knapsack extends Problem{
+public class Knapsack_copy extends Problem{
 
-
-
+	private static final long serialVersionUID = 1L;
 	private static int[][] profit_;
 	private static int[][] weight_;
 
@@ -28,13 +27,13 @@ public class Knapsack extends Problem{
 		decodeType = d;
 	}
 
-	public Knapsack(Integer numberOfVariables, Integer numberOfObjectives) {
+	public Knapsack_copy(Integer numberOfVariables, Integer numberOfObjectives) {
 		numberOfVariables_ = numberOfVariables;
 		numberOfObjectives_ = numberOfObjectives;
 		problemName_ = "Knapsack";
 	}
 
-	public Knapsack(String filename){
+	public Knapsack_copy(String filename) {
 		String name = filename;
 
 		FileReading(name);
@@ -79,7 +78,7 @@ public class Knapsack extends Problem{
 	public static void main(String[] args){
 		String 	knapsackfileName  = "Data/KnapsackData/knapsack_2_500to6.txt";
 
-		Knapsack a = new Knapsack(knapsackfileName);
+		Knapsack_copy a = new Knapsack_copy(knapsackfileName);
 
 		Solution d = new Solution();
 

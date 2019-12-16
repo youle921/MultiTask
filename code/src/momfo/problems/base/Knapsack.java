@@ -8,7 +8,9 @@ import java.util.Map;
 import momfo.core.Problem;
 import momfo.core.Solution;
 import momfo.core.Variable;
+import momfo.encodings.solutionType.IntSolutionType;
 import momfo.util.JMException;
+import momfo.util.wrapper.XInt;
 
 public class Knapsack extends Problem {
 
@@ -48,60 +50,22 @@ public class Knapsack extends Problem {
 		} // for
 	}
 
-	// public static void main(String[] args) throws JMException {
+	// public int[] decodeSolution(Solution sol) throws JMException {
 
-	// 	Knapsack a = new Knapsack(8);
-	// 	Solution d = new Solution();
+	// 	Variable[] decisionVariables = sol.getDecisionVariables();
+	// 	int[] x = new int[numberOfVariables_];
 
+	// 	for (int i = 0; i < numberOfVariables_; i++){
 
-	// 	for (int i = 0; i < 250; i++) {
-	// 		// d.setIth(i*2, 1);
-	// 		// d.setValue(i*2+1, 0);
+	// 		if (decisionVariables[i].getValue() < 0.5) {
+	// 			x[i] = 0;
+	// 		} else if (decisionVariables[i].getValue() >= 0.5) {
+	// 			x[i] = 1;
+	// 		}
 	// 	}
-
-	// 	a.subscript();
-	// 	a.repair(d,null);
-	// 	a.evaluate(d);
-	// 	for (int i = 0; i < 2; i++) {
-	// 		System.out.print(d.getObjective(i) + "	");
-	// 	}
-	// }
-
-	public int[] decodeSolution(Solution sol) throws JMException {
-
-		Variable[] decisionVariables = sol.getDecisionVariables();
-		int[] x = new int[numberOfVariables_];
-
-		for (int i = 0; i < numberOfVariables_; i++){
-
-			if (decisionVariables[i].getValue() < 0.5) {
-				x[i] = 0;
-			} else if (decisionVariables[i].getValue() >= 0.5) {
-				x[i] = 1;
-			}
-		}
 			
-		return x;
-	}
-
-	public void evaluate(Solution solution) throws JMException {
-
-		int[] val = decodeSolution(solution);
-		int[] f = new int[numberOfObjectives_];
-
-		int sum;
-		for (int i = 0; i < numberOfObjectives_; i++) {
-			sum = 0;
-			for (int j = 0; j < numberOfVariables_; j++) {
-				sum += profit_[i][j] * val[j];
-			}
-			f[i] = sum;
-		}
-
-		for (int i = 0; i < numberOfObjectives_; i++)
-			solution.setObjective(i, f[i]);
-
-	}
+	// 	return x;
+	// }
 
 	// this method read the knapsack data
 	public void setItems() {
@@ -109,17 +73,17 @@ public class Knapsack extends Problem {
 		String line_profit;
 		String line_weight;
 
-		for (int i = 1; i <= numberOfObjectives_; i++) {
+		for (int i = 0; i < numberOfObjectives_; i++) {
 
-			String ProfitName = DirectoryName + "profit" + String.valueOf(i) + Extension;
-			String WeightName = DirectoryName + "Weight" + String.valueOf(i) + Extension;
+			String ProfitName = DirectoryName + "profit" + String.valueOf(i + 1) + Extension;
+			String WeightName = DirectoryName + "Weight" + String.valueOf(i + 1) + Extension;
 
 			try (BufferedReader br_profit = new BufferedReader(new FileReader(ProfitName));
 					BufferedReader br_weight = new BufferedReader(new FileReader(WeightName));) {
 
 				capacity_[i] = 0;
 
-				for (int j = 0; i < numberOfVariables_; j++) {
+				for (int j = 0; j < numberOfVariables_; j++) {
 					line_profit = br_profit.readLine();
 					profit_[i][j] = Integer.valueOf(line_profit);
 					line_weight = br_weight.readLine();
@@ -127,7 +91,7 @@ public class Knapsack extends Problem {
 					capacity_[i] += weight_[i][j];
 				}
 
-				if (i == 1 | i == 2) {
+				if (i == 0 | i == 1) {
 					capacity_[i] /= 2;
 				} else {
 					capacity_[i] = Double.POSITIVE_INFINITY;
@@ -171,15 +135,33 @@ public class Knapsack extends Problem {
 
 	}
 
+	public void evaluate(Solution solution) throws JMException {
 
-	public void repair(Solution c, Map<String, Object> a) throws JMException {
-		int[] d = new int[1];
-		if (!break_knapsack(d))
-			return;
-		int counter = 0;
-		do {
-			d[sort_min_[counter++]] = 0;
-		} while (break_knapsack(d));
+		XInt var = new XInt(solution);
+		int[] f = new int[numberOfObjectives_];
+
+		repair(var);
+
+		int sum;
+		for (int i = 0; i < numberOfObjectives_; i++) {
+			sum = 0;
+			for (int j = 0; j < numberOfVariables_; j++) {
+				sum += profit_[i][j] * var.getValue(j);
+			}
+			f[i] = sum;
+		}
+
+		// to change to minimization problems, use objective function value multipled by -1 
+		for (int i = 0; i < numberOfObjectives_; i++){
+			solution.setObjective(i, -1 * f[i]);
+		}
+	}
+
+	public void repair(XInt v) throws JMException {
+
+		for (int counter = 0; break_knapsack(v); counter++){
+			v.setValue(sort_min_[counter], 0);
+		}
 
 	}
 
@@ -187,20 +169,16 @@ public class Knapsack extends Problem {
 	 * if at least one Knapsack is broken, this method return true; else return
 	 * false;
 	 */
-	public boolean break_knapsack(int[] sol) throws JMException {
-		double sum = 0;
-		int bit = 1;
+	public boolean break_knapsack(XInt sol) throws JMException {
+
+		double sum ;
 
 		for (int i = 0; i < numberOfObjectives_; i++) {
-			sum = 0;
-			for (int j = 0; j < numberOfVariables_; j++) {
 
-				if (sol[j] > 0.99) {
-					bit = 1;
-				} else if (sol[j] < 0.01) {
-					bit = 0;
-				}
-				sum += bit * weight_[i][j];
+			sum = 0;
+			
+			for (int j = 0; j < numberOfVariables_; j++) {
+				sum += sol.getValue(j) * weight_[i][j];
 			}
 			if (sum > capacity_[i]) {
 				return true;

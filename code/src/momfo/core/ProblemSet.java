@@ -7,6 +7,7 @@ import java.util.List;
 
 import momfo.core.Problem;
 import momfo.core.SolutionType;
+import momfo.encodings.solutionType.IntSolutionType;
 import momfo.encodings.solutionType.PermutationSolutionType;
 import momfo.encodings.solutionType.RealSolutionType;
 import momfo.util.Configuration;
@@ -78,6 +79,8 @@ public class ProblemSet {
 
 		if (solutionType.compareTo("Real") == 0)
 			solutionType_ = new RealSolutionType(this);
+		else if (solutionType.compareTo("Int") == 0)
+			solutionType_ = new IntSolutionType(this);
 		else {
 			System.out.println("solution type " + solutionType + " invalid");
 			System.exit(-1);

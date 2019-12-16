@@ -51,6 +51,8 @@ public class MutationFactory {
 			return new GaussianMutation(parameters);
 		else if (name.equalsIgnoreCase("SwapMutation"))
 			return new SwapMutation(parameters);
+		else if (name.equalsIgnoreCase("BitFlipMutation"))
+			return new BitFlipMutation(parameters);
 		else {
 			Configuration.logger_.severe("Operator '" + name + "' not found ");
 			Class cls = java.lang.String.class;

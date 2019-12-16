@@ -96,8 +96,8 @@ public class NSGAII extends Algorithm {
 
 		// population.printVariablesToFile(path[0] + "/final_pops/var/pops" + path[1] +
 		// ".dat");
-		// population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] +
-		// ".dat");
+		population.printObjectivesToFile(path[0] + "/final_pops/obj/pops" + path[1] +
+		".dat");
 
 		Ranking ranking = new Ranking(population);
 		return ranking.getSubfront(0);

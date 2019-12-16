@@ -15,5 +15,5 @@ for i in range(8):
     kp_weight = kp[0::2]
     kp_profit = kp[1::2]
 
-    np.savetxt("knapsack_500_weight" + str(i + 1) + ext, kp_weight, delimiter = ',')
-    np.savetxt("knapsack_500_profit" + str(i + 1) + ext, kp_profit, delimiter = ',')
+    np.savetxt("items/knapsack_500_weight" + str(i + 1) + ext, kp_weight, delimiter = ',', fmt = '%d')
+    np.savetxt("items/knapsack_500_profit" + str(i + 1) + ext, kp_profit, delimiter = ',', fmt = '%d')

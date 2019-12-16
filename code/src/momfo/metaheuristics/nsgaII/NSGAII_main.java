@@ -9,13 +9,16 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import momfo.core.Operator;
+import momfo.core.Problem;
 import momfo.core.ProblemSet;
 import momfo.core.SolutionSet;
+import momfo.encodings.solutionType.IntSolutionType;
 import momfo.operators.crossover.CrossoverFactory;
 import momfo.operators.mutation.MutationFactory;
 import momfo.operators.selection.SelectionFactory;
-import momfo.problems.ProblemSetFactory;
-import momfo.qualityIndicator.QualityIndicator;
+// import momfo.problems.ProblemSetFactory;
+import momfo.problems.base.Knapsack;
+// import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
 import momfo.util.PseudoRandom;
 import momfo.util.RandomGenerator;
@@ -30,92 +33,96 @@ public class NSGAII_main {
 
 		HashMap parameters; // Operator parameters
 
-		ProblemSet problemSets = ProblemSetFactory.getProblem(args[0]);
+		int objective = 2;
+		Problem kp = new Knapsack(objective);
 
-		for(int problem_no = 0; problem_no < 2; problem_no++){
+		problemSet = new ProblemSet();
+		problemSet.add(kp);
+		problemSet.setSolutionType(new IntSolutionType(problemSet));
 
-			problemSet = new ProblemSet();
-			problemSet.add(problemSets.get(problem_no));
+		algorithm = new NSGAII(problemSet);
 
-//			problemSet.setUnifiedLowerLimit(-50);
-//			problemSet.setUnifiedUpperLimit(50);
+		// String pf = "PF/" + problemSet.get(0).getHType() + ".pf";
+		// System.out.println(pf);
 
-			algorithm = new NSGAII(problemSet);
+		algorithm.setInputParameter("populationSize", 100);
+		algorithm.setInputParameter("maxEvaluations", 100 * 4000);
 
-			String pf = "PF/" + problemSet.get(0).getHType() + ".pf";
-		//	System.out.println(pf);
+		parameters = new HashMap();
+		parameters.put("probability", 0.8);
+		// parameters.put("distributionIndex", 20.0);
+		crossover = CrossoverFactory.getCrossoverOperator("UniformCrossover", parameters);
 
-			algorithm.setInputParameter("populationSize", 100);
-			algorithm.setInputParameter("maxEvaluations", 100 * 1000);
+		// Mutation operator
+		parameters = new HashMap();
+		parameters.put("probability", 1.0 / problemSet.getMaxDimension());
+		// parameters.put("distributionIndex", 20.0);
+		mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
-			parameters = new HashMap();
-			parameters.put("probability", 0.9);
-			parameters.put("distributionIndex", 20.0);
-			crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+		// Selection Operator
+		parameters = null;
+		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
 
-			// Mutation operator
-			parameters = new HashMap();
-			parameters.put("probability", 1.0 / problemSet.getMaxDimension());
-			parameters.put("distributionIndex", 20.0);
-			mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
+		// Add the operators to the algorithm
+		algorithm.addOperator("crossover", crossover);
+		algorithm.addOperator("mutation", mutation);
+		algorithm.addOperator("selection", selection);
 
-			// Selection Operator
-			parameters = null ;
-			selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
+		// System.out.println("RunID\t" + "IGD for " + problemSet.get(0).getName());
+		// DecimalFormat form = new DecimalFormat("#.####E0");
+		// QualityIndicator indicator = new QualityIndicator(problemSet.get(0), pf);
 
-			// Add the operators to the algorithm
-			algorithm.addOperator("crossover", crossover);
-			algorithm.addOperator("mutation", mutation);
-			algorithm.addOperator("selection", selection);
+		int times = 100;
+		// double aveIGD = 0;
+		// double[] aveIGDArray = new double[times];
 
-			System.out.println("RunID\t" + "IGD for " + problemSet.get(0).getName());
-			DecimalFormat form = new DecimalFormat("#.####E0");
-			QualityIndicator indicator = new QualityIndicator(problemSet.get(0), pf);
+		String path = "result/knapsack" + String.valueOf(objective);
 
-			int times = 30;
-			double aveIGD = 0;
-			double[] aveIGDArray = new double[times];
+		// File init_var_file = new File("result/" + problemSet.get(0).getName() +
+		// "/init_pops/var");
+		// init_var_file.mkdirs();
+		// File final_var_file = new File("result/" + problemSet.get(0).getName() +
+		// "/final_pops/var");
+		// final_var_file.mkdirs();
+		// File init_obj_file = new File("result/" + problemSet.get(0).getName() +
+		// "/init_pops/obj");
+		// init_obj_file.mkdirs();
+		File finalObjFile = new File(path +	"/final_pops/obj");
+		finalObjFile.mkdirs();
 
-			File init_var_file = new File("result/" + problemSet.get(0).getName() + "/init_pops/var");
-			init_var_file.mkdirs();
-			File final_var_file = new File("result/" + problemSet.get(0).getName() + "/final_pops/var");
-			final_var_file.mkdirs();
-			File init_obj_file = new File("result/" + problemSet.get(0).getName() + "/init_pops/obj");
-			init_obj_file.mkdirs();
-			File final_obj_file = new File("result/" + problemSet.get(0).getName() + "/final_pops/obj");
-			final_obj_file.mkdirs();
+		for (int i = 1; i <= times; i++) {
 
-			for (int i = 1; i <= times; i++) {
+			RandomGenerator defaultGenerator_ = new RandomGenerator(i);
+			PseudoRandom.setRandomGenerator(defaultGenerator_);
 
-				algorithm.initialize();
+			algorithm.initialize();
 
-				RandomGenerator defaultGenerator_ = new RandomGenerator(i);
-				PseudoRandom.setRandomGenerator(defaultGenerator_);
-
-				algorithm.setPath("result/" + problemSet.get(0).getName(), i);
-				SolutionSet population = algorithm.execute();
-				// Ranking ranking = new Ranking(population);
-				// population = ranking.getSubfront(0);
-				double igd = indicator.getIGD(population);
-				aveIGD += igd;
-				aveIGDArray[i - 1] = igd;
-				System.out.println(i + "\t" + form.format(igd));;
-			}
-
-			System.out.println();
-			System.out.println("Average IGD for " + problemSet.get(0).getName() + ": " + form.format(aveIGD / times));
-
-			FileOutputStream fos_1 = new FileOutputStream("result/" + problemSet.get(0).getName()+ "_IGD_v2.csv");
-			OutputStreamWriter osw_1 = new OutputStreamWriter(fos_1);
-			BufferedWriter bw_1 = new BufferedWriter(osw_1);
-
-			for(int t = 0; t<aveIGDArray.length;t++){
-				bw_1.write(String.valueOf(aveIGDArray[t]));
-				bw_1.newLine();
-			}
-			bw_1.close();
-
+			algorithm.setPath(path, i);
+			algorithm.execute();
+			// SolutionSet population = algorithm.execute();
+			// Ranking ranking = new Ranking(population);
+			// population = ranking.getSubfront(0);
+			// double igd = indicator.getIGD(population);
+			// aveIGD += igd;
+			// aveIGDArray[i - 1] = igd;
+			// System.out.println(i + "\t" + form.format(igd));
+			System.out.println(i);
 		}
+
+		// System.out.println();
+		// System.out.println("Average IGD for " + problemSet.get(0).getName() + ": " +
+		// form.format(aveIGD / times));
+
+		// FileOutputStream fos_1 = new FileOutputStream("result/" +
+		// problemSet.get(0).getName()+ "_IGD_v2.csv");
+		// OutputStreamWriter osw_1 = new OutputStreamWriter(fos_1);
+		// BufferedWriter bw_1 = new BufferedWriter(osw_1);
+
+		// for(int t = 0; t<aveIGDArray.length;t++){
+		// bw_1.write(String.valueOf(aveIGDArray[t]));
+		// bw_1.newLine();
+		// }
+		// bw_1.close();
 
 	}
 }
