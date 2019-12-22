@@ -21,6 +21,8 @@ class Knapsack:
         if objective > 3:
             self.size[2:] = np.inf
 
+        self.original_size = self.size
+
     def evaluate(self, solutions):
 
         self.repair(solutions)
@@ -44,6 +46,10 @@ class Knapsack:
             util[mask, idx] = np.inf
 
             mask = np.sum(np.dot(solutions, self.items[:, 1, :]) > self.size, axis = 1) > 0
+
+    def shift_size(self, scale):
+
+        self.size = self.original_size * scale
 
 if __name__ == "__main__":
 
