@@ -51,34 +51,37 @@ item_num = 15
 kp = Knapsack(items = item_num)
 sol = np.array(list(itertools.product((0, 1), repeat = item_num)))
 
-kp.shift_size(0.6)
 f = kp.evaluate(sol)
 pf, _, _ = divide_solution(f)
 u_pf = np.unique(pf, axis = 0)
 
 sol = np.array(list(itertools.product((0, 1), repeat = item_num)))
-kp.shift_size(0.8)
+kp.shift_size(0.6)
 f2 = kp.evaluate(sol)
-pf2,_ ,_  = divide_solution(f2)
-u_pf2 = np.unique(pf2, axis = 0)
+pf2,_ ,idx2  = divide_solution(f2)
+_, u_id = np.unique(pf2, axis = 0, return_index = True)
+idx2 = idx2[u_id]
 
 sol = np.array(list(itertools.product((0, 1), repeat = item_num)))
-kp.shift_size(1.0)
+kp.shift_size(0.8)
 f3 = kp.evaluate(sol)
-pf3, _, _ = divide_solution(f3)
-u_pf3 = np.unique(pf3, axis = 0)
+pf3, _, idx3 = divide_solution(f3)
+_, u_id = np.unique(pf3, axis = 0, return_index = True)
+idx3 = idx3[u_id]
 
 sol = np.array(list(itertools.product((0, 1), repeat = item_num)))
 kp.shift_size(1.2)
 f4 = kp.evaluate(sol)
-pf4,_ ,_  = divide_solution(f4)
-u_pf4 = np.unique(pf4, axis = 0)
+pf4,_ ,idx4  = divide_solution(f4)
+_, u_id = np.unique(pf4, axis = 0, return_index = True)
+idx4 = idx4[u_id]
 
 sol = np.array(list(itertools.product((0, 1), repeat = item_num)))
 kp.shift_size(1.4)
 f5 = kp.evaluate(sol)
-pf5, _, _ = divide_solution(f5)
-u_pf5 = np.unique(pf5, axis = 0)
+pf5, _, idx5 = divide_solution(f5)
+_, u_id = np.unique(pf5, axis = 0, return_index = True)
+idx5 = idx5[u_id]
 
 # for i in range(pf.shape[0]):
 #     print(np.sum(np.sum(f == pf[i, :], axis = 1) == f.shape[1]))
@@ -97,12 +100,12 @@ u_pf5 = np.unique(pf5, axis = 0)
 # plt.quiver(X[:, 0], X[:, 1], U[:, 0], U[:, 1], angles = 'xy', scale_units = 'xy', scale = 1)
 
 plt.scatter(u_pf[:, 0], u_pf[:, 1])
-plt.scatter(u_pf2[:, 0], u_pf2[:, 1])
-plt.scatter(u_pf3[:, 0], u_pf3[:, 1])
-plt.scatter(u_pf4[:, 0], u_pf4[:, 1])
-plt.scatter(u_pf5[:, 0], u_pf5[:, 1])
+plt.scatter(f[idx2, 0], f[idx2, 1])
+plt.scatter(f[idx3, 0], f[idx3, 1])
+plt.scatter(f[idx4, 0], f[idx4, 1], s = 200, marker = '+')
+plt.scatter(f[idx5, 0], f[idx5, 1], s = 200, marker = 'x')
 
-plt.rcParams["font.size"] = 15
-plt.legend(['  = 0.6', '  = 0.8', '  = 1.0', '  = 1.2', '  = 1.4'], fontsize = 15, bbox_to_anchor=(1.4, 1))
 
-plt.savefig('pf.svg', bbox_inches='tight')
+plt.legend(['  = 1.0', '  = 0.6', '  = 0.8', '  = 1.2', '  = 1.4'], fontsize = 15, bbox_to_anchor=(1.4, 1))
+plt.rcParams["font.size"] = 20
+plt.savefig('repair.svg', bbox_inches='tight')
