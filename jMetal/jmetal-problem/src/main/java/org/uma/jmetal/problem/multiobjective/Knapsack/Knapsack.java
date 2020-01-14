@@ -1,4 +1,4 @@
-package org.uma.jmetal.problem.multiobjective;
+package org.uma.jmetal.problem.multiobjective.Knapsack;
 
 import org.uma.jmetal.problem.binaryproblem.impl.AbstractBinaryProblem;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
@@ -11,12 +11,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+@SuppressWarnings("serial")
 public class Knapsack extends AbstractBinaryProblem {
 
 	private static int[][] profit_;
 	private static int[][] weight_;
 
-	private static String DirectoryName = "Data/Knapsack/Items/knapsack_500_";
+	private static String DirectoryName = "Items/knapsack_500_";
 	private static String Extension = ".csv";
 
 	static double[] capacity_;

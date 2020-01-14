@@ -41,12 +41,12 @@ public class MOEADRunner extends AbstractAlgorithmRunner {
       problemName = args[0];
       referenceParetoFront = args[1];
     } else {
-      problemName = "org.uma.jmetal.problem.multiobjective.lz09.LZ09F2";
+      problemName = "org.uma.jmetal.problem.multiobjective.Knapsack";
       // referenceParetoFront = "referenceFronts/LZ09_F2.pf";
     }
 
     problem = (DoubleProblem) ProblemUtils.<DoubleSolution>loadProblem(problemName);
-
+    
     double cr = 1.0;
     double f = 0.5;
     crossover =
