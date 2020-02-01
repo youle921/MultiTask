@@ -1,23 +1,18 @@
 package momfo.metaheuristics.nsgaII;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import momfo.core.Operator;
 import momfo.core.Problem;
 import momfo.core.ProblemSet;
-import momfo.core.SolutionSet;
 import momfo.encodings.solutionType.IntSolutionType;
 import momfo.operators.crossover.CrossoverFactory;
 import momfo.operators.mutation.MutationFactory;
 import momfo.operators.selection.SelectionFactory;
 // import momfo.problems.ProblemSetFactory;
-import momfo.problems.base.Knapsack;
+import momfo.problems.KnapsackSetFactory;
 // import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
 import momfo.util.PseudoRandom;
@@ -34,7 +29,7 @@ public class NSGAII_main {
 		HashMap parameters; // Operator parameters
 
 		int objective = 2;
-		Problem kp = new Knapsack(objective);
+		Problem kp = KnapsackSetFactory.getProblem(args[0], Double.parseDouble(args[1]));
 
 		problemSet = new ProblemSet();
 		problemSet.add(kp);
@@ -46,10 +41,10 @@ public class NSGAII_main {
 		// System.out.println(pf);
 
 		algorithm.setInputParameter("populationSize", 100);
-		algorithm.setInputParameter("maxEvaluations", 100 * 4000);
+		algorithm.setInputParameter("maxEvaluations", 100 * 1000);
 
 		parameters = new HashMap();
-		parameters.put("probability", 0.8);
+		parameters.put("probability", 0.9);
 		// parameters.put("distributionIndex", 20.0);
 		crossover = CrossoverFactory.getCrossoverOperator("UniformCrossover", parameters);
 
@@ -72,11 +67,11 @@ public class NSGAII_main {
 		// DecimalFormat form = new DecimalFormat("#.####E0");
 		// QualityIndicator indicator = new QualityIndicator(problemSet.get(0), pf);
 
-		int times = 100;
+		int times = Integer.parseInt(args[2]);
 		// double aveIGD = 0;
 		// double[] aveIGDArray = new double[times];
 
-		String path = "result/knapsack" + String.valueOf(objective);
+		String path = "result/knapsack_" + args[0] + "_" + args[1];
 
 		// File init_var_file = new File("result/" + problemSet.get(0).getName() +
 		// "/init_pops/var");
@@ -87,7 +82,7 @@ public class NSGAII_main {
 		// File init_obj_file = new File("result/" + problemSet.get(0).getName() +
 		// "/init_pops/obj");
 		// init_obj_file.mkdirs();
-		File finalObjFile = new File(path +	"/final_pops/obj");
+		File finalObjFile = new File(path + "/final_pops/obj");
 		finalObjFile.mkdirs();
 
 		for (int i = 1; i <= times; i++) {

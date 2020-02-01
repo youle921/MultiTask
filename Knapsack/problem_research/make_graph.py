@@ -6,6 +6,8 @@ Created on Wed Jan 15 13:56:05 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt
+
+import os
 import subprocess
 
 dir_name = "set_pop/"
@@ -68,4 +70,6 @@ for m in methods:
     fig2.savefig(graph_names[1] + '.svg', bbox_inches='tight')
     
     subprocess.call("inkscape " + graph_names[0] + ".svg -M " +  graph_names[0] + ".emf", shell = False)
-    subprocess.call("inkscape " + graph_names[1] + ".svg -M " +  graph_names[1] + ".emf", shell = False)   
+    os.remove(graph_names[0] + '.svg')
+    subprocess.call("inkscape " + graph_names[1] + ".svg -M " +  graph_names[1] + ".emf", shell = False)
+    os.remove(graph_names[1] + '.svg')   

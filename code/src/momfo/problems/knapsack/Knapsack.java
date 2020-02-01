@@ -1,9 +1,8 @@
-package momfo.problems.base;
+package momfo.problems.knapsack;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
 
 import momfo.core.Problem;
 import momfo.core.Solution;
@@ -14,14 +13,14 @@ import momfo.util.wrapper.XInt;
 
 public class Knapsack extends Problem {
 
-	private static int[][] profit_;
-	private static int[][] weight_;
+	protected static int[][] profit_;
+	protected static int[][] weight_;
 
-	private static String DirectoryName = "Data/Knapsack/Items/knapsack_500_";
-	private static String Extension = ".csv";
+	protected static String DirectoryName = "Data/Knapsack/Items/knapsack_500_";
+	protected static String Extension = ".csv";
 
-	static double[] capacity_;
-	private int[] sort_min_;
+	protected double[] capacity_;
+	protected int[] sort_min_;
 
 	int decodeType = 0;//
 

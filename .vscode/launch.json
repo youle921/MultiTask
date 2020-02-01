@@ -6,6 +6,24 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - island_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.EMOMT_island.island_main"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - island_shortnote_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.island_shortnote.island_shortnote_main"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - NSGAII_main",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - MOEADRunner",
             "request": "launch",
             "mainClass": "org.uma.jmetal.example.multiobjective.moead.MOEADRunner",

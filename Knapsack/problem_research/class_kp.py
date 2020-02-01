@@ -9,13 +9,22 @@ import numpy as np
 
 class Knapsack:
 
-    def __init__(self, objective = 2, items = 500, lower = 10, upper = 100):
+    def __init__(self, objective = 2, items = 500, lower = 10, upper = 100, load = True):
 
         self.objective = objective
 
-        self.items = np.random.randint(lower, high = upper + 1, size = (items, 2, objective))
+        if load:
+            self.items = np.empty([items, 2, objective])
+            for i in range(objective):
+                load_item = np.loadtxt("../KnapsackData/items/knapsack_500_profit" + str(i + 1) + ".csv")
+                self.items[:, 0, i] = load_item[:items]
+                load_weight = np.loadtxt("../KnapsackData/items/knapsack_500_weight" + str(i + 1) + ".csv")
+                self.items[:, 1, i] = load_weight[:items]
 
-        self.utility = np.max(self.items[:, 0, 0 : 1] / self.items[:, 1, 0 : 1], axis = 1)
+        else:
+            self.items = np.random.randint(lower, high = upper + 1, size = (items, 2, objective))
+
+        self.utility = np.max(self.items[:, 0, 0 : 2] / self.items[:, 1, 0 : 2], axis = 1)
 
         self.size = np.sum(self.items[:, 1, :], axis = 0) / 2
         if objective > 3:

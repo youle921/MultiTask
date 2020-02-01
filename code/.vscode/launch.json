@@ -47,7 +47,10 @@
             "request": "launch",
             "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
             "projectName": "momfo_gupta",
-            "args": "PIMS"
+            "args": [
+                "Scaling",
+                "0.8"
+            ]
         },
         {
             "type": "java",
