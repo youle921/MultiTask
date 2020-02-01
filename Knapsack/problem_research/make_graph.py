@@ -43,10 +43,10 @@ for m in methods:
     ax1.set_ylim(-5, 250)
 
     
-    ax2.set_ylim(-5, 130)
-    ax2.set_yticks((0, 25, 50, 75, 100, 125))
-    ax2.set_xlim(-5, 130)
-    ax2.set_xticks((0, 25, 50, 75, 100, 125))
+    ax2.set_ylim(-5, 160)
+    ax2.set_yticks((0, 25, 50, 75, 100, 125, 150))
+    ax2.set_xlim(-5, 160)
+    ax2.set_xticks((0, 25, 50, 75, 100, 125, 150))
     
         
     if m == "scaling":
