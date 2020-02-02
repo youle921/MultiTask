@@ -80,7 +80,7 @@ public class MOMFEA extends Algorithm {
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
 		populationSize = ((Integer) getInputParameter("populationSize")).intValue();
 		maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
-		igdValue = new double[2][maxEvaluations / populationSize];
+		// igdValue = new double[2][maxEvaluations / populationSize];
 		rmp = ((Double) getInputParameter("rmp")).doubleValue();
 
 		crossover = operators_.get("crossover");
@@ -91,13 +91,13 @@ public class MOMFEA extends Algorithm {
 
 		initPopulation();
 
-		int t = 0;
-		calclateIGDValue(t++);
+		// int t = 0;
+		// calclateIGDValue(t++);
 
 		while (evaluations < maxEvaluations) {
 			createOffspringPopulation();
 			getNextPopulation();
-			calclateIGDValue(t++);
+			// calclateIGDValue(t++);
 		}
 
 		return population;

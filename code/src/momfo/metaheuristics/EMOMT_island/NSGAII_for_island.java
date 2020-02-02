@@ -287,4 +287,8 @@ public class NSGAII_for_island extends Algorithm {
 	public boolean get_criterion() {
 		return criterion;
 	}
+
+	public SolutionSet getAllSolution() {
+		return population;
+	}
 } // NSGA-II

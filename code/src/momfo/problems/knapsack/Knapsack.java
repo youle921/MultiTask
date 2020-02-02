@@ -152,8 +152,8 @@ public class Knapsack extends Problem {
 
 		// to change to minimization problems, use objective function value multipled by -1 
 		for (int i = 0; i < numberOfObjectives_; i++){
-			solution.setObjective(i, -1 * f[i]);
-		}
+			solution.setObjective(startObjPos_ + i, -1 * f[i]);
+		}			
 	}
 
 	public void repair(XInt v) throws JMException {

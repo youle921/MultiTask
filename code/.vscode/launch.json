@@ -6,6 +6,18 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - MOMFEA_main_forKP",
+            "request": "launch",
+            "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main_forKP",
+            "projectName": "momfo_gupta",
+            "args": [
+                "Scaling",
+                "0.8",
+                "1"
+            ]
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - island_shortnote_main",
             "request": "launch",
             "mainClass": "momfo.metaheuristics.island_shortnote.island_shortnote_main",
@@ -25,9 +37,11 @@
             "mainClass": "momfo.metaheuristics.EMOMT_island.island_main",
             "projectName": "momfo_gupta",
             "args": [
-                "PIHS",
-                "250",
-                "80"
+                "Scaling",
+                "0.8",
+                "1",
+                "10",
+                "5"
             ]
         },
         {
@@ -37,8 +51,8 @@
             "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main",
             "projectName": "momfo_gupta",
             "args": [
-                "CIHS",
-                "0.9"
+                "PIHS",
+                "0.9",
             ]
         },
         {
