@@ -73,7 +73,7 @@ public class Knapsack_bitflip extends Knapsack {
             for (int j = 0; j < numberOfFlippingBits; j++) {
                 sum += weight_[i][j] * (1 - sol.getValue(j));
             }
-            for (int j = numberOfFlippingBits ; j < numberOfVariables_; j++){
+            for (int j = numberOfFlippingBits; j < numberOfVariables_; j++){
                 sum += weight_[i][j] * sol.getValue(j);
             }
 

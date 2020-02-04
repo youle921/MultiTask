@@ -37,7 +37,7 @@
             "mainClass": "momfo.metaheuristics.EMOMT_island.island_main",
             "projectName": "momfo_gupta",
             "args": [
-                "Scaling",
+                "Bitflip",
                 "0.8",
                 "1",
                 "10",
