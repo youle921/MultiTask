@@ -54,7 +54,7 @@ for m in methods:
         ax.scatter(obj_prj[:, 0], obj_prj[:, 1], s = 100,  marker= 'x', label = "Task2")
         ax.legend(fontsize = 15, bbox_to_anchor=(1.35, 1))
 
-        n = dir_name + m + "/prjection_" + f.parts[2]
+        n = dir_name + m + "/projection_" + f.parts[2]
         fig.savefig(n + ".svg", bbox_inches='tight')
         subprocess.call("inkscape " + n + ".svg -M " + n + ".emf")
         os.remove(n + ".svg")
