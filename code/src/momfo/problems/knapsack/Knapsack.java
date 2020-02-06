@@ -49,23 +49,6 @@ public class Knapsack extends Problem {
 		} // for
 	}
 
-	// public int[] decodeSolution(Solution sol) throws JMException {
-
-	// 	Variable[] decisionVariables = sol.getDecisionVariables();
-	// 	int[] x = new int[numberOfVariables_];
-
-	// 	for (int i = 0; i < numberOfVariables_; i++){
-
-	// 		if (decisionVariables[i].getValue() < 0.5) {
-	// 			x[i] = 0;
-	// 		} else if (decisionVariables[i].getValue() >= 0.5) {
-	// 			x[i] = 1;
-	// 		}
-	// 	}
-			
-	// 	return x;
-	// }
-
 	// this method read the knapsack data
 	public void setItems() {
 

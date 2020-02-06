@@ -82,7 +82,7 @@ public class NSGAII_main {
 		// File init_obj_file = new File("result/" + problemSet.get(0).getName() +
 		// "/init_pops/obj");
 		// init_obj_file.mkdirs();
-		File finalObjFile = new File(path + "/final_pops/obj");
+		File finalObjFile = new File(path + "/final_pops");
 		finalObjFile.mkdirs();
 
 		for (int i = 1; i <= times; i++) {
