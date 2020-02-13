@@ -11,8 +11,8 @@
             "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main_forKP",
             "projectName": "momfo_gupta",
             "args": [
-                "Scaling",
-                "0.8",
+                "profitflip",
+                "0.2",
                 "1"
             ]
         },
@@ -62,8 +62,9 @@
             "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
             "projectName": "momfo_gupta",
             "args": [
-                "Scaling",
-                "0.8"
+                "profitflip",
+                "0.2",
+                "1"
             ]
         },
         {

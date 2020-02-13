@@ -16,7 +16,7 @@ public class Knapsack extends Problem {
 	protected static int[][] profit_;
 	protected static int[][] weight_;
 
-	protected static String DirectoryName = "Data/Knapsack/Items/knapsack_500_";
+	protected static String DirectoryName = "Data/Knapsack/items3/knapsack_500_";
 	protected static String Extension = ".csv";
 
 	protected double[] capacity_;
