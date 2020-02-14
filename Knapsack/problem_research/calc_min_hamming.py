@@ -6,6 +6,8 @@ Created on Wed Jan 15 02:18:29 2020
 """
 
 import numpy as np
+import pandas as pd
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 def min_hamming(data, ref):
@@ -27,61 +29,53 @@ def differ_hamning(data, ref):
 
     return differ
 
-dir_name = "set_pop/"
-
-methods = ["profitflip"]
-params = ["pfr"]
-names = ["result_", "/pops_gen"]
+dir_name = "set_seed/"
 ext = ".csv"
 
-sr = ["0.6", "0.8", "1.2", "1.4"]
-fr = ["0.5", "0.4", "0.3", "0.2"]
-pfr = ["0.1", "0.2", "0.3", "0.4", "0.5"]
+names = ["scaling/", "inversion/"]
 
-dist_list = np.zeros([51, 3])
-dist_list[0, 0] = 0
-dist_list[1:, 0] = [i * 10 for i in range(1, 51)]
+# dist_list = np.zeros([51, 3])
+# dist_list[0, 0] = 0
+# dist_list[1:, 0] = [i * 10 for i in range(1, 51)]
 
-base_data = np.zeros([51, 200, 500])
-base_data[0] = np.loadtxt(dir_name + "baseline" + names[1] + str(1) + ext, delimiter = ',')
-for i in range(50):
-    base_data[i + 1] = np.loadtxt(dir_name + "baseline" + names[1] + str((i + 1) * 10) + ext, delimiter = ',')
-
-for m in range(len(methods)):
-
-    for j in range(len(pfr)):
-
-        d1 = np.loadtxt(dir_name + methods[m] + '/' + names[0] + params[0] + pfr[j] + names[1] + str(1) + ext, delimiter = ',')
-        dist_list[0, 1] = np.average(min_hamming(d1, base_data[0]))
-        dist_list[0, 2] = np.average(min_hamming(base_data[0], d1))
-
-        for i in range(50):
-
-            d1 = np.loadtxt(dir_name + methods[m] + '/' + names[0] + params[0] + pfr[j] + names[1] + str((i + 1) * 10) + ext, delimiter = ',')
-
-            dist_list[i + 1, 1] = np.average(min_hamming(d1, base_data[i + 1]))
-            dist_list[i + 1, 2] = np.average(min_hamming(base_data[i + 1], d1))
-
-        dif = differ_hamning(d1, base_data[i + 1])
-
-        if m == 0:
-            np.savetxt(dir_name + methods[m] + "/hamming_distance_" + pfr[j] + ext, dist_list, delimiter = ',')
-            np.savetxt(dir_name + methods[m] + "/differ_hamming_" + pfr[j] + ext, dif, delimiter = ',')
-        else:
-            np.savetxt(dir_name + methods[m] + "/hamming_distance_" + sr[j] + ext, dist_list, delimiter = ',')
-            np.savetxt(dir_name + methods[m] + "/differ_hamming_" + sr[j] + ext, dif, delimiter = ',')
-
-
-# d1 = np.loadtxt(dir_name + 'result_fr0.1' + names[2] + str(1) + ext, delimiter = ',')
-# dist_list[0, 1] = np.average(min_hamming(d1, base_data[0]))
-# dist_list[0, 2] = np.average(min_hamming(base_data[0], d1))
-
+base_data = pd.read_csv(dir_name + "base_result/pops" + ext, header = None).to_numpy()
 # for i in range(50):
+#     base_data[i + 1] = np.loadtxt(dir_name + "baseline" + names[1] + str((i + 1) * 10) + ext, delimiter = ',')
 
-#     d1 = np.loadtxt(dir_name + 'result_fr0.1' + names[2] + str((1 + i)*10) + ext, delimiter = ',')
+# for m in range(len(methods)):
 
-#     dist_list[i + 1, 1] = np.average(min_hamming(d1, base_data[i]))
-#     dist_list[i + 1, 2] = np.average(min_hamming(base_data[i], d1))
+#     for j in range(len(pfr)):
+
+#         d1 = np.loadtxt(dir_name + methods[m] + '/' + names[0] + params[0] + pfr[j] + names[1] + str(1) + ext, delimiter = ',')
+#         dist_list[0, 1] = np.average(min_hamming(d1, base_data[0]))
+#         dist_list[0, 2] = np.average(min_hamming(base_data[0], d1))
+
+#         for i in range(50):
+
+#             d1 = np.loadtxt(dir_name + methods[m] + '/' + names[0] + params[0] + pfr[j] + names[1] + str((i + 1) * 10) + ext, delimiter = ',')
+
+#             dist_list[i + 1, 1] = np.average(min_hamming(d1, base_data[i + 1]))
+#             dist_list[i + 1, 2] = np.average(min_hamming(base_data[i + 1], d1))
+
+#         dif = differ_hamning(d1, base_data[i + 1])
+
+#         if m == 0:
+#             np.savetxt(dir_name + methods[m] + "/hamming_distance_" + pfr[j] + ext, dist_list, delimiter = ',')
+#             np.savetxt(dir_name + methods[m] + "/differ_hamming_" + pfr[j] + ext, dif, delimiter = ',')
+#         else:
+#             np.savetxt(dir_name + methods[m] + "/hamming_distance_" + sr[j] + ext, dist_list, delimiter = ',')
+#             np.savetxt(dir_name + methods[m] + "/differ_hamming_" + sr[j] + ext, dif, delimiter = ',')
+
+
+for n in names:
+    path = Path(dir_name + n)
+
+    for l in path.glob("**/pops.csv"):
+
+        d1 = pd.read_csv(l, header = None).to_numpy()
+        dif = differ_hamning(d1, base_data)
+
+        np.savetxt(dir_name + n + "differ_hamming_"+ l.parts[2] + ext, dif, delimiter = ',')
 
 # dif = differ_hamning(d1, base_data[i + 1])
 

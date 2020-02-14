@@ -13,6 +13,7 @@ import momfo.operators.mutation.MutationFactory;
 import momfo.operators.selection.SelectionFactory;
 // import momfo.problems.ProblemSetFactory;
 import momfo.problems.KnapsackSetFactory;
+import momfo.problems.knapsack.Knapsack;
 // import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
 import momfo.util.PseudoRandom;
@@ -72,6 +73,7 @@ public class NSGAII_main {
 		// double[] aveIGDArray = new double[times];
 
 		String path = "result/knapsack_" + args[0] + "_" + args[1];
+		// String path = "result/knapsack_baseline";
 
 		// File init_var_file = new File("result/" + problemSet.get(0).getName() +
 		// "/init_pops/var");
