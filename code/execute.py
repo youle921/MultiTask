@@ -14,16 +14,16 @@ if __name__ == "__main__":
 
     alg = ["MOMFEA", "NSGAII"]
 #    problems = ["bitflip", "scaling", "profitflip"]
-    problems = ["profitflip"]
+    problems = ["scaling"]
     
-    sr = ["0.8", "0.9", "1.1", "1.2"]
-    fr = ["0.25", "0.2", "0.15", "0.1", "0.05"]
-    pfr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
+    sr = ["1.05", "1.15", "1.25"]
+#    fr = ["0.25", "0.2", "0.15", "0.1", "0.05"]
+#    pfr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
     # params = [sr, fr, pfr]
-    params = [pfr]
+    params = [sr]
 
-    interval = ["2", "5", "100"]
-    size = ["5", "10", "50"]
+    interval = ["5"]
+    size = ["10"]
     island_params = [[i, s] for i in interval for s in size]
     
     args = []
