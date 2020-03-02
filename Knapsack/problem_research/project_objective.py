@@ -77,7 +77,6 @@ for i, m in enumerate(methods):
     p = Path(dir_name + m)
 
     for l in p.glob("0.25/**/obj.csv"):
-
         # cmp_obj = pd.read_csv(l, header = None).to_numpy()
 
         cmp_sol = pd.read_csv(l / '..' / 'pops.csv', header = None).to_numpy()
@@ -108,3 +107,13 @@ for i, m in enumerate(methods):
         # fig.savefig(n + ".svg", bbox_inches='tight')
         # subprocess.call("inkscape " + n + ".svg -M " + n + ".emf")
         # os.remove(n + ".svg")
+
+# f1[0][0].savefig("set_seed/scaling/prj_t1_0.25.svg", bbox_inches='tight')
+# subprocess.call("inkscape set_seed/scaling/prj_t1_0.25.svg -M set_seed/scaling/prj_t1_0.25.emf")
+# f2[0][0].savefig("set_seed/scaling/prj_t2_0.25.svg", bbox_inches='tight')
+# subprocess.call("inkscape set_seed/scaling/prj_t2_0.25.svg -M set_seed/scaling/prj_t2_0.25.emf")
+
+# f1[1][0].savefig("set_seed/inversion/prj_t1_0.25.svg", bbox_inches='tight')
+# subprocess.call("inkscape set_seed/inversion/prj_t1_0.25.svg -M set_seed/inversion/prj_t1_0.25.emf")
+# f2[1][0].savefig("set_seed/inversion/prj_t2_0.25.svg", bbox_inches='tight')
+# subprocess.call("inkscape set_seed/inversion/prj_t2_0.25.svg -M set_seed/inversion/prj_t2_0.25.emf")

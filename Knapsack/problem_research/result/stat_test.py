@@ -15,24 +15,24 @@ import matplotlib.pyplot as plt
 
 Path("statistical_result").mkdir(exist_ok = "True")
 
-base_hv_t1 = pd.read_csv("Knapsack_baseline/final_pops/hv.csv", header = None)
+base_hv_t1 = pd.read_csv("NSGA-II/Knapsack_baseline/final_pops/hv.csv", header = None)
 base_name = "Knapsack_"
 
-dir_list = list(Path().glob("NSGA-II*"))
+dir_list = list(Path().glob("NSGA-II-island_interval5_size10"))
 alg = ["momfea"]
 alg.extend(list(map(str, dir_list)))
 
-problems = ["bitflip", "scaling", "profitflip"]
-sr = ["0.8", "0.9", "1.1", "1.2"]
-fr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
-pfr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
+# sr = ["0.8", "0.9", "1.1", "1.2"]
+# fr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
+# pfr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
+sr = ["1.05", "1.15", "1.25"]
 
 param_dict = {}
-param_dict["bitflip"] = fr
+# param_dict["bitflip"] = fr
 param_dict["scaling"] = sr
-param_dict["profitflip"] = pfr
+# param_dict["profitflip"] = pfr
 
-for p in problems:
+for p in param_dict.keys():
 
     for param in param_dict[p]:
 
@@ -41,7 +41,7 @@ for p in problems:
         save_data = np.zeros([2, 2, len(alg) + 1])
 
         footer = base_name + p + "_" + param
-        path = Path(footer)
+        path = Path("NSGA-II/" + footer)
         base_hv_t2 = pd.read_csv(list(path.glob("**/hv.csv"))[0], header = None)
         plot_data[1].append(base_hv_t2.to_numpy().flatten())
         save_data[0, 0, 0] = base_hv_t1.median()
@@ -84,8 +84,8 @@ for p in problems:
         ax.set_title(p + param + " Task2")
         fig.show()
 
-        # np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
-        # np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
+        np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
+        np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
 
 p = Path("statistical_result")
 l = list(p.glob("*.csv"))

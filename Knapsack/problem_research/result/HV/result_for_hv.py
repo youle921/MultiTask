@@ -12,7 +12,7 @@ import numpy as np
 import subprocess as sub
 
 p = Path("../")
-dir_list = list(p.glob("**/*baseline/final_pops"))
+dir_list = list(p.glob("**/*knapsack_scaling_*5/**/final_pops"))
 
 hv_path = "d:/research/Multitask/hv/hv.bat"
 

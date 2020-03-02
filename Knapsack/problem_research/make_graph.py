@@ -35,7 +35,7 @@ for m in methods:
         if mk == "+":
             sz = 200
         if mk == "x":
-            sz = 10
+            sz = 100
         ax2.scatter(scatter_data[:, 0], scatter_data[:, 1], s = sz, marker = mk, zorder = i)
 
     # ax1.set_xlim(0, 505)
@@ -55,7 +55,7 @@ for m in methods:
     #     ax2.set_xticks((10, 30, 50, 70))
 
         # ax1.legend(['dist(0.1, 0.0)', 'dist(0.2, 0.0)', 'dist(0.3, 0.0)', 'dist(0.4, 0.0)', 'dist(0.5, 0.0)'], fontsize = 15, bbox_to_anchor=(1.5, 1))
-    ax2.legend(['  =      ', '  =      ', '  =      ', '  =      ', '  =      '], fontsize = 15, bbox_to_anchor= (1.5, 1))
+    ax2.legend(['  =          ', '  =          ', '  =          ', '  =          ', '  =          '], fontsize = 15, bbox_to_anchor= (1.55, 1))
 
     ax2.set_aspect('equal')
 
@@ -65,11 +65,11 @@ for m in methods:
 
     graph_names = [dir_name + m + '/dist', dir_name + m + '/dif']
     # fig1.savefig(graph_names[0] + '.svg', bbox_inches='tight')
-    # fig2.savefig(graph_names[1] + '.svg', bbox_inches='tight')
+    fig2.savefig(graph_names[1] + '.svg', bbox_inches='tight')
 
     # subprocess.call("inkscape " + graph_names[0] + ".svg -M " +  graph_names[0] + ".emf", shell = False)
     # os.remove(graph_names[0] + '.svg')
-    # subprocess.call("inkscape " + graph_names[1] + ".svg -M " +  graph_names[1] + ".emf", shell = False)
-    # os.remove(graph_names[1] + '.svg')
+    subprocess.call("inkscape " + graph_names[1] + ".svg -M " +  graph_names[1] + ".emf", shell = False)
+    os.remove(graph_names[1] + '.svg')
 
 
