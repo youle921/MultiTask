@@ -12,9 +12,10 @@ import numpy as np
 import subprocess as sub
 
 p = Path("../")
-dir_list = list(p.glob("**/*knapsack_scaling_*5/**/final_pops"))
+dir_list = list(p.glob("**/*knapsack_scaling_1.0*/**/final_pops"))
 
-hv_path = "d:/research/Multitask/hv/hv.bat"
+#hv_path = "d:/research/Multitask/hv/hv.bat"
+hv_path = "C:/Users/y5ule/research/MultiTask/hv/hv.bat"
 
 for l in dir_list:
 

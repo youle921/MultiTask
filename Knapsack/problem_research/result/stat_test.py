@@ -25,7 +25,7 @@ alg.extend(list(map(str, dir_list)))
 # sr = ["0.8", "0.9", "1.1", "1.2"]
 # fr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
 # pfr = ["0.05", "0.1", "0.15", "0.2", "0.25"]
-sr = ["1.05", "1.15", "1.25"]
+sr = ["{0:.1f}".format(i * 0.1) for i in range(1, 10)]
 
 param_dict = {}
 # param_dict["bitflip"] = fr
@@ -74,18 +74,18 @@ for p in param_dict.keys():
             plot_data[0].append(cmp_hv_t1.to_numpy().flatten())
             plot_data[1].append(cmp_hv_t2.to_numpy().flatten())
 
-        fig, ax = plt.subplots(1, 1)
-        ax.boxplot(plot_data[0])
-        ax.set_title(p + param + " Task1")
-        fig.show()
-
-        fig, ax = plt.subplots(1, 1)
-        ax.boxplot(plot_data[1])
-        ax.set_title(p + param + " Task2")
-        fig.show()
-
-        np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
-        np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
+#        fig, ax = plt.subplots(1, 1)
+#        ax.boxplot(plot_data[0])
+#        ax.set_title(p + param + " Task1")
+#        fig.show()
+#
+#        fig, ax = plt.subplots(1, 1)
+#        ax.boxplot(plot_data[1])
+#        ax.set_title(p + param + " Task2")
+#        fig.show()
+#
+#        np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
+#        np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
 
 p = Path("statistical_result")
 l = list(p.glob("*.csv"))
