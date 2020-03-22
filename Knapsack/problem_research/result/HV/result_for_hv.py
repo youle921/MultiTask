@@ -11,11 +11,13 @@ import numpy as np
 
 import subprocess as sub
 
-p = Path("../")
-dir_list = list(p.glob("**/*knapsack_scaling_1.0*/**/final_pops"))
+p = Path()
+dir_list = list(p.glob("**/final_pops"))
 
 #hv_path = "d:/research/Multitask/hv/hv.bat"
-hv_path = "C:/Users/y5ule/research/MultiTask/hv/hv.bat"
+# hv_path = "C:/Users/y5ule/research/MultiTask/hv/hv.bat"
+
+hv_path = str(Path("../../../../hv/hv.bat").resolve())
 
 for l in dir_list:
 

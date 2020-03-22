@@ -100,8 +100,8 @@ public class island_main {
 				algorithm2.execute();
 				migrated_to2 = algorithm1.get_migrate_pop();
 				migrated_to1 = algorithm2.get_migrate_pop();
-				algorithm1.migration_gen(migrated_to1);
-				algorithm2.migration_gen(migrated_to2);
+				algorithm1.noEvaluationMigration(migrated_to1);
+				algorithm2.noEvaluationMigration(migrated_to2);
 
 				criterion1 = algorithm1.get_criterion();
 				criterion2 = algorithm2.get_criterion();

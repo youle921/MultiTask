@@ -172,6 +172,19 @@ public class NSGAII_for_island extends Algorithm {
 
 	}
 
+	public void noEvaluationMigration(SolutionSet migrated_pop) throws JMException {
+
+		SolutionSet parent_pool = environmental_selection(population, populationSize - size);
+		for (int ms = 0; ms < size; ms++){
+			parent_pool.add(migrated_pop.get(ms));
+		}
+
+		SolutionSet offsprings = get_offspring(parent_pool);
+		SolutionSet union = ((SolutionSet) population).union(offsprings);
+		population = environmental_selection(union, populationSize);
+
+	}
+
 	// GA oprators
 	private SolutionSet get_offspring(SolutionSet parent_pop) throws JMException {
 
