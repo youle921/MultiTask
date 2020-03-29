@@ -11,8 +11,8 @@
             "mainClass": "momfo.metaheuristics.momfea.MOMFEA_main_forKP",
             "projectName": "momfo_gupta",
             "args": [
-                "profitflip",
-                "0.2",
+                "scaling",
+                "1.01",
                 "1"
             ]
         },
@@ -37,11 +37,11 @@
             "mainClass": "momfo.metaheuristics.EMOMT_island.island_main",
             "projectName": "momfo_gupta",
             "args": [
-                "scaling",
-                "1.1",
+                "bitflip",
+                "0.1",
                 "1",
-                "10",
-                "5"
+                "5",
+                "0"
             ]
         },
         {

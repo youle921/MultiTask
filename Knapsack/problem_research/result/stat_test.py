@@ -18,7 +18,7 @@ Path("statistical_result").mkdir(exist_ok = "True")
 base_hv_t1 = pd.read_csv("NSGA-II/Knapsack_baseline/final_pops/hv.csv", header = None)
 base_name = "Knapsack_"
 
-dir_list = list(Path().glob("NSGA-II-island_interval5_size10"))
+dir_list = list(Path().glob("*interval5_size10"))
 alg = ["momfea"]
 alg.extend(list(map(str, dir_list)))
 
@@ -47,8 +47,6 @@ for p in param_dict.keys():
         save_data[0, 0, 0] = base_hv_t1.median()
         save_data[1, 0, 0] = base_hv_t2.median()
 
-        s_data_hv[]
-
         for i, a in enumerate(alg):
 
             path = Path(a + "/" + footer + "/base")
@@ -76,30 +74,30 @@ for p in param_dict.keys():
             plot_data[0].append(cmp_hv_t1.to_numpy().flatten())
             plot_data[1].append(cmp_hv_t2.to_numpy().flatten())
 
-        fig, ax = plt.subplots(1, 1)
-        ax.boxplot(plot_data[0])
-        ax.set_title(p + param + " Task1")
-        fig.show()
+        # fig, ax = plt.subplots(1, 1)
+        # ax.boxplot(plot_data[0])
+        # ax.set_title(p + param + " Task1")
+        # fig.show()
 
-        fig, ax = plt.subplots(1, 1)
-        ax.boxplot(plot_data[1])
-        ax.set_title(p + param + " Task2")
-        fig.show()
+        # fig, ax = plt.subplots(1, 1)
+        # ax.boxplot(plot_data[1])
+        # ax.set_title(p + param + " Task2")
+        # fig.show()
 
-        # np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
-        # np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
+        np.savetxt("statistical_result/" + p + param + "Task1.csv", save_data[0], delimiter = ',')
+        np.savetxt("statistical_result/" + p + param + "Task2.csv", save_data[1], delimiter = ',')
 
 p = Path("statistical_result")
 l = list(p.glob("*1.0*"))
-flag = np.zeros([len(l), 3])
-hv = np.zeros([len(l), 3])
+flag = np.zeros([len(l), 5])
+hv = np.zeros([len(l), 5])
 
 for i, f in enumerate(l):
 
     hv[i] = pd.read_csv(f, header = None, skiprows = [1])
     flag[i] = pd.read_csv(f, header = None, skiprows = 1)
 
-s_data = pd.DataFrame(flag, columns = ["NSGA-II", "MO-MFEA", "Island"], index = list(map(str, l)))
-s_data_hv = pd.DataFrame(hv, columns = ["NSGA-II", "MO-MFEA", "Island"], index = list(map(str, l)))
+s_data = pd.DataFrame(flag, columns = ["NSGA-II", "MO-MFEA", "dif", "Island", "no_eval"], index = list(map(str, l)))
+s_data_hv = pd.DataFrame(hv, columns = ["NSGA-II", "MO-MFEA", "dif", "Island", "no_eval"], index = list(map(str, l)))
 
 

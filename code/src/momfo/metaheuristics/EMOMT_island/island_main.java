@@ -1,11 +1,7 @@
 package momfo.metaheuristics.EMOMT_island;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import momfo.core.Operator;
@@ -16,9 +12,7 @@ import momfo.operators.crossover.CrossoverFactory;
 import momfo.operators.mutation.MutationFactory;
 import momfo.operators.selection.SelectionFactory;
 import momfo.problems.KnapsackSetFactory;
-import momfo.problems.ProblemSetFactory;
 import momfo.problems.knapsack.Knapsack;
-import momfo.qualityIndicator.QualityIndicator;
 import momfo.util.JMException;
 import momfo.util.PseudoRandom;
 import momfo.util.RandomGenerator;
@@ -26,7 +20,7 @@ import momfo.util.RandomGenerator;
 public class island_main {
 	public static void main(String args[]) throws IOException, JMException, ClassNotFoundException {
 
-		// args[0]: problems, args[1]: parameter fot KP, 
+		// args[0]: problems, args[1]: parameter fot KP,
 		// args[2]: number of trials, args[3]: interval, args[4]: size
 
 		NSGAII_for_island algorithm1; // The algorithm to use
@@ -100,8 +94,8 @@ public class island_main {
 				algorithm2.execute();
 				migrated_to2 = algorithm1.get_migrate_pop();
 				migrated_to1 = algorithm2.get_migrate_pop();
-				algorithm1.noEvaluationMigration(migrated_to1);
-				algorithm2.noEvaluationMigration(migrated_to2);
+				algorithm1.migration_gen(migrated_to1);
+				algorithm2.migration_gen(migrated_to2);
 
 				criterion1 = algorithm1.get_criterion();
 				criterion2 = algorithm2.get_criterion();

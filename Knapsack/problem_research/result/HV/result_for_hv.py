@@ -6,35 +6,48 @@ Created on Fri Dec 13 01:40:09 2019
 """
 
 from pathlib import Path
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 import subprocess as sub
+import sys
 
-p = Path()
-dir_list = list(p.glob("**/final_pops"))
+def calc_hv(dirs, save = 1):
 
-#hv_path = "d:/research/Multitask/hv/hv.bat"
-# hv_path = "C:/Users/y5ule/research/MultiTask/hv/hv.bat"
+    for l in dirs:
+
+        save_path = Path(str(l) + "/result_2obj.csv")
+
+        if save_path.exists():
+            save_path.unlink()
+
+        with save_path.open(mode = 'a') as f:
+
+            for i in l.glob("*.dat"):
+                data = pd.read_csv(i, sep = " ", header = None).dropna(axis = 1)
+
+                np.savetxt(f, -data, delimiter = '\t', fmt = '%d')
+                f.write("\n")
+
+        a = sub.check_output([hv_path, str(save_path), "-a", "-r", "0"])
+        hv = np.fromstring(a.decode(), sep = "\r\n")
+
+        if save:
+            np.savetxt(str(l) + "/hv.csv", hv, delimiter = ',')
+        else:
+            print(np.median(hv))
 
 hv_path = str(Path("../../../../hv/hv.bat").resolve())
+args = sys.argv
 
-for l in dir_list:
+if len(args) < 2:
 
-    save_path = Path(str(l) + "/result_2obj.csv")
+    p = Path()
+    dir_list = list(p.glob("**/final_pops"))
 
-    if save_path.exists():
-        save_path.unlink()
+    calc_hv(dir_list)
 
-    with save_path.open(mode = 'a') as f:
-
-        for i in l.glob("*.dat"):
-            data = pd.read_csv(i, sep = " ", header = None).dropna(axis = 1)
-
-            np.savetxt(f, -data, delimiter = '\t', fmt = '%d')
-            f.write("\n")
-
-    a = sub.check_output([hv_path, str(save_path), "-a", "-r", "0"])
-    hv = np.fromstring(a.decode(), sep = "\r\n")
-    np.savetxt(str(l) + "/hv.csv", hv, delimiter = ',')
+else:
+    dir_list = list(Path(args[1]).glob("**/final_pops"))
+    calc_hv(dir_list, save = 0)
 
