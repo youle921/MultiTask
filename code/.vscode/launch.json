@@ -62,7 +62,7 @@
             "mainClass": "momfo.metaheuristics.nsgaII.NSGAII_main",
             "projectName": "momfo_gupta",
             "args": [
-                "profitflip",
+                "CIHS",
                 "0.2",
                 "1"
             ]
