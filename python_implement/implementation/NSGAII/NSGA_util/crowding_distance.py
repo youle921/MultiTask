@@ -19,6 +19,7 @@ def calc_cd(obj):
 
             idx = np.argsort(obj[:, n])
             cd[idx[[0, -1]]] += 1000000
-            cd[idx[1:size[0] - 1]] += (obj[idx[2:], n] - obj[idx[:size[0] - 2], n])/(obj[idx[-1], n] - obj[idx[0], n])
+            dif = (obj[idx[2:], n] - obj[idx[:size[0] - 2], n])/(obj[idx[-1], n] - obj[idx[0], n])
+            cd[idx[1:size[0] - 1]] += np.nan_to_num(dif)
 
     return cd

@@ -18,7 +18,7 @@ from implementation.NSGAII_SBMS import NSGAII_SBMS
 tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
 names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 
-n_trial = 11
+n_trial = 31
 n_eval = 100000
 
 alpha = [2,3,5,10,15,20,40]
@@ -38,7 +38,7 @@ for a, b in params:
 
         for idx in range(2):
 
-            path_task = path + n + "_task" + str(task_no + 1)
+            path_task = path + "/" + n + "_task" + str(idx + 1)
             os.mkdir(path_task)
 
             p = t.get_tasks()[idx]
