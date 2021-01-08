@@ -43,7 +43,7 @@ def calc_hv(dirs, save = 1):
 if __name__ == "__main__":
 
     dir_path = Path(__file__).parent
-    hv_path = dir_path.relative_to(dir_path.cwd()) / "hv/hv.bat"
+    hv_path = str(dir_path.relative_to(dir_path) / "hv/hv.bat")
     # hv_path = str((P/ Path("..hv/hv.bat").resolve())
     args = sys.argv
 
@@ -61,5 +61,5 @@ if __name__ == "__main__":
     else:
         print(args[1])
         dir_list = list(Path(args[1]).glob("*/**"))
-        calc_hv(dir_list, save = 0)
+        calc_hv(dir_list, save = 1)
 

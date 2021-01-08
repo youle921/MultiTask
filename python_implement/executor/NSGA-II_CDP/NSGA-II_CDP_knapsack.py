@@ -12,9 +12,9 @@ import numpy as np
 
 import implementation
 from implementation.problems.knapsack import *
-from implementation.NSGAII import NSGAII_CDP
+from implementation.CNSGAII import NSGAII_CDP
 
-n_trial = 31
+n_trial = 101
 n_eval = 400000
 n_obj = 2
 
@@ -26,6 +26,7 @@ os.makedirs("final_pops", exist_ok = True)
 
 for i in range(n_trial):
 
+    np.random.seed(i)
     solver.init_pop()
     solver.execute(n_eval)
 
