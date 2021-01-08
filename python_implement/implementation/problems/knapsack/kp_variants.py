@@ -4,6 +4,8 @@ Created on Tue Jul 21 23:59:14 2020
 
 @author: t.urita
 """
+import numpy as np
+
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
@@ -15,7 +17,7 @@ class kp_inversion(knapsack):
     def __init__(self, ir):
         super().__init__()
         inversion_num = int(ir * self.items.shape[0])
-        self.items[:inversion_num, 0, 1] = 110 - self.items[:inversion_num, 0, 1]
+        self.items[0, :inversion_num, 1] = 110 - self.items[0, :inversion_num, 1]
 
 class kp_scaling(knapsack):
 
@@ -35,7 +37,7 @@ class kp_bitflip(knapsack):
         flip_mask = np.zeros_like(solutions)
         flip_mask[:, :self.flip_num] = 1
 
-        self.repair(solutions, flip_mask)
+        self.repair(solutions)
         f = np.dot((flip_mask - solutions), self.items[:, 0, :])
 
         return -f
@@ -45,7 +47,7 @@ class kp_bitflip(knapsack):
         flip_mask = np.zeros_like(solutions)
         flip_mask[:, :self.flip_num] = 1
 
-        w = np.dot(solutions, self.items[:, 1, :])
+        w = np.dot(solutions, self.items[:, :, 1].T)
 
         mask = np.sum(w > self.size, axis = 1) > 0
         util = solutions * self.utility
@@ -58,4 +60,4 @@ class kp_bitflip(knapsack):
             solutions[mask, idx] = 0
             util[mask, idx] = np.inf
 
-            mask = np.sum(np.dot(solutions, self.items[:, 1, :]) > self.size, axis = 1) > 0
+            mask = np.sum(np.dot(solutions, self.items[:, :, 1].T) > self.size, axis = 1) > 0

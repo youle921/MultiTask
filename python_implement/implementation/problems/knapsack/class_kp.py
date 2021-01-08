@@ -15,34 +15,42 @@ class knapsack:
 
         if load:
             path = os.path.dirname(__file__)
-            self.items = np.empty([items, 2, objective])
+            self.items = np.empty([objective, items, 2])
             for i in range(objective):
                 load_item = np.loadtxt(path + "/items/knapsack_500_profit" + str(i + 1) + ".csv")
-                self.items[:, 0, i] = load_item[:items]
+                self.items[i, :, 0] = load_item[:items]
                 load_weight = np.loadtxt(path + "/items/knapsack_500_weight" + str(i + 1) + ".csv")
-                self.items[:, 1, i] = load_weight[:items]
+                self.items[i, :, 1] = load_weight[:items]
 
         else:
             self.items = np.random.randint(lower, high = upper + 1, size = (items, 2, objective))
 
-        self.utility = np.max(self.items[:, 0, 0 : 2] / self.items[:, 1, 0 : 2], axis = 1)
+        self.utility = (self.items[0:2, :, 0] / self.items[0:2, :, 1]).max(axis = 0)
 
-        self.size = np.sum(self.items[:, 1, :], axis = 0) / 2
-        if objective > 3:
-            self.size[2:] = np.inf
+        self.size = np.sum(self.items[:, :, 1], axis = 1) / 2
+        if objective > 2:
+            self.size[2:] *= 2
 
         self.original_size = self.size
+        self.repair_order = (self.items[0:2, :, 0] / self.items[0:2, :, 1])
 
     def evaluate(self, solutions):
 
         self.repair(solutions)
-        f = np.dot(solutions, self.items[:, 0, :])
+        f = np.dot(solutions, self.items[:, :, 0].T)
 
         return -f
 
+    def evaluate_with_violation(self, solutions):
+
+        f = np.dot(solutions, self.items[:, :, 0].T)
+        w = np.dot(solutions, self.items[:, :, 1].T)
+
+        return [-f, np.clip(w - self.size, 0, None)]
+
     def repair(self, solutions):
 
-        w = np.dot(solutions, self.items[:, 1, :])
+        w = np.dot(solutions, self.items[:, :, 1].T)
 
         mask = np.sum(w > self.size, axis = 1) > 0
         util = solutions * self.utility
@@ -50,16 +58,17 @@ class knapsack:
 
         while(np.sum(mask) != 0):
 
-            idx = np.argmin(util, axis = 1)[mask]
+            idx = np.argmin(util[mask], axis = 1)
 
             solutions[mask, idx] = 0
             util[mask, idx] = np.inf
 
-            mask = np.sum(np.dot(solutions, self.items[:, 1, :]) > self.size, axis = 1) > 0
+            mask = np.sum(np.dot(solutions, self.items[:, :, 1].T) > self.size, axis = 1) > 0
 
 if __name__ == "__main__":
 
-    kp = Knapsack(items = 20)
-    sol = np.random.randint(0, 2, size = (10, 20))
-    sol2 = sol.copy()
+    kp = knapsack(objective = 2)
+    sol = np.random.randint(0, 2, size = (200, 500))
+    sol_ = sol.copy()
     f = kp.evaluate(sol)
+    f_const, g = kp.evaluate_with_violation(sol_)

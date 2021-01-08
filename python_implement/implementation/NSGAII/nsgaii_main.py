@@ -71,7 +71,7 @@ class NSGAII:
 
         n, mod= divmod(max_eval - self.neval, self.noff)
 
-        rep = np.empty(n)
+        # rep = np.empty(n)
 
         for i in range(n):
 
@@ -79,7 +79,7 @@ class NSGAII:
 
             parents = self.selection()
 
-            offs["variables"] = self.mutation(self.crossover(parents))
+            offs["variables"] = self.mutation(self.crossover(parents, pc = 0.8))
             offs["objectives"] = self.problem.evaluate(offs["variables"])
             self.update(offs)
 
@@ -123,11 +123,11 @@ class NSGAII:
         pop_size = self.pop["objectives"].shape
 
         union = {}
-        union["variables"] = np.vstack((self.pop["variables"] ,offs["variables"]))
-        union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))
-        # union["variables"], idx = np.unique(np.vstack((self.pop["variables"] ,offs["variables"])),\
-        #                                       axis = 0, return_index = True)
-        # union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))[idx]
+        # union["variables"] = np.vstack((self.pop["variables"] ,offs["variables"]))
+        # union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))
+        union["variables"], idx = np.unique(np.vstack((self.pop["variables"] ,offs["variables"])),\
+                                              axis = 0, return_index = True)
+        union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))[idx]
 
         r = NDsorting(union["objectives"], pop_size[0])
 

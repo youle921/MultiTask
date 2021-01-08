@@ -9,15 +9,15 @@ import numpy as np
 # crossover operator
 
 # binary
-def uniform_crossover(parents):
+def uniform_crossover(parents, pc = 0.9):
 
-    offspring1 = parents[0].copy()
-    offspring2 = parents[1].copy()
-    mask = (np.random.rand(offspring1.shape[0], 1) < 0.9) * (np.random.rand(*offspring1.shape,) < 0.5)
-    offspring1[mask] = parents[1][mask]
-    offspring2[mask] = parents[0][mask]
+    num = parents[0].shape[0]
+    offspring = np.vstack([parents[0], parents[1]])
+    mask = (np.random.rand(num, 1) < pc) & (np.random.rand(*parents[0].shape,) < 0.5)
+    offspring[:num][mask] = parents[1][mask]
+    offspring[num:][mask] = parents[0][mask]
 
-    return np.vstack((offspring1, offspring2))
+    return offspring
 # binary end
 
 # real
