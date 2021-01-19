@@ -19,7 +19,7 @@ tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
 names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 
 n_trial = 31
-n_gen = 20
+n_gen = 1000
 
 alpha = 10
 beta = 2
