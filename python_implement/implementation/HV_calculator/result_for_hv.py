@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import os
 import subprocess as sub
 import sys
 
@@ -17,7 +18,8 @@ def calc_hv(dirs, save = 1):
     for l in dirs:
 
         # HV計算用の.csvファイルを作成
-        save_path = Path(__file__).parent / "tmp/result_obj.csv"
+        tmp = Path(__file__).parent
+        save_path = tmp.relative_to(tmp) / "tmp/result_obj.csv"
 
         if save_path.exists():
             save_path.unlink()
@@ -42,6 +44,7 @@ def calc_hv(dirs, save = 1):
 
 if __name__ == "__main__":
 
+    os.makedirs("tmp", exist_ok = True)
     dir_path = Path(__file__).parent
     hv_path = str(dir_path.relative_to(dir_path) / "hv/hv.bat")
     # hv_path = str((P/ Path("..hv/hv.bat").resolve())

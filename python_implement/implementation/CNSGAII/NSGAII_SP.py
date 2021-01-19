@@ -11,8 +11,16 @@ from ..operator import *
 from ..NSGAII.NSGA_util import NDsorting, calc_cd, mating
 from ..constraint_handling.SP import modify_objective_function
 
-# todo グラフのリアルタイム更新
-# https://oregengo.hatenablog.com/entry/2017/04/20/111932
+def plot_kp_sols(i, sol, pf):
+
+    plt.cla()
+
+    plt.plot(*pf.T, c = 'gray', label = "Pareto Front")
+    plt.scatter(*-sol[i].T, label = "population")
+
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
+    plt.tight_layout()
+
 
 class NSGAII_SP:
 
@@ -70,7 +78,7 @@ class NSGAII_SP:
         r = NDsorting(self.pop["modified_obj"], self.pop["objectives"].shape[0])
         self.pop["pareto_rank"] = r
 
-        for i in range(max(r) + 1):
+        for i in set(r):
 
             self.pop["crowding_distance"][r == i] = calc_cd(self.pop["modified_obj"][r == i])
 
@@ -86,20 +94,20 @@ class NSGAII_SP:
             # old_pop = self.pop["variables"].copy()
 
             self.re_eval_population()
+            self.analyzer_func(i + 1)
+
             parents = self.selection()
 
             offs["variables"] = self.mutation(self.crossover(parents, pc = 0.8))
             offs["objectives"], offs["violations"] = self.problem.evaluate_with_violation(offs["variables"])
-            offs["modified_obj"] = modify_objective_function\
-                (offs["objectives"], offs["violations"], self.feasible_ratio)
             self.update(offs)
 
             # visualize objective space
             # if i % 10 == 0:
 
-            #     plt.cla()
-            #     plt.scatter(*self.pop["objectives"].T,)
-            #     plt.pause(0.01)
+                # plt.cla()
+                # plt.scatter(*self.pop["objectives"].T,)
+                # plt.pause(0.01)
 
             # rep[i] = self.noff - np.sum((self.pop["variables"][:, None, :] == old_pop[None, :, :]).sum(axis = 2) == self.pop["variables"].shape[1])
 
@@ -113,6 +121,9 @@ class NSGAII_SP:
             offs["violations"][mod:] = 1.0e+7
 
             self.update(offs)
+
+        self.re_eval_population()
+        self.analyzer_func(n + 1)
 
         self.neval = max_eval
 
@@ -142,12 +153,14 @@ class NSGAII_SP:
                                               axis = 0, return_index = True)
         union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))[idx]
         union["violations"] = np.vstack((self.pop["violations"], offs["violations"]))[idx]
-        union["modified_obj"] = np.vstack((self.pop["modified_obj"], offs["modified_obj"]))[idx]
+        union["modified_obj"] = modify_objective_function\
+            (union["objectives"], union["violations"], self.feasible_ratio)
 
         r = NDsorting(union["modified_obj"], pop_size[0])
 
         offset = 0
-        for i in range(max(r)):
+        max_r = np.max(r)
+        for i in range(max_r):
 
             n = sum(r == i)
 
@@ -157,16 +170,24 @@ class NSGAII_SP:
 
             offset +=n
 
-        cd = calc_cd(union["modified_obj"][r == max(r)])
+        cd = calc_cd(union["modified_obj"][r == max_r])
         remain = np.argsort(-cd)[:pop_size[0] - offset]
-        self.pop["objectives"][offset:] = union["objectives"][r == max(r)][remain]
-        self.pop["variables"][offset:] = union["variables"][r == max(r)][remain]
+        self.pop["objectives"][offset:] = union["objectives"][r == max_r][remain]
+        self.pop["variables"][offset:] = union["variables"][r == max_r][remain]
+        self.pop["violations"][offset:] = union["violations"][r == max_r][remain]
 
     def get_NDsolution(self):
 
-        r = NDsorting(self.pop["objectives"], self.pop["objectives"].shape[0])
+        is_feasible = self.pop["violations"].sum(axis = 1) == 0
+        feasible_sol = self.pop["objectives"][is_feasible]
 
-        return self.pop["objectives"][r == 0]
+        # for minmization problem(compalator: >)
+        is_dominated = (feasible_sol[:, None, :] >= feasible_sol[None, :, :]).prod(axis = 2) & \
+            (feasible_sol[:, None, :] > feasible_sol[None, :, :]).max(axis = 2)
+
+        NDsolution = is_dominated.max(axis = 1) == 0
+
+        return self.pop["objectives"][is_feasible][NDsolution]
 
     def set_analyzer(self, save_list, dulation):
 
@@ -175,13 +196,46 @@ class NSGAII_SP:
         self.dulation = dulation
 
         for key in self.save_list:
-            self.saved_data[save_list] = []
+            self.saved_data[key] = []
 
         self.analyzer_func = self.analyzer
 
     def analyzer(self, gen):
 
-        if gen % self.dulation == 0:
+        if gen % self.dulation == 0 or gen == 1:
             for key in self.save_list:
-                self.saved_data[key].append(self.pop[key])
+                self.saved_data[key].append(self.pop[key].copy())
+
+    def visualize_optimization(self):
+
+        from matplotlib.animation import FuncAnimation
+
+        fig = plt.figure()
+        a = self.problem.get_pf()
+
+        anim = FuncAnimation(fig, plot_kp_sols, fargs = (self.saved_data["objectives"], self.problem.get_pf()),frames = len(self.saved_data["objectives"]),interval = 50, repeat = False)
+        fig.show()
+
+        return anim
+
+        # 没案(軸の調整ができない)
+
+        # fig, ax = plt.subplots()
+        # fig.canvas.draw()
+
+        # bg = fig.canvas.copy_from_bbox(ax.bbox)
+
+        # scat = ax.scatter(*np.vstack((self.saved_data["objectives"][0], self.saved_data["objectives"][-1])).T,)
+        # fig.show()
+
+        # ds = self.saved_data["objectives"]
+
+        # for d in self.saved_data["objectives"]:
+
+        #     scat.set_offsets(d)
+        #     fig.canvas.restore_region(bg)
+        #     ax.draw_artist(scat)
+        #     fig.canvas.blit(ax.bbox)
+
+        #     fig.canvas.flush_events()
 

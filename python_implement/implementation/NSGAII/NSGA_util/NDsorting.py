@@ -12,7 +12,7 @@ def NDsorting(union, num):
     rank = -np.ones(union.shape[0], dtype = int)
 
     # for minmization problem(compalator: >)
-    is_dominated = (union[:, None, :] >= union[None, :, :]).prod(axis = 2) * \
+    is_dominated = (union[:, None, :] >= union[None, :, :]).prod(axis = 2) & \
         (union[:, None, :] > union[None, :, :]).max(axis = 2)
 
     while(np.sum(rank != -1) < num):

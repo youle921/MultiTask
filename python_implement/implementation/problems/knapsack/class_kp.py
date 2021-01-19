@@ -12,6 +12,7 @@ class knapsack:
     def __init__(self, objective = 2, items = 500, lower = 10, upper = 100, load = True):
 
         self.objective = objective
+        self.pf = None
 
         if load:
             path = os.path.dirname(__file__)
@@ -33,6 +34,14 @@ class knapsack:
 
         self.original_size = self.size
         self.repair_order = (self.items[0:2, :, 0] / self.items[0:2, :, 1])
+
+    def get_pf(self):
+
+        if self.pf is None:
+            path = os.path.dirname(__file__)
+            self.pf = np.loadtxt(path + "/pf/knapsack_500_pf.dat")
+
+        return self.pf
 
     def evaluate(self, solutions):
 
