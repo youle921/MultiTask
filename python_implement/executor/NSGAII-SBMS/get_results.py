@@ -8,6 +8,16 @@ Created on Tue Jan 12 02:04:13 2021
 import numpy as np
 from sklearn import preprocessing
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def print_heatmap(flatten_data, params):
+
+    plt.figure(figsize = [10, 10])
+    array_data = flatten_data.reshape([len(params), -1])[::-1]
+    sns.heatmap(array_data, annot = True, fmt = ".2e", cmap = "RdBu",xticklabels = params, yticklabels = [*reversed(params)])
+    plt.gca().set_aspect("equal")
+
 params = [2,3,5,10,15,20,40]
 
 dir_names = ["a=" + str(i) + "_b=" + str(j)for i in params for j in params]

@@ -40,12 +40,12 @@ class MT_SBMS:
         """
         todo
         mating operation
-        移住元個体の選択:バイナリトーナメントにより選択
-        移住先個体の選択:β個体選択し，その中から決定変数空間で最も近い個体を選択
+        移住元個体の選択: バイナリトーナメントにより選択
+        移住先個体の選択: beta個体選択し，その中から決定変数空間で最も近い個体を選択
         """
 
         base_pops = [*map(lambda alg: alg.select_parent(self.migration_size), self.algs)]
-        mig_pops = [*map(lambda alg, p:alg.select_parent_b(p), self.algs, base_pops)]
+        migrated_pops = [*map(lambda alg, p:alg.select_parent_b(p), reversed(self.algs), base_pops)]
 
-        [*map(lambda alg, base_p, mig_p: alg.migration_gen(base_p, mig_p), self.algs, base_pops, mig_pops)]
+        [*map(lambda alg, base_p, mig_p: alg.migration_gen(base_p, mig_p), self.algs, base_pops, migrated_pops)]
 
