@@ -44,7 +44,7 @@ class nsgaii_SBMS_for_mt(NSGAII):
         for i in range(2):
             self.parents[i][base.shape[0]:] = self.select_parent(size)
 
-        self.offs["variables"] = self.mutation(self.crossover(self.parents))
+        self.offs["variables"] = self.mutation(self.crossover(self.parents))[:self.noff]
         self.offs["objectives"] = self.problem.evaluate(self.offs["variables"])
 
         self.update(self.offs)
@@ -88,3 +88,13 @@ class nsgaii_SBMS_for_mt(NSGAII):
                          size)
 
         return self.pop["variables"][parent]
+
+    def select_nn_parent(self, parent_a):
+
+        """
+        todo parent_aと最近傍の個体を探索
+        各個体と最近傍のbを親個体としてreturn
+        """
+        idx = ((parent_a[:, None, :] - self.pop["variables"][None, :, : ])**2).sum(axis = 2).argmax(axis = 1)
+
+        return self.pop["variables"][idx]
