@@ -53,15 +53,15 @@ class nsgaii_SBMS_for_mt(NSGAII):
 
         parents = []
 
-        parents.append(self.select_parent_a())
-        parents.append(self.select_parent_b(parents[0]))
+        parents.append(self.select_parent_a(self.alpha))
+        parents.append(self.select_parent_b(parents[0], self.beta))
 
         return parents
 
-    def select_parent_a(self):
+    def select_parent_a(self, size):
 
         idx = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-                     int(self.noff/2) * self.alpha).reshape([-1, self.alpha])
+                     int(self.noff/2) * size).reshape([-1, size])
 
         candidate = self.pop["objectives"][idx]
         center = candidate.mean(axis = 1)
@@ -71,10 +71,10 @@ class nsgaii_SBMS_for_mt(NSGAII):
 
         return self.pop["variables"][parent]
 
-    def select_parent_b(self, parent_a):
+    def select_parent_b(self, parent_a, size):
 
         idx = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-                     parent_a.shape[0] * self.beta).reshape([-1, self.beta])
+                     parent_a.shape[0] * size).reshape([-1, size])
 
         dist = ((self.pop["variables"][idx] - parent_a[:, None, :])**2).sum(axis = 2)
 
