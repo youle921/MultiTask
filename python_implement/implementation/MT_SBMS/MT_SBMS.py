@@ -48,7 +48,7 @@ class MT_SBMS:
 
         return
     
-    def execute_costom_migration(self, max_gen, num):
+    def execute_custom_migration(self, max_gen, num):
 
         [*map(lambda alg: alg.execute(self.interval - 2), self.algs)]
         self.custom_migration(num)
@@ -57,7 +57,7 @@ class MT_SBMS:
         for i in range(itr - 1):
 
             [*map(lambda alg: alg.execute(self.interval - 1), self.algs)]
-            self.custom_migration()
+            self.custom_migration(num)
 
         return
 
