@@ -8,6 +8,6 @@
     "migration_size": 10,
 
     "n_trial": 31,
-    "n_gen": 10
+    "n_gen": 1000
 
 }

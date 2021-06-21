@@ -25,46 +25,50 @@ names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
 
-path = F'mig_all_a={str(params["alpha"])}_b={str(params["beta"])}'
-os.makedirs(path, exist_ok = True)
-print(path)
 
-results = np.empty((len(tasks), 2, 2))
 
-for t, n, task_no in zip(tasks, names, range(len(tasks))):
+for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
 
-    path_task = [path + "/" + n + "_task1", path + "/" + n + "_task2"]
-    os.makedirs(path_task[0], exist_ok = True)
-    os.makedirs(path_task[1], exist_ok = True)
+    params["migration_size"] = mig
+    path = F'm_size={mig}_a={str(params["alpha"])}_b={str(params["beta"])}'
+    os.makedirs(path, exist_ok = True)
+    print(path)
+    results = np.empty((len(tasks), 2, 2))
 
-    igd = np.empty([2, params["n_trial"]])
+    for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
-    p = t.get_tasks()
+        path_task = [path + "/" + n + "_task1", path + "/" + n + "_task2"]
+        os.makedirs(path_task[0], exist_ok = True)
+        os.makedirs(path_task[1], exist_ok = True)
 
-    params.update({"start_time": datetime.now().isoformat()})
+        igd = np.empty([2, params["n_trial"]])
 
-    solver = MT_SBMS(params, p)
+        p = t.get_tasks()
 
-    for trial in range(params["n_trial"]):
+        params.update({"start_time": datetime.now().isoformat()})
 
-        solver.init_pop()
-        solver.execute(params["n_gen"])
+        solver = MT_SBMS(params, p)
+
+        for trial in range(params["n_trial"]):
+
+            solver.init_pop()
+            solver.execute(params["n_gen"])
+
+            for idx in range(2):
+
+                igd[idx][trial] = p[idx].calc_IGD(solver.algs[idx].pop["objectives"])
 
         for idx in range(2):
 
-            igd[idx][trial] = p[idx].calc_IGD(solver.algs[idx].pop["objectives"])
+            results[task_no, idx, 0] = igd[idx].mean()
+            results[task_no, idx, 1] = igd[idx].std()
 
-    for idx in range(2):
+            np.savetxt(path_task[idx] + "/all_IGDs.csv", igd[idx], delimiter = ',')
 
-        results[task_no, idx, 0] = igd[idx].mean()
-        results[task_no, idx, 1] = igd[idx].std()
+        params.update({"end_time": datetime.now().isoformat()})
 
-        np.savetxt(path_task[idx] + "/all_IGDs.csv", igd[idx], delimiter = ',')
+        with open(F'{path}/setting_log.json', 'w') as f:
+            json.dump(params, f, indent = 0)
+        print("\n" + n +" Finished\n")
 
-    params.update({"end_time": datetime.now().isoformat()})
-
-    with open(F'{path}/setting_log.json', 'w') as f:
-        json.dump(params, f, indent = 0)
-    print("\n" + n +" Finished\n")
-
-np.savetxt(path + "/all_results.csv", results.reshape([-1, 2]), delimiter = ',')
+    np.savetxt(path + "/all_results.csv", results.reshape([-1, 2]), delimiter = ',')
