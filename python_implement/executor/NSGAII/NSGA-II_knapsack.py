@@ -15,14 +15,16 @@ from implementation.problems.knapsack import *
 from implementation.NSGAII import NSGAII
 
 n_trial = 1
-n_eval = 10000
+n_eval = 100000
 n_obj = 2
 
 p = class_kp.knapsack(objective = n_obj)
 solver = NSGAII(500, n_obj, 100, 100, p, 'bin')
 
+dir_name = "knapsack_final_pops"
+
 ratio = np.empty(n_trial)
-os.makedirs("final_pops", exist_ok = True)
+os.makedirs(dir_name, exist_ok = True)
 
 for i in range(n_trial):
 
@@ -30,6 +32,6 @@ for i in range(n_trial):
     solver.execute(n_eval)
 
     sol = solver.pop["objectives"][solver.pop["pareto_rank"] == 0]
-    # np.savetxt("final_pops/pops" + str(i) + ".dat", sol)
+    np.savetxt(dir_name + "/pops" + str(i) + ".dat", sol)
 
     print("trial " + str(i + 1) + " finished")

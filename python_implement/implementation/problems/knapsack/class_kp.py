@@ -7,33 +7,60 @@ Created on Tue Dec 17 23:30:13 2019
 import numpy as np
 import os
 
+# 修復操作独立実装バージョン
+# 修復した個体を戻り値にするのではなく，個体が直接書き換えられる．
+# profit, weight共にサイズは[(目的数), (アイテム数)]
+def repair(profit, weight, size, solutions):
+
+    utility = (profit[0:2] / weight[0:2]).max(axis = 0)
+    # for repair operation
+    sort_idx = utility.argsort()[::-1]
+    inv_sort_idx = sort_idx.argsort()
+
+    w_ = solutions[None, :, :] * weight[:, None, :]
+    no_repair_pos = np.ones_like(solutions, dtype = bool)
+    infeasible = np.logical_or(*w_.sum(axis = 2) > size[:, None])
+
+    w_sorted = w_[:,infeasible][:, :, sort_idx]
+    w_mask = w_sorted.cumsum(axis = 2) < size[:, None, None]
+    no_repair_pos[infeasible] = np.logical_and(*w_mask,)[:, inv_sort_idx]
+
+    solutions[~no_repair_pos] = 0
+
 class knapsack:
 
     def __init__(self, objective = 2, items = 500, lower = 10, upper = 100, load = True):
 
-        self.objective = objective
+        self.nobj = objective
+        self.ndim = items
+
         self.pf = None
+        self.code = 'bin'
 
         if load:
             path = os.path.dirname(__file__)
-            self.items = np.empty([objective, items, 2])
+            self.items = dict(profit = np.empty([objective, items]), weight = np.empty([objective, items]))
             for i in range(objective):
                 load_item = np.loadtxt(path + "/items/knapsack_500_profit" + str(i + 1) + ".csv")
-                self.items[i, :, 0] = load_item[:items]
+                self.items["profit"][i] = load_item[:items]
                 load_weight = np.loadtxt(path + "/items/knapsack_500_weight" + str(i + 1) + ".csv")
-                self.items[i, :, 1] = load_weight[:items]
+                self.items["weight"][i] = load_weight[:items]
 
         else:
-            self.items = np.random.randint(lower, high = upper + 1, size = (items, 2, objective))
+            self.items["profit"] = np.random.randint(lower, high = upper + 1, size = (objective, items))
+            self.items["weight"] = np.random.randint(lower, high = upper + 1, size = (objective, items))
 
-        self.utility = (self.items[0:2, :, 0] / self.items[0:2, :, 1]).max(axis = 0)
+        self.utility = (self.items["profit"][0:2] / self.items["weight"][0:2]).max(axis = 0)
 
-        self.size = np.sum(self.items[:, :, 1], axis = 1) / 2
+        self.size = np.sum(self.items["weight"], axis = 1) / 2
         if objective > 2:
-            self.size[2:] *= 2
+            self.size[2:] *= 3
 
         self.original_size = self.size
-        self.repair_order = (self.items[0:2, :, 0] / self.items[0:2, :, 1])
+
+        # for repair operation
+        self.sort_idx = self.utility.argsort()[::-1]
+        self.inv_sort_idx = self.sort_idx.argsort()
 
     def get_pf(self):
 
@@ -46,38 +73,71 @@ class knapsack:
     def evaluate(self, solutions):
 
         self.repair(solutions)
-        f = np.dot(solutions, self.items[:, :, 0].T)
+        f = np.dot(solutions, self.items["profit"].T)
 
         return -f
 
     def evaluate_with_violation(self, solutions):
 
-        f = np.dot(solutions, self.items[:, :, 0].T)
-        w = np.dot(solutions, self.items[:, :, 1].T)
+        f = np.dot(solutions, self.items["profit"].T)
+        w = np.dot(solutions, self.items["weight"].T)
 
         return [-f, np.clip(w - self.size, 0, None)]
 
+    # while削除バージョン，実行不可能解にのみ適用，思いつく限り最速
     def repair(self, solutions):
 
-        w = np.dot(solutions, self.items[:, :, 1].T)
+        w_ = solutions[None, :, :] * self.items["weight"][:, None, :]
+        no_repair_pos = np.ones_like(solutions, dtype = bool)
+        infeasible = np.logical_or(*w_.sum(axis = 2) > self.size[:, None])
 
-        mask = np.sum(w > self.size, axis = 1) > 0
-        util = solutions * self.utility
-        util[util == 0] = np.inf
+        w_sorted = w_[:,infeasible][:, :, self.sort_idx]
+        w_mask = w_sorted.cumsum(axis = 2) < self.size[:, None, None]
+        no_repair_pos[infeasible] = np.logical_and(*w_mask,)[:, self.inv_sort_idx]
 
-        while(np.sum(mask) != 0):
+        solutions[~no_repair_pos] = 0
 
-            idx = np.argmin(util[mask], axis = 1)
+    # ベクトル対応・whileバージョン
+    # def repair_while(self, solutions):
 
-            solutions[mask, idx] = 0
-            util[mask, idx] = np.inf
+    #     w = np.dot(solutions, self.items["weight"].T)
 
-            mask = np.sum(np.dot(solutions, self.items[:, :, 1].T) > self.size, axis = 1) > 0
+    #     mask = np.sum(w > self.size, axis = 1) > 0
+    #     util = solutions * self.utility
+    #     util[util == 0] = np.inf
+
+    #     while(np.sum(mask) != 0):
+
+    #         idx = np.argmin(util[mask], axis = 1)
+
+    #         solutions[mask, idx] = 0
+    #         util[mask, idx] = np.inf
+
+    #         w[mask] -= self.items["weight"][:, idx].T
+
+    #         mask = np.sum(w > self.size, axis = 1) > 0
+
+    # while削除バージョン，実行可能解にも適用するためちょっと遅い
+    # def repair_all(self, solutions):
+
+    #     w_sorted = (solutions[None, :, :] * self.items["weight"][:, None, :])\
+    #         [:, :, self.sort_idx]
+    #     w_mask = w_sorted.cumsum(axis = 2) < self.size[:, None, None]
+    #     w_pos = np.logical_and(*w_mask,)[:, self.inv_sort_idx]
+
+    #     solutions[~w_pos] = 0
 
 if __name__ == "__main__":
 
+    np.random.seed(0)
+
     kp = knapsack(objective = 2)
-    sol = np.random.randint(0, 2, size = (200, 500))
-    sol_ = sol.copy()
-    f = kp.evaluate(sol)
-    f_const, g = kp.evaluate_with_violation(sol_)
+    # sol = np.random.randint(0, 2, size = (200, 500))
+    sol1 = np.where(np.random.rand(100, 500) < 0.5, 1, 0)
+    sol2 = sol1.copy()
+
+    kp.repair(sol1)
+    f1, g1 = kp.evaluate_with_violation(sol1)
+
+    kp.repair_all(sol2)
+    f2, g2 = kp.evaluate_with_violation(sol2)

@@ -4,18 +4,19 @@ Created on Wed May 13 13:54:46 2020
 
 @author: t.urita
 """
-from .nsgaii_for_mt import nsgaii_SBMS_for_mt
+from .nsgaii_for_SBMS import nsgaii_SBMS_for_mt
 
 class MT_SBMS:
 
-    def __init__(self, ndim, nobj, npop, noff, problem_list, code, alpha, beta, m_size, interval):
+    # def __init__(self, ndim, nobj, npop, noff, problem_list, code, alpha, beta, m_size, interval):
+    def __init__(self, params,  problem_list):
 
         self.algs = []
         for task in problem_list:
-            self.algs.append(nsgaii_SBMS_for_mt(ndim, nobj, npop, noff, task, code, alpha, beta))
+            self.algs.append(nsgaii_SBMS_for_mt(params, task))
 
-        self.migration_size = m_size
-        self.interval = interval
+        self.migration_size = params["migration_size"]
+        # self.interval = params["interval"]
 
     def init_pop(self):
 
@@ -24,13 +25,7 @@ class MT_SBMS:
 
     def execute(self, max_gen):
 
-        [*map(lambda alg: alg.execute(self.interval - 2), self.algs)]
-        self.migration()
-
-        itr = int(max_gen / self.interval)
-        for i in range(itr - 1):
-
-            [*map(lambda alg: alg.execute(self.interval - 1), self.algs)]
+        for i in range(max_gen - 1):
             self.migration()
 
         return
@@ -47,7 +42,7 @@ class MT_SBMS:
             self.migration_nn()
 
         return
-    
+
     def execute_custom_migration(self, max_gen, num):
 
         [*map(lambda alg: alg.execute(self.interval - 2), self.algs)]
@@ -64,7 +59,7 @@ class MT_SBMS:
     def migration(self):
 
         base_pops = [*map(lambda alg: alg.select_parent(self.migration_size), self.algs)]
-        migrated_pops = [*map(lambda alg, p, beta:alg.select_parent_b(p, beta), reversed(self.algs), base_pops, self.algs.beta)]
+        migrated_pops = [*map(lambda alg, p, :alg.select_parent_b(p, alg.beta), reversed(self.algs), base_pops)]
 
         [*map(lambda alg, base_p, mig_p: alg.migration_gen(base_p, mig_p), self.algs, base_pops, migrated_pops)]
 
@@ -76,7 +71,7 @@ class MT_SBMS:
         [*map(lambda alg, base_p, mig_p: alg.migration_gen(base_p, mig_p), self.algs, base_pops, migrated_pops)]
 
     def custom_migration(self, size):
-        
+
         base_pops = [*map(lambda alg: alg.select_parent(self.migration_size), self.algs)]
         migrated_pops = [*map(lambda alg, p:alg.select_parent_b(p, size), reversed(self.algs), base_pops)]
 

@@ -7,37 +7,37 @@ Created on Tue Apr 14 22:04:37 2020
 import numpy as np
 import matplotlib.pyplot as plt
 
+from ..base_class.EMOA_base import Algorithm
 from ..operator import *
 from .NSGA_util import NDsorting, calc_cd, mating
 
-class NSGAII:
+class NSGAII(Algorithm):
 
-    def __init__(self, ndim, nobj, npop, noff, problem, code):
+    def __init__(self, params, problem):
 
         self.pop = {}
-        self.pop["variables"] = np.zeros([npop, ndim])
-        self.pop["objectives"] = np.zeros([npop, nobj])
-        self.pop["pareto_rank"] = np.zeros(npop)
-        self.pop["crowding_distance"] = np.zeros(npop)
+        self.pop["variables"] = np.empty([params["npop"], problem.ndim])
+        self.pop["crowding_distance"] = np.zeros(params["npop"])
 
-        self.problem = problem
+        self.code = problem.code
+        self.eval_method = problem.evaluate
 
-        self.neval = 0
-        self.noff = noff
+        self.noff = params["noff"]
+        self.offs = {}
 
-        self.code = code
-
-        if code == "real":
+        if self.code == "real":
             self.crossover = SBX
             self.mutation = PM
-        elif code == "bin":
+            self.concat_pops = self.create_union
+        elif self.code == "bin":
             self.crossover = uniform_crossover
             self.mutation = bitflip_mutation
+            self.concat_pops = self.create_unique_union
 
     def import_pop(self, task_name, task_no, trial):
 
         self.pop["variables"] = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(task_no) + "/InitialVAR/InitialVAR" + str(trial) + ".dat")
-        self.pop["objectives"] = self.problem.evaluate(self.pop["variables"])
+        self.pop["objectives"] = self.eval_method(self.pop["variables"])
         self.init_eval()
 
         self.neval = self.pop["variables"].shape[0]
@@ -49,7 +49,7 @@ class NSGAII:
         elif self.code == "bin":
             self.pop["variables"] = np.random.randint(2, size = self.pop["variables"].shape)
 
-        self.pop["objectives"] = self.problem.evaluate(self.pop["variables"])
+        self.pop["objectives"] = self.eval_method(self.pop["variables"])
         self.init_eval()
 
         self.neval = self.pop["variables"].shape[0]
@@ -65,10 +65,6 @@ class NSGAII:
 
     def execute(self, max_eval):
 
-        offs = {}
-        offs["variables"] = np.zeros([self.noff, self.pop["variables"].shape[1]])
-        offs["objectives"] = np.zeros([self.noff, self.pop["objectives"].shape[1]])
-
         n, mod= divmod(max_eval - self.neval, self.noff)
 
         # rep = np.empty(n)
@@ -79,27 +75,19 @@ class NSGAII:
 
             parents = self.selection()
 
-            offs["variables"] = self.mutation(self.crossover(parents, pc = 0.8))
-            offs["objectives"] = self.problem.evaluate(offs["variables"])
-            self.update(offs)
-
-            # visualize objective space
-            # plt.cla()
-            # plt.scatter(*self.pop["objectives"].T,)
-            # plt.pause(0.01)
+            self.offs["variables"] = self.mutation(self.crossover(parents, pc = 0.9))
+            self.offs["objectives"] = self.eval_method(self.offs["variables"])
+            self.update(self.offs)
 
             # rep[i] = self.noff - np.sum((self.pop["variables"][:, None, :] == old_pop[None, :, :]).sum(axis = 2) == self.pop["variables"].shape[1])
 
         if mod != 0:
 
-            parents = []
-            parents.append(self.pop["variables"][self.selection()])
-            parents.append(self.pop["variables"][self.selection()])
+            parents = self.selection()
 
-            offs["variables"] = self.mutation(self.crossover(parents))
-            offs["objectives"][:mod] = self.problem.evaluate(offs["variables"][:mod])
-            offs["objectives"][mod:] = 0
-            self.update(offs)
+            self.offs["variables"] = self.mutation(self.crossover(parents[:mod]))
+            self.offs["objectives"] = self.eval_method(self.offs["variables"])
+            self.update(self.offs)
 
         self.neval = max_eval
 
@@ -107,27 +95,23 @@ class NSGAII:
 
     def selection(self):
 
-        parents = []
-        parent1 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-                         int(self.noff/2))
-        parent2 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-                         int(self.noff/2))
+        parents = [*map(lambda :self.pop["variables"]\
+                        [mating(self.pop["pareto_rank"], self.pop["crowding_distance"], int(self.noff/2))])]
+        # parents = []
+        # parent1 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
+        #                  int(self.noff/2))
+        # parent2 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
+        #                  int(self.noff/2))
 
-        parents.append(self.pop["variables"][parent1])
-        parents.append(self.pop["variables"][parent2])
+        # parents.append(self.pop["variables"][parent1])
+        # parents.append(self.pop["variables"][parent2])
 
         return parents
 
     def update(self, offs):
 
         pop_size = self.pop["objectives"].shape
-
-        union = {}
-        # union["variables"] = np.vstack((self.pop["variables"] ,offs["variables"]))
-        # union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))
-        union["variables"], idx = np.unique(np.vstack((self.pop["variables"] ,offs["variables"])),\
-                                              axis = 0, return_index = True)
-        union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))[idx]
+        union = self.concat_pops(self.offs)
 
         r = NDsorting(union["objectives"], pop_size[0])
 

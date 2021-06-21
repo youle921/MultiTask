@@ -1,0 +1,12 @@
+{
+    "ndim": 500,
+    "nobj": 2,
+    "npop": 100,
+
+    "divide": 99,
+    "neighbor_size": 10,
+    "type": "PBI",
+
+    "ntrial": 1,
+    "neval": 100000
+}

@@ -38,9 +38,8 @@ def calc_hv(dirs, save = 1):
 
         if save:
             np.savetxt(str(l) + "/hv.csv", hv, delimiter = ',')
-            print(np.median(hv))
-        else:
-            print(np.median(hv))
+
+        print("HV: {:.3e}\n".format(np.median(hv)))
 
 if __name__ == "__main__":
 
@@ -62,7 +61,8 @@ if __name__ == "__main__":
 
     # 引数を与える場合，引数のディレクトリ下のすべてのディレクトリを対象に，ディレクトリ内のdatファイルに対して計算
     else:
-        print(args[1])
         dir_list = list(Path(args[1]).glob("*/**"))
+        if dir_list == []:
+            dir_list = [Path(args[1])]
         calc_hv(dir_list, save = 1)
 

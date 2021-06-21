@@ -1,0 +1,12 @@
+{
+"ndim": 500,
+"nobj": 2,
+"npop": 100,
+"divide": 99,
+"neighbor_size": 10,
+"type": "PBI",
+"ntrial": 1,
+"neval": 100000,
+"start_time": "2021-06-08T23:30:37.132376",
+"end_time": "2021-06-08T23:30:37.132376"
+}

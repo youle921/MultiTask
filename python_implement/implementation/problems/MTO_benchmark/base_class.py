@@ -20,6 +20,9 @@ class MTO_base_class:
         self.IGD_ref = None
         self.current_path = os.path.dirname(__file__)
 
+        self.ndim = 50
+        self.code = 'real'
+
     def set_reference_point(self, pf_type):
 
         self.IGD_ref = np.loadtxt(self.current_path + "/pf/" + pf_type + ".pf")

@@ -7,23 +7,20 @@ Created on Tue Apr 14 22:04:37 2020
 import numpy as np
 
 from ..NSGAII.nsgaii_main import NSGAII
-# from ..operator import *
-# from ..NSGAII.NSGA_util import NDsorting, calc_cd, mating
 from ..NSGAII.NSGA_util import mating
 
 class nsgaii_SBMS_for_mt(NSGAII):
 
-    def __init__(self, ndim, nobj, npop, noff, problem, code, t_num_alpha, t_num_beta):
+    # def __init__(self, ndim, nobj, npop, noff, problem, code, t_num_alpha, t_num_beta):
+    def __init__(self, params, problem):
 
-        super().__init__(ndim, nobj, npop, noff, problem, code)
+        super().__init__(params, problem)
 
         # 目的関数空間上で選択する解の個数
-        self.alpha = t_num_alpha
+        self.alpha = params["alpha"]
         # 決定変数空間上で選択する解の個数
-        self.beta = t_num_beta
-
-        self.offs = {}
-        self.parents = [np.empty([noff, ndim]), np.empty([noff, ndim])]
+        self.beta = params["beta"]
+        self.parents = [np.empty([params["noff"], params["ndim"]]), np.empty([params["noff"], params["ndim"]])]
 
     def execute(self, gen):
 
@@ -32,7 +29,7 @@ class nsgaii_SBMS_for_mt(NSGAII):
             parents = self.selection()
 
             self.offs["variables"] = self.mutation(self.crossover(parents))
-            self.offs["objectives"] = self.problem.evaluate(self.offs["variables"])
+            self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self.update(self.offs)
 
     def migration_gen(self, base, mig):
@@ -45,7 +42,7 @@ class nsgaii_SBMS_for_mt(NSGAII):
             self.parents[i][base.shape[0]:] = self.select_parent(size)
 
         self.offs["variables"] = self.mutation(self.crossover(self.parents))[:self.noff]
-        self.offs["objectives"] = self.problem.evaluate(self.offs["variables"])
+        self.offs["objectives"] = self.eval_method(self.offs["variables"])
 
         self.update(self.offs)
 
@@ -91,10 +88,6 @@ class nsgaii_SBMS_for_mt(NSGAII):
 
     def select_nn_parent(self, parent_a):
 
-        """
-        todo parent_aと最近傍の個体を探索
-        各個体と最近傍のbを親個体としてreturn
-        """
         idx = ((parent_a[:, None, :] - self.pop["variables"][None, :, : ])**2).sum(axis = 2).argmax(axis = 1)
 
         return self.pop["variables"][idx]

@@ -11,6 +11,10 @@ sys.path.append(os.path.join(os.pardir, '..'))
 import numpy as np
 import matplotlib.pyplot as plt
 
+import json
+from datetime import datetime
+from collections import OrderedDict
+
 import implementation
 from implementation.problems.MTO_benchmark import *
 from implementation.MT_SBMS import MT_SBMS
@@ -18,13 +22,10 @@ from implementation.MT_SBMS import MT_SBMS
 tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
 names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 
-n_trial = 31
-n_gen = 1000
+with open("setting.json") as f:
+    params = json.load(f, object_pairs_hook=OrderedDict)
 
-alpha = 10
-beta = 2
-
-path = "a=" + str(alpha) + "_b=" + str(beta)
+path = F'mig_all_a={str(params["alpha"])}_b={str(params["beta"])}'
 os.makedirs(path, exist_ok = True)
 print(path)
 
@@ -36,15 +37,18 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
     os.makedirs(path_task[0], exist_ok = True)
     os.makedirs(path_task[1], exist_ok = True)
 
+    igd = np.empty([2, params["n_trial"]])
+
     p = t.get_tasks()
-    solver = MT_SBMS(50, 2, 100, 100, p, 'real', alpha, beta, 10, 10)
 
-    igd = np.zeros([2, n_trial])
+    params.update({"start_time": datetime.now().isoformat()})
 
-    for trial in range(n_trial):
+    solver = MT_SBMS(params, p)
+
+    for trial in range(params["n_trial"]):
 
         solver.init_pop()
-        solver.execute(n_gen)
+        solver.execute(params["n_gen"])
 
         for idx in range(2):
 
@@ -57,6 +61,10 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
         np.savetxt(path_task[idx] + "/all_IGDs.csv", igd[idx], delimiter = ',')
 
+    params.update({"end_time": datetime.now().isoformat()})
+
+    with open(F'{path}/setting_log.json', 'w') as f:
+        json.dump(params, f, indent = 0)
     print("\n" + n +" Finished\n")
 
 np.savetxt(path + "/all_results.csv", results.reshape([-1, 2]), delimiter = ',')
