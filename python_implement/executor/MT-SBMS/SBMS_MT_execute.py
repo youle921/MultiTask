@@ -25,8 +25,6 @@ names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
 
-
-
 for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
 
     params["migration_size"] = mig
@@ -34,6 +32,8 @@ for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
     os.makedirs(path, exist_ok = True)
     print(path)
     results = np.empty((len(tasks), 2, 2))
+    
+    params.update({"start_time": datetime.now().isoformat()})
 
     for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
@@ -44,8 +44,6 @@ for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
         igd = np.empty([2, params["n_trial"]])
 
         p = t.get_tasks()
-
-        params.update({"start_time": datetime.now().isoformat()})
 
         solver = MT_SBMS(params, p)
 
@@ -65,10 +63,10 @@ for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
 
             np.savetxt(path_task[idx] + "/all_IGDs.csv", igd[idx], delimiter = ',')
 
-        params.update({"end_time": datetime.now().isoformat()})
-
-        with open(F'{path}/setting_log.json', 'w') as f:
-            json.dump(params, f, indent = 0)
         print("\n" + n +" Finished\n")
+        
+    params.update({"end_time": datetime.now().isoformat()})
+    with open(F'{path}/setting_log.json', 'w') as f:
+        json.dump(params, f, indent = 0)
 
     np.savetxt(path + "/all_results.csv", results.reshape([-1, 2]), delimiter = ',')
