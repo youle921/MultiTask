@@ -95,13 +95,14 @@ class NSGAII(Algorithm):
 
     def selection(self):
 
-        parents = [*map(lambda :self.pop["variables"]\
-                        [mating(self.pop["pareto_rank"], self.pop["crowding_distance"], int(self.noff/2))])]
+        parents = [*map(lambda _:self.pop["variables"]\
+                        [mating(self.pop["pareto_rank"], self.pop["crowding_distance"], int(self.noff/2))],range(2))]
+
         # parents = []
         # parent1 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-        #                  int(self.noff/2))
+        #                   int(self.noff/2))
         # parent2 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-        #                  int(self.noff/2))
+        #                   int(self.noff/2))
 
         # parents.append(self.pop["variables"][parent1])
         # parents.append(self.pop["variables"][parent2])
