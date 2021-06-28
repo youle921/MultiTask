@@ -2,17 +2,17 @@
 """
 Created on Wed May 13 13:54:46 2020
 
-@author: t.urita
+@author: youle
 """
 from .nsgaii_for_migration import nsgaii_for_all_migration
 
 class MT_all_mig:
 
-    def __init__(self, ndim, nobj, npop, noff, problem_list, code):
+    def __init__(self, params, problem_list):
 
         self.algs = []
         for task in problem_list:
-            self.algs.append(nsgaii_for_all_migration(ndim, nobj, npop, noff, task, code))
+            self.algs.append(nsgaii_for_all_migration(params, task))
 
     def init_pop(self):
 

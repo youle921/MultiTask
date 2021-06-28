@@ -10,9 +10,9 @@ from ..NSGAII.nsgaii_main import NSGAII
 
 class nsgaii_for_all_migration(NSGAII):
 
-    def __init__(self, ndim, nobj, npop, noff, problem, code):
+    def __init__(self, params, problem):
 
-        super().__init__(ndim, nobj, npop, noff, problem, code)
+        super().__init__(params, problem)
 
     def execute(self, gen):
 
