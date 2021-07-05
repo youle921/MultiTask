@@ -126,6 +126,6 @@ if __name__ == "__main__":
     print("      correct IGD = " + str(correct_igd2))
     print("   calculated IGD = " + str(prob2.calc_IGD(calc_obj2)))
 
-    prob1.IGD_ref = (prob1.IGD_ref - np.min(prob1.IGD_ref, axis = 0))/ (np.max(prob1.IGD_ref, axis = 0) - np.min(prob1.IGD_ref, axis = 0))
+    # prob1.IGD_ref = (prob1.IGD_ref - np.min(prob1.IGD_ref, axis = 0))/ (np.max(prob1.IGD_ref, axis = 0) - np.min(prob1.IGD_ref, axis = 0))
 
-    igd = prob1.calc_IGD(calc_obj1)
+    # igd = prob1.calc_IGD(calc_obj1)

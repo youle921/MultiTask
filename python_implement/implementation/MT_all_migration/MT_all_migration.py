@@ -21,9 +21,10 @@ class MT_all_mig:
 
     def execute(self, max_gen):
 
+        n_tasks = len(self.algs)
+
         for g in range(max_gen):
 
-            n_tasks = len(self.algs)
             [*map(lambda alg: alg.execute(1), self.algs)]
 
             for i in range(n_tasks):

@@ -49,6 +49,7 @@ for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
 
         for trial in range(params["n_trial"]):
 
+            np.random.seed(trial)
             solver.init_pop()
             solver.execute(params["n_gen"])
 
