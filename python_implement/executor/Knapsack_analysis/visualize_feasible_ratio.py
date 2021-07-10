@@ -14,17 +14,16 @@ from scipy import stats
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 n_obj = 2 # 目的(制約)数
 n_item = 500
 
 p = 0.5 # 初期解における1の確率
 beta = 0.5 # 容量の制限(総重量×betaがナップサック容量)
 
-binom = stats.binom.pmf(np.arange(1, n_item+1), n_item, p)
-norm = stats.norm.cdf(x = (55*n_item*beta)/np.arange(1, n_item + 1), loc = 55, scale = (8100/(12*np.arange(1, n_item+1)))**0.5)
+prob = stats.binom.pmf(np.arange(1, n_item+1), n_item, p)
+feasible_prob = stats.norm.cdf(x = (55*n_item*beta)/np.arange(1, n_item + 1), loc = 55, scale = (8100/(12*np.arange(1, n_item+1)))**0.5)
 # 全実行可能解中における，アイテム数がiの実行可能解の割合
-results = binom * norm**n_obj
+results = prob * feasible_prob**n_obj
 
 plt.figure()
 plt.plot(results)
