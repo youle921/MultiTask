@@ -29,6 +29,6 @@ class MT_all_mig:
 
             for i in range(n_tasks):
 
-                self.algs[i].migration(self.algs[n_tasks - i - 1].pop)
+                self.algs[i].migration(self.algs[n_tasks - i - 1].offs)
 
         return

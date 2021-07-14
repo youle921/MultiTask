@@ -11,7 +11,7 @@ from sklearn import preprocessing
 size = [1,2,3,5,7,10,15,20,30]
 # size = [2,5,10,20,30]
 
-dir_names = [f'0622/m_size={i}_a=10_b=2' for i in size]
+dir_names = [f'0714/m_size={i}_a=10_b=2' for i in size]
 
 names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 names_ = [f'{n}_{t}' for n in names for t in ["T1", "T2"]]
