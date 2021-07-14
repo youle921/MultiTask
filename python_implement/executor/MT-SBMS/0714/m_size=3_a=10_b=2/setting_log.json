@@ -1,0 +1,12 @@
+{
+"ndim": 50,
+"npop": 100,
+"noff": 100,
+"alpha": 10,
+"beta": 2,
+"migration_size": 3,
+"n_trial": 31,
+"n_gen": 1000,
+"start_time": "2021-07-14T04:20:21.923043",
+"end_time": "2021-07-14T05:04:29.343624"
+}

@@ -96,7 +96,8 @@ class NSGAII(Algorithm):
     def selection(self):
 
         parents = [self.pop["variables"]\
-                   [mating(self.pop["pareto_rank"], self.pop["crowding_distance"])]\
+                   [mating(self.pop["pareto_rank"], self.pop["crowding_distance"],\
+                           int(self.noff/2))]\
                    for _ in range(2)]
 
         # parents = []

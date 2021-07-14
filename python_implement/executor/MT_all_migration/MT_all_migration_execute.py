@@ -46,6 +46,7 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
     for trial in range(params["n_trial"]):
 
+        np.random.seed(trial)
         solver.init_pop()
         solver.execute(params["n_gen"])
 

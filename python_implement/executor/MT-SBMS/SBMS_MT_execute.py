@@ -24,11 +24,14 @@ names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
+    
+path_parent = datetime.today().strftime("%m%d")
+os.makedirs(path_parent, exist_ok = True)
 
-for mig in [1, 2, 3, 5, 7, 10, 15, 20, 30]:
+for mig in [2, 3, 5, 7, 10, 15, 20, 30]:
 
     params["migration_size"] = mig
-    path = F'm_size={mig}_a={str(params["alpha"])}_b={str(params["beta"])}'
+    path = F'{path_parent}/m_size={mig}_a={str(params["alpha"])}_b={str(params["beta"])}'
     os.makedirs(path, exist_ok = True)
     print(path)
     results = np.empty((len(tasks), 2, 2))
