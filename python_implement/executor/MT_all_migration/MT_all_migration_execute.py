@@ -2,7 +2,7 @@
 """
 Created on Fri Apr 17 22:30:08 2020
 
-@author: t.urita
+@author: youle
 """
 import sys
 import os
