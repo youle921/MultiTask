@@ -40,6 +40,8 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         os.makedirs(path, exist_ok = True)
 
         p = t.get_tasks()[idx]
+        
+        params.update({"start_time": datetime.now().isoformat()})
         solver = NSGAII(params, p)
 
         igd = np.zeros(params["ntrial"])
@@ -55,7 +57,11 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
             # np.savetxt("final_pops/pops" + str(i) + ".dat", sol)
 
             igd[trial] = p.calc_IGD(solver.pop["objectives"])
-            print(f'Trial {trial + 1:02}: {igd[trial]}')
+            # print(f'Trial {trial + 1:02}: {igd[trial]}')
+
+        params.update({"end_time": datetime.now().isoformat()})
+        with open(F'{path}/setting_log.json', 'w') as f:
+            json.dump(params, f, indent = 0)
 
         print("---------mean IGD---------")
         results[task_no, idx, 0] = igd.mean()
@@ -66,6 +72,5 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         print(results[task_no, idx, 1])
 
         np.savetxt(f'{path}/all_IGDs.csv', results[task_no], delimiter = ",")
-
 
     print("\n" + n +" Finished\n")
