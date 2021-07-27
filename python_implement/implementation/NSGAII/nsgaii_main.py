@@ -17,12 +17,13 @@ class NSGAII(Algorithm):
 
         self.pop = {}
         self.pop["variables"] = np.empty([params["npop"], problem.ndim])
-        self.pop["crowding_distance"] = np.zeros(params["npop"])
+        self.pop["crowding_distance"] = np.empty(params["npop"])
 
         self.code = problem.code
         self.eval_method = problem.evaluate
 
         self.noff = params["noff"]
+
         self.offs = {}
 
         if self.code == "real":
@@ -36,7 +37,7 @@ class NSGAII(Algorithm):
 
     def import_pop(self, task_name, task_no, trial):
 
-        self.pop["variables"] = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(task_no) + "/InitialVAR/InitialVAR" + str(trial) + ".dat")
+        self.pop["variables"][...] = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(task_no) + "/InitialVAR/InitialVAR" + str(trial) + ".dat")
         self.pop["objectives"] = self.eval_method(self.pop["variables"])
         self.init_eval()
 
@@ -45,9 +46,9 @@ class NSGAII(Algorithm):
     def init_pop(self):
 
         if self.code == "real":
-            self.pop["variables"] = np.random.rand(*self.pop["variables"].shape,)
+            self.pop["variables"][...] = np.random.rand(*self.pop["variables"].shape,)
         elif self.code == "bin":
-            self.pop["variables"] = np.random.randint(2, size = self.pop["variables"].shape)
+            self.pop["variables"][...] = np.random.randint(2, size = self.pop["variables"].shape)
 
         self.pop["objectives"] = self.eval_method(self.pop["variables"])
         self.init_eval()

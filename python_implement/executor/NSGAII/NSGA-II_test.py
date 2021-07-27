@@ -11,48 +11,51 @@ sys.path.append(os.path.join(os.pardir, '..'))
 import numpy as np
 import matplotlib.pyplot as plt
 
+import json
+from datetime import datetime
+from collections import OrderedDict
+
 import implementation
 from implementation.problems.MTO_benchmark import *
 from implementation.NSGAII import NSGAII
 
-# p = NIHS().get_tasks()[1]
-# solver = NSGAII(50, 2, 100, 100, p, 'real')
-# solver.init_pop()
-# solver.execute(100000)
+tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
+names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
 
-# sol = solver.pop["objectives"][solver.pop["pareto_rank"] == 0]
-# var = solver.pop["variables"]
-# np.savetxt("final_pops/pops" + str(11) + ".dat", sol)
+with open("setting.json") as f:
+    params = json.load(f, object_pairs_hook=OrderedDict)
 
-# tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
-# names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
-tasks = [CIMS(), PIMS(), NIMS()]
-names = ["CIMS", "PIMS", "NIMS"]
+path_parent = datetime.today().strftime("%m%d")
+os.makedirs(path_parent, exist_ok = True)
 
-n_trial = 31
 results = np.empty((len(tasks), 2, 2))
 
 for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
     for idx in range(2):
 
-        print(n + " Task" + str(idx + 1))
+        print(f'{n} Task {idx + 1}')
+
+        path = f'{path_parent}/{n}_Task{idx + 1}'
+        os.makedirs(path, exist_ok = True)
 
         p = t.get_tasks()[idx]
-        solver = NSGAII(50, 2, 100, 100, p, 'real')
+        solver = NSGAII(params, p)
 
-        igd = np.zeros(n_trial)
+        igd = np.zeros(params["ntrial"])
 
-        for i in range(n_trial):
-            solver.import_pop(n, idx + 1, i + 1)
-            # solver.init_pop()
-            solver.execute(100000)
+        for trial in range(params["ntrial"]):
+
+            np.random.seed(trial)
+
+            solver.init_pop()
+            solver.execute(params["neval"])
 
             # sol = solver.pop["objectives"][solver.pop["pareto_rank"] == 0]
             # np.savetxt("final_pops/pops" + str(i) + ".dat", sol)
 
-            igd[i] = p.calc_IGD(solver.pop["objectives"])
-            print("Trial " + str(i+1).zfill(2) + ": " + str(igd[i]))
+            igd[trial] = p.calc_IGD(solver.pop["objectives"])
+            print(f'Trial {trial + 1:02}: {igd[trial]}')
 
         print("---------mean IGD---------")
         results[task_no, idx, 0] = igd.mean()
@@ -61,5 +64,8 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         print("----standard deviation----")
         results[task_no, idx, 1] = igd.std()
         print(results[task_no, idx, 1])
+
+        np.savetxt(f'{path}/all_IGDs.csv', results[task_no], delimiter = ",")
+
 
     print("\n" + n +" Finished\n")

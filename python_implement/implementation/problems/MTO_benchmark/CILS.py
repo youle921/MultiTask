@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     calc_obj1 = prob1.evaluate(pop1)
     print("-----Task1-----")
-    print("accumulated error = " + str(np.sum(correct_obj1 - calc_obj1)))
+    print("accumulated error = " + str(np.sum(np.abs(correct_obj1 - calc_obj1))))
 
     print("      correct IGD = " + str(correct_igd1))
     print("   calculated IGD = " + str(prob1.calc_IGD(calc_obj1)) + "\n")
@@ -97,14 +97,9 @@ if __name__ == "__main__":
     correct_obj2 = np.loadtxt("check_obj/" + task_name + "/t2/FinalFUN1.dat")
     correct_igd2 = np.loadtxt("check_obj/" + task_name + "/t2/IGDHisWithAllSol1.dat")[999, 1]
 
-    pop2 = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(2) + "/InitialVAR/InitialVAR" + str(1) + ".dat")
-    correct_obj2 = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(2) + "/InitialFun/InitialFun" + str(1) + ".dat")
-    correct_igd2 = np.loadtxt("check_obj/" + task_name + "/t2/IGDHisWithAllSol1.dat")[0, 1]
-
-
     calc_obj2 = prob2.evaluate(pop2)
     print("-----Task2-----")
-    print("accumulated error = " + str(np.sum(correct_obj2 - calc_obj2)))
+    print("accumulated error = " + str(np.sum(np.abs(correct_obj2 - calc_obj2))))
 
     print("      correct IGD = " + str(correct_igd2))
     print("   calculated IGD = " + str(prob2.calc_IGD(calc_obj2)))

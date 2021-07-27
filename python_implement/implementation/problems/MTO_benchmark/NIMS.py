@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     calc_obj1 = prob1.evaluate(pop1)
     print("-----Task1-----")
-    print("accumulated error = " + str(np.sum(correct_obj1 - calc_obj1)))
+    print("accumulated error = " + str(np.sum(np.abs(correct_obj1 - calc_obj1))))
 
     print("      correct IGD = " + str(correct_igd1))
     print("   calculated IGD = " + str(prob1.calc_IGD(calc_obj1)) + "\n")
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     calc_obj2 = prob2.evaluate(pop2)
     print("-----Task2-----")
-    print("accumulated error = " + str(np.sum(correct_obj2 - calc_obj2)))
+    print("accumulated error = " + str(np.sum(np.abs(correct_obj2 - calc_obj2))))
 
     print("      correct IGD = " + str(correct_igd2))
     print("   calculated IGD = " + str(prob2.calc_IGD(calc_obj2)))
