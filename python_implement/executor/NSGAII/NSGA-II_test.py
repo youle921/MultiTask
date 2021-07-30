@@ -71,6 +71,8 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         results[task_no, idx, 1] = igd.std()
         print(results[task_no, idx, 1])
 
-        np.savetxt(f'{path}/all_IGDs.csv', results[task_no], delimiter = ",")
+        np.savetxt(f'{path}/all_IGDs.csv', igd, delimiter = ",")
 
     print("\n" + n +" Finished\n")
+    
+np.savetxt(path_parent + "/all_results.csv", results.reshape([-1, 2]), delimiter = ',')
