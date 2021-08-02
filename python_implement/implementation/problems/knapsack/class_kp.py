@@ -97,35 +97,62 @@ class knapsack:
 
         solutions[~no_repair_pos] = 0
 
+    def repair_2loop(self, solutions):
+        for s in solutions:
+            is_feasible = np.logical_and.reduce(np.dot(self.items["weight"], s) <= self.size)
+            idx = 499
+            while(not(is_feasible)):
+                s[self.sort_idx[idx]] = 0
+                is_feasible = np.logical_and.reduce(np.dot(self.items["weight"], s) <= self.size)
+                idx -= 1
+
     # ベクトル対応・whileバージョン
-    # def repair_while(self, solutions):
+    def repair_while(self, solutions):
 
-    #     w = np.dot(solutions, self.items["weight"].T)
+        w = np.dot(solutions, self.items["weight"].T)
 
-    #     mask = np.sum(w > self.size, axis = 1) > 0
-    #     util = solutions * self.utility
-    #     util[util == 0] = np.inf
+        mask = np.sum(w > self.size, axis = 1) > 0
+        util = solutions * self.utility
+        util[util == 0] = np.inf
 
-    #     while(np.sum(mask) != 0):
+        while(np.sum(mask) != 0):
 
-    #         idx = np.argmin(util[mask], axis = 1)
+            idx = np.argmin(util[mask], axis = 1)
 
-    #         solutions[mask, idx] = 0
-    #         util[mask, idx] = np.inf
+            solutions[mask, idx] = 0
+            util[mask, idx] = np.inf
 
-    #         w[mask] -= self.items["weight"][:, idx].T
+            w[mask] -= self.items["weight"][:, idx].T
 
-    #         mask = np.sum(w > self.size, axis = 1) > 0
+            mask = np.sum(w > self.size, axis = 1) > 0
+
+
+    def repair_old(self, solutions):
+
+        w = np.dot(solutions, self.items["weight"].T)
+
+        mask = np.sum(w > self.size, axis = 1) > 0
+        util = solutions * self.utility
+        util[util == 0] = np.inf
+
+        while(np.sum(mask) != 0):
+
+            idx = np.argmin(util[mask], axis = 1)
+
+            solutions[mask, idx] = 0
+            util[mask, idx] = np.inf
+
+            mask = np.sum(np.dot(solutions, self.items["weight"].T) > self.size, axis = 1) > 0
 
     # while削除バージョン，実行可能解にも適用するためちょっと遅い
-    # def repair_all(self, solutions):
+    def repair_all(self, solutions):
 
-    #     w_sorted = (solutions[None, :, :] * self.items["weight"][:, None, :])\
-    #         [:, :, self.sort_idx]
-    #     w_mask = w_sorted.cumsum(axis = 2) < self.size[:, None, None]
-    #     w_pos = np.logical_and(*w_mask,)[:, self.inv_sort_idx]
+        w_sorted = (solutions[None, :, :] * self.items["weight"][:, None, :])\
+            [:, :, self.sort_idx]
+        w_mask = w_sorted.cumsum(axis = 2) < self.size[:, None, None]
+        w_pos = np.logical_and(*w_mask,)[:, self.inv_sort_idx]
 
-    #     solutions[~w_pos] = 0
+        solutions[~w_pos] = 0
 
 if __name__ == "__main__":
 
@@ -135,9 +162,17 @@ if __name__ == "__main__":
     # sol = np.random.randint(0, 2, size = (200, 500))
     sol1 = np.where(np.random.rand(100, 500) < 0.5, 1, 0)
     sol2 = sol1.copy()
+    sol3 = sol1.copy()
+    sol4 = sol1.copy()
 
     kp.repair(sol1)
     f1, g1 = kp.evaluate_with_violation(sol1)
 
-    kp.repair_all(sol2)
+    kp.repair_old(sol2)
     f2, g2 = kp.evaluate_with_violation(sol2)
+
+    kp.repair_while(sol3)
+    f3, g3 = kp.evaluate_with_violation(sol3)
+
+    kp.repair_2loop(sol4)
+    f4, g4 = kp.evaluate_with_violation(sol4)

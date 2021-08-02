@@ -27,12 +27,15 @@ results = prob * feasible_prob**n_obj
 
 plt.figure()
 plt.plot(results)
-plt.title("アイテム数に関する実行可能解の分布")
+plt.title("実行可能解の分布")
+plt.xlabel("アイテム数")
+plt.ylabel("実行可能解の割合")
 plt.show()
 
 plt.figure()
 plt.plot(np.cumsum(results))
-plt.title("アイテム数に関する累積実行可能割合")
+# plt.title("累積実行可能割合")
+plt.rcParams["font.size"] = 14
 plt.show()
 
 print(F'実行可能解の割合は{results.sum()}です')

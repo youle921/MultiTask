@@ -101,21 +101,12 @@ class NSGAII(Algorithm):
                            int(self.noff/2))]\
                    for _ in range(2)]
 
-        # parents = []
-        # parent1 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-        #                   int(self.noff/2))
-        # parent2 = mating(self.pop["pareto_rank"], self.pop["crowding_distance"], \
-        #                   int(self.noff/2))
-
-        # parents.append(self.pop["variables"][parent1])
-        # parents.append(self.pop["variables"][parent2])
-
         return parents
 
     def update(self, offs):
 
         pop_size = self.pop["objectives"].shape
-        union = self.concat_pops(self.offs)
+        union = self.concat_pops(offs)
 
         r = NDsorting(union["objectives"], pop_size[0])
 
