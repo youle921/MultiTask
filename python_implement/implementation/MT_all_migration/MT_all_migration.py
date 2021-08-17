@@ -11,8 +11,9 @@ class MT_all_mig:
     def __init__(self, params, problem_list):
 
         self.algs = []
+        ndim = max([p.ndim for p in problem_list])
         for task in problem_list:
-            self.algs.append(nsgaii_for_all_migration(params, task))
+            self.algs.append(nsgaii_for_all_migration(params, task, ndim = ndim))
 
     def init_pop(self):
 

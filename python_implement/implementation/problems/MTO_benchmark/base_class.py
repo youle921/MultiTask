@@ -2,7 +2,7 @@
 """
 Created on Wed Jul 29 01:45:26 2020
 
-@author: t.urita
+@author: youle
 """
 import numpy as np
 import os
@@ -20,7 +20,6 @@ class MTO_base_class:
         self.IGD_ref = None
         self.current_path = os.path.dirname(__file__)
 
-        self.ndim = 50
         self.code = 'real'
 
     def set_reference_point(self, pf_type):

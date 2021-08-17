@@ -13,10 +13,12 @@ from .NSGA_util import NDsorting, calc_cd, mating
 
 class NSGAII(Algorithm):
 
-    def __init__(self, params, problem):
+    def __init__(self, params, problem, ndim = None):
 
+        if ndim == None:
+            ndim = problem.ndim
         self.pop = {}
-        self.pop["variables"] = np.empty([params["npop"], problem.ndim])
+        self.pop["variables"] = np.empty([params["npop"], ndim])
         self.pop["crowding_distance"] = np.empty(params["npop"])
 
         self.code = problem.code

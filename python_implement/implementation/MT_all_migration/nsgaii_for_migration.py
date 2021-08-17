@@ -32,4 +32,3 @@ class nsgaii_for_all_migration(NSGAII):
         mig_pop["objectives"] = self.eval_method(mig_pop["variables"])
 
         self.update(mig_pop)
-

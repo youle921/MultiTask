@@ -11,10 +11,9 @@ from ..NSGAII.NSGA_util import mating
 
 class nsgaii_SBMS_for_mt(NSGAII):
 
-    # def __init__(self, ndim, nobj, npop, noff, problem, code, t_num_alpha, t_num_beta):
-    def __init__(self, params, problem):
+    def __init__(self, params, problem, ndim = None):
 
-        super().__init__(params, problem)
+        super().__init__(params, problem, ndim = ndim)
 
         # 目的関数空間上で選択する解の個数
         self.alpha = params["alpha"]

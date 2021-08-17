@@ -8,12 +8,12 @@ from .nsgaii_for_SBMS import nsgaii_SBMS_for_mt
 
 class MT_SBMS:
 
-    # def __init__(self, ndim, nobj, npop, noff, problem_list, code, alpha, beta, m_size, interval):
-    def __init__(self, params,  problem_list):
+    def __init__(self, params, problem_list):
 
         self.algs = []
+        ndim = max([p.ndim for p in problem_list])
         for task in problem_list:
-            self.algs.append(nsgaii_SBMS_for_mt(params, task))
+            self.algs.append(nsgaii_SBMS_for_mt(params, task, ndim = ndim))
 
         self.migration_size = params["migration_size"]
         # self.interval = params["interval"]

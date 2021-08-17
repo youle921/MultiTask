@@ -30,15 +30,15 @@ class CIMS:
 
 class CIMS_t1(MTO_base_class):
 
-    def __init__(self, n = 10):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 10
 
         self.dist_f = rosenbrock
-        self.lower = np.array([0] + [-5] * (n - 1))
-        self.upper = np.array([1] + [5] * (n - 1))
+        self.lower = np.array([0] + [-5] * (self.ndim - 1))
+        self.upper = np.array([1] + [5] * (self.ndim - 1))
 
         self.set_reference_point("concave")
 
@@ -52,15 +52,15 @@ class CIMS_t1(MTO_base_class):
 
 class CIMS_t2(MTO_base_class):
 
-    def __init__(self, n = 10):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 10
 
         self.dist_f = mean
-        self.lower = np.array([0] + [-5] * (n - 1))
-        self.upper = np.array([1] + [5] * (n - 1))
+        self.lower = np.array([0] + [-5] * (self.ndim - 1))
+        self.upper = np.array([1] + [5] * (self.ndim - 1))
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_CIMS_2.txt")
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_CIMS_2.txt")

@@ -30,15 +30,15 @@ class NILS:
 
 class NILS_t1(MTO_base_class):
 
-    def __init__(self, n = 25):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 25
 
         self.dist_f = griewank
-        self.lower = np.array([0] + [0] + [-50] * (n - 2))
-        self.upper = np.array([1] + [1] + [50] * (n - 2))
+        self.lower = np.array([0] + [0] + [-50] * (self.ndim - 2))
+        self.upper = np.array([1] + [1] + [50] * (self.ndim - 2))
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_NILS_1.txt")
         self.set_reference_point("sphere")
@@ -73,15 +73,15 @@ class NILS_t1(MTO_base_class):
 
 class NILS_t2(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = ackley
-        self.lower = np.array([0] + [0] + [-100] * (n - 2))
-        self.upper = np.array([1] + [1] + [100] * (n - 2))
+        self.lower = np.array([0] + [0] + [-100] * (self.ndim - 2))
+        self.upper = np.array([1] + [1] + [100] * (self.ndim - 2))
 
         self.set_reference_point("concave")
 

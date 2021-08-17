@@ -26,15 +26,15 @@ class PIHS:
 
 class PIHS_t1(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = sphere
-        self.lower = np.array([0] + [-100] * (n - 1))
-        self.upper = np.array([1] + [100] * (n - 1))
+        self.lower = np.array([0] + [-100] * (self.ndim - 1))
+        self.upper = np.array([1] + [100] * (self.ndim - 1))
 
         self.set_reference_point("convex")
 
@@ -48,15 +48,15 @@ class PIHS_t1(MTO_base_class):
 
 class PIHS_t2(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = rastrigin
-        self.lower = np.array([0] + [-100] * (n - 1))
-        self.upper = np.array([1] + [100] * (n - 1))
+        self.lower = np.array([0] + [-100] * (self.ndim - 1))
+        self.upper = np.array([1] + [100] * (self.ndim - 1))
 
         self.shift_vector = np.loadtxt(self.current_path +"/shift_data/S_PIHS_2.txt")
         self.set_reference_point("convex")

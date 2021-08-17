@@ -7,26 +7,6 @@ Created on Tue Dec 17 23:30:13 2019
 import numpy as np
 import os
 
-# 修復操作独立実装バージョン
-# 修復した個体を戻り値にするのではなく，個体が直接書き換えられる．
-# profit, weight共にサイズは[(目的数), (アイテム数)]
-def repair(profit, weight, size, solutions):
-
-    utility = (profit[0:2] / weight[0:2]).max(axis = 0)
-    # for repair operation
-    sort_idx = utility.argsort()[::-1]
-    inv_sort_idx = sort_idx.argsort()
-
-    w_ = solutions[None, :, :] * weight[:, None, :]
-    no_repair_pos = np.ones_like(solutions, dtype = bool)
-    infeasible = np.logical_or(*w_.sum(axis = 2) > size[:, None])
-
-    w_sorted = w_[:,infeasible][:, :, sort_idx]
-    w_mask = w_sorted.cumsum(axis = 2) < size[:, None, None]
-    no_repair_pos[infeasible] = np.logical_and(*w_mask,)[:, inv_sort_idx]
-
-    solutions[~no_repair_pos] = 0
-
 class knapsack:
 
     def __init__(self, objective = 2, items = 500, lower = 10, upper = 100, load = True):

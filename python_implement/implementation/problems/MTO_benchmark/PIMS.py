@@ -30,15 +30,15 @@ class PIMS:
 
 class PIMS_t1(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = sphere
-        self.lower = np.array([0] + [0] * (n - 1))
-        self.upper = np.array([1] + [1] * (n - 1))
+        self.lower = np.array([0] + [0] * (self.ndim - 1))
+        self.upper = np.array([1] + [1] * (self.ndim - 1))
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_PIMS_1.txt")
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_1.txt")
@@ -54,15 +54,15 @@ class PIMS_t1(MTO_base_class):
 
 class PIMS_t2(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = rastrigin
-        self.lower = np.array([0] + [0] * (n - 1))
-        self.upper = np.array([1] + [1] * (n - 1))
+        self.lower = np.array([0] + [0] * (self.ndim - 1))
+        self.upper = np.array([1] + [1] * (self.ndim - 1))
 
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_2.txt")
         self.set_reference_point("concave")

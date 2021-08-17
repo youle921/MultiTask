@@ -30,15 +30,15 @@ class NIMS:
 
 class NIMS_t1(MTO_base_class):
 
-    def __init__(self, n = 20):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 20
 
         self.dist_f = rosenbrock
-        self.lower = np.array([0] + [0] + [-20] * (n - 2))
-        self.upper = np.array([1] + [1] + [20] * (n - 2))
+        self.lower = np.array([0] + [0] + [-20] * (self.ndim - 2))
+        self.upper = np.array([1] + [1] + [20] * (self.ndim - 2))
 
         self.set_reference_point("sphere")
 
@@ -66,15 +66,15 @@ class NIMS_t1(MTO_base_class):
 
 class NIMS_t2(MTO_base_class):
 
-    def __init__(self, n = 20):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 20
 
         self.dist_f = sphere
-        self.lower = np.array([0] + [0] + [-20] * (n - 2))
-        self.upper = np.array([1] + [1] + [20] * (n - 2))
+        self.lower = np.array([0] + [0] + [-20] * (self.ndim - 2))
+        self.upper = np.array([1] + [1] + [20] * (self.ndim - 2))
 
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_NIMS_2.txt")
         self.set_reference_point("concave")

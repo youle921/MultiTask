@@ -83,7 +83,6 @@ class Algorithm(metaclass=ABCMeta):
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
         plt.tight_layout()
 
-
     def visualize_optimization(self):
 
         from matplotlib.animation import FuncAnimation

@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from MOMFEA.populations import populations
+from ..operator import *
 
 def mfea_crossover(parents, sf):
 

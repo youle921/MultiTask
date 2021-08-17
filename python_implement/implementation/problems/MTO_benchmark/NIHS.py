@@ -30,15 +30,15 @@ class NIHS:
 
 class NIHS_t1(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = rosenbrock
-        self.lower = np.array([0] + [-80] * (n - 1))
-        self.upper = np.array([1] + [80] * (n - 1))
+        self.lower = np.array([0] + [-80] * (self.ndim - 1))
+        self.upper = np.array([1] + [80] * (self.ndim - 1))
 
         self.set_reference_point("circle")
 
@@ -52,15 +52,15 @@ class NIHS_t1(MTO_base_class):
 
 class NIHS_t2(MTO_base_class):
 
-    def __init__(self, n = 50):
+    def __init__(self):
 
         super().__init__()
 
-        self.dim = n
+        self.ndim = 50
 
         self.dist_f = sphere
-        self.lower = np.array([0] + [-80] * (n - 1))
-        self.upper = np.array([1] + [80] * (n - 1))
+        self.lower = np.array([0] + [-80] * (self.ndim - 1))
+        self.upper = np.array([1] + [80] * (self.ndim - 1))
 
         self.set_reference_point("convex")
 
