@@ -26,22 +26,14 @@ class EMEA:
 
     def execute(self, max_gen):
 
-        n_tasks = len(self.algs)
-        gen = 1
+        for g in range(1, max_gen):
 
-        while gen < max_gen:
+            if g % self.interval != 0:
+                [alg.execute(1) for alg in self.algs]
 
-            for g in range(self.interval - 1):
-
-                [*map(lambda alg: alg.execute(self.interval - 1), self.algs)]
-
-                for i in range(n_tasks):
-
-                    self.algs[i].migration(self.algs[n_tasks - i - 1].offs)
-
-            injected_pop = []
-            [self.algs[i].migration_gen(injected_pop[i]) for i in range(len(self.algs))]
-            [*map(lambda alg: alg.migration_gen(self.interval - 1), self.algs)]
+            else:
+                inject_pop = self.get_inject_pop()
+                [self.algs[i].migration_gen(inject_pop[i]) for i in range(len(self.algs))]
 
         return
 
@@ -96,3 +88,26 @@ class EMEA:
         padded_pop[:, :target.shape[1]] = target
 
         return padded_pop
+
+    def get_inject_pop(self):
+
+        inject_pop = []
+
+        for i in range(len(self.algs)):
+            source_idx = np.random.randint(0, self.algs[i].pop["objectives"].shape[1])
+            target_idx = np.random.randint(0, self.algs[1 - i].pop["objectives"].shape[1])
+
+            source_pop_idx = self.algs[i].pop["objectives"][:, source_idx].argsort()
+            source_pop = self.algs[i].pop["variables"][source_pop_idx][:self.mig_size]
+
+            source_dim = source_pop.shape[1]
+            target_dim = self.algs[1 - i].shape[1]
+
+            if source_dim > target_dim:
+                source_pop[:, target_dim:] = 0
+                inject_pop.append(np.dot(self.matrix[source_idx][target_idx], source_pop.T).T)
+            elif target_dim > source_dim:
+                inject_pop.append\
+                    (np.dot(self.matrix[source_idx][target_idx], source_pop.T).T[:, :source_dim])
+
+        return inject_pop
