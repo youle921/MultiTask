@@ -56,7 +56,7 @@ class NIMS_t1(MTO_base_class):
 
     def evaluate(self, population):
 
-        tf_pop = self.transforn_population(population[:, :self.dim])
+        tf_pop = self.transforn_population(population[:, :self.ndim])
 
         f1_value = self.f1(tf_pop)
         f2_value = self.f2(tf_pop)

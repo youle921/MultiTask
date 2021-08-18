@@ -19,8 +19,11 @@ import implementation
 from implementation.problems.MTO_benchmark import *
 from implementation.NSGAII import NSGAII
 
-tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
-names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
+# tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
+# names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
+
+tasks = [NIMS(), NILS()]
+names = ["NIMS", "NILS"]
 
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
@@ -31,6 +34,8 @@ os.makedirs(path_parent, exist_ok = True)
 results = np.empty((len(tasks), 2, 2))
 
 for t, n, task_no in zip(tasks, names, range(len(tasks))):
+    
+    ndim= max([prob.ndim for prob in t.get_tasks()])
 
     for idx in range(2):
 
@@ -42,7 +47,7 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         p = t.get_tasks()[idx]
         
         params.update({"start_time": datetime.now().isoformat()})
-        solver = NSGAII(params, p)
+        solver = NSGAII(params, p, ndim)
 
         igd = np.zeros(params["ntrial"])
 

@@ -16,20 +16,16 @@ class MT_all_mig:
             self.algs.append(nsgaii_for_all_migration(params, task, ndim = ndim))
 
     def init_pop(self):
-
-        for alg in self.algs:
-            alg.init_pop()
+        [alg.init_pop() for alg in self.algs]
 
     def execute(self, max_gen):
 
         n_tasks = len(self.algs)
 
         for g in range(max_gen):
-
-            [*map(lambda alg: alg.execute(1), self.algs)]
+            [alg.execute(1) for alg in self.algs]
 
             for i in range(n_tasks):
-
                 self.algs[i].migration(self.algs[n_tasks - i - 1].offs)
 
         return

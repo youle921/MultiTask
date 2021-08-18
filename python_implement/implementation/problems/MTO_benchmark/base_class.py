@@ -30,7 +30,7 @@ class MTO_base_class:
 
         # self.repair_population(population)
 
-        tf_pop = self.transforn_population(population[:, :self.dim])
+        tf_pop = self.transforn_population(population[:, :self.ndim])
 
         f1_value = self.f1(tf_pop)
         f2_value = self.f2(tf_pop)
