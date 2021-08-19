@@ -18,27 +18,27 @@ class Algorithm(metaclass=ABCMeta):
     def update(self):
         pass
 
-    def create_union(self, offs):
+    def create_union(self, pop, offs):
 
         union = {}
 
         for k in ["variables", "objectives"]:
-            size_p, dim = self.pop[k].shape
+            size_p, dim = pop[k].shape
             size_o = offs[k].shape[0]
 
             union[k] = np.empty([size_p + size_o, dim])
-            union[k][:size_p] = self.pop[k]
+            union[k][:size_p] = pop[k]
             union[k][size_p:] = offs[k]
 
         return union
 
-    def create_unique_union(self, offs):
+    def create_unique_union(self, pop, offs):
 
         union = {}
 
-        union["variables"], idx = np.unique(np.vstack((self.pop["variables"] ,offs["variables"])),\
+        union["variables"], idx = np.unique(np.vstack((pop["variables"] ,offs["variables"])),\
                                               axis = 0, return_index = True)
-        union["objectives"] = np.vstack((self.pop["objectives"], offs["objectives"]))[idx]
+        union["objectives"] = np.vstack((pop["objectives"], offs["objectives"]))[idx]
 
         return union
 

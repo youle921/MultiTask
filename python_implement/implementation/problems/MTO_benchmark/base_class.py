@@ -21,6 +21,7 @@ class MTO_base_class:
         self.current_path = os.path.dirname(__file__)
 
         self.code = 'real'
+        self.project_uss = True
 
     def set_reference_point(self, pf_type):
 
@@ -29,9 +30,7 @@ class MTO_base_class:
     def evaluate(self, population):
 
         # self.repair_population(population)
-
         tf_pop = self.transforn_population(population[:, :self.ndim])
-
         f1_value = self.f1(tf_pop)
         f2_value = self.f2(tf_pop)
 
@@ -45,7 +44,10 @@ class MTO_base_class:
 # apply transformation(normalize + shift + rotate)
     def transforn_population(self, pop):
 
-        pop_ = self.reverse_normalize(pop)
+        if self.project_uss:
+            pop_ = self.reverse_normalize(pop)
+        else:
+            pop_ = pop.copy()
 
         if not(self.shift_vector is None):
             pop_ = self.shift_population(pop_)

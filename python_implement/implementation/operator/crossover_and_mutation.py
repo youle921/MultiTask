@@ -21,7 +21,7 @@ def uniform_crossover(parents, pc = 0.9):
 # binary end
 
 # real
-def SBX(parents, pc = 0.9, DI = 20):
+def SBX(parents, pc = 0.9, DI = 20, lower = 0, upper = 1):
 
     beta = np.zeros_like(parents[0])
     mu = np.random.rand(*beta.shape,)
@@ -37,7 +37,7 @@ def SBX(parents, pc = 0.9, DI = 20):
     off1 = (parents[0] + parents[1])/2 + beta * (parents[0] - parents[1])/2
     off2 = (parents[0] + parents[1])/2 - beta * (parents[0] - parents[1])/2
 
-    return np.clip(np.vstack([off1, off2]), 0, 1)
+    return np.clip(np.vstack([off1, off2]), lower, upper)
 
 def SBX_java(parents, pc = 0.9, DI = 20):
 
@@ -129,10 +129,10 @@ def bitflip_mutation(offs):
 # binary end
 
 # real
-def PM(offs, pm = 1, DI = 20, low = 0, high = 1):
+def PM(offs, pm = 1, DI = 20, lower = 0, upper = 1):
 
-    lower = np.ones_like(offs) * low
-    upper = np.ones_like(offs) * high
+    lower = np.ones_like(offs) * lower
+    upper = np.ones_like(offs) * upper
 
     mask = np.random.rand(*offs.shape,) < pm/offs.shape[1]
     rand = np.random.rand(*offs.shape,)
@@ -145,7 +145,7 @@ def PM(offs, pm = 1, DI = 20, low = 0, high = 1):
     offs[tmp] = offs[tmp] + (upper[tmp]-lower[tmp]) * (1 - (2*(1-rand[tmp]) + 2*(rand[tmp]-0.5)*\
                       (1-(upper[tmp]-offs[tmp]) / (upper[tmp]-lower[tmp]))**(DI+1)) **(1/(DI+1)))
 
-    return np.clip(offs, low, high)
+    return np.clip(offs, lower, upper)
 # real end
 
 # mutation end

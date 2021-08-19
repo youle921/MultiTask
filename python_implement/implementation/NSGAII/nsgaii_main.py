@@ -2,10 +2,9 @@
 """
 Created on Tue Apr 14 22:04:37 2020
 
-@author: t.urita
+@author: youle
 """
 import numpy as np
-import matplotlib.pyplot as plt
 
 from ..base_class.EMOA_base import Algorithm
 from ..operator import *
@@ -24,6 +23,7 @@ class NSGAII(Algorithm):
         self.code = problem.code
         self.eval_method = problem.evaluate
 
+        self.npop = params["npop"]
         self.noff = params["noff"]
 
         self.offs = {}
@@ -37,14 +37,6 @@ class NSGAII(Algorithm):
             self.mutation = bitflip_mutation
             self.concat_pops = self.create_unique_union
 
-    def import_pop(self, task_name, task_no, trial):
-
-        self.pop["variables"][...] = np.loadtxt("D:/research/MultiTask/code/result/実験結果/result/NSGA2/" + task_name + "/Task" + str(task_no) + "/InitialVAR/InitialVAR" + str(trial) + ".dat")
-        self.pop["objectives"] = self.eval_method(self.pop["variables"])
-        self.init_eval()
-
-        self.neval = self.pop["variables"].shape[0]
-
     def init_pop(self):
 
         if self.code == "real":
@@ -55,11 +47,11 @@ class NSGAII(Algorithm):
         self.pop["objectives"] = self.eval_method(self.pop["variables"])
         self.init_eval()
 
-        self.neval = self.pop["variables"].shape[0]
+        self.neval = self.npop
 
     def init_eval(self):
 
-        r = NDsorting(self.pop["objectives"], self.pop["objectives"].shape[0])
+        r = NDsorting(self.pop["objectives"], self.npop)
         self.pop["pareto_rank"] = r
 
         for i in range(max(r) + 1):
@@ -70,19 +62,13 @@ class NSGAII(Algorithm):
 
         n, mod= divmod(max_eval - self.neval, self.noff)
 
-        # rep = np.empty(n)
-
         for i in range(n):
-
-            # old_pop = self.pop["variables"].copy()
 
             parents = self.selection()
 
             self.offs["variables"] = self.mutation(self.crossover(parents, pc = 0.9))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self.update(self.offs)
-
-            # rep[i] = self.noff - np.sum((self.pop["variables"][:, None, :] == old_pop[None, :, :]).sum(axis = 2) == self.pop["variables"].shape[1])
 
         if mod != 0:
 
@@ -93,8 +79,6 @@ class NSGAII(Algorithm):
             self.update(self.offs)
 
         self.neval = max_eval
-
-        # return rep
 
     def selection(self):
 
@@ -107,10 +91,9 @@ class NSGAII(Algorithm):
 
     def update(self, offs):
 
-        pop_size = self.pop["objectives"].shape
-        union = self.concat_pops(offs)
+        union = self.concat_pops(self.pop, offs)
 
-        r = NDsorting(union["objectives"], pop_size[0])
+        r = NDsorting(union["objectives"], self.npop)
 
         offset = 0
         for i in range(max(r)):
@@ -125,7 +108,7 @@ class NSGAII(Algorithm):
             offset +=n
 
         cd = calc_cd(union["objectives"][r == max(r)])
-        remain = np.argsort(-cd)[:pop_size[0] - offset]
+        remain = np.argsort(-cd)[:self.npop - offset]
         self.pop["objectives"][offset:] = union["objectives"][r == max(r)][remain]
         self.pop["variables"][offset:] = union["variables"][r == max(r)][remain]
         self.pop["pareto_rank"][offset:] = max(r)

@@ -11,9 +11,8 @@ class EMEA:
         self.mig_size = params["migration_size"]
 
         self.algs = []
-        ndim = max([p.ndim for p in problem_list])
         for task in problem_list:
-            self.algs.append(NSGAII_EMEA(params, task, ndim = ndim))
+            self.algs.append(NSGAII_EMEA(params, task))
 
         self.matrix = [[] for i in range(len(problem_list))]
 
@@ -33,7 +32,7 @@ class EMEA:
 
             else:
                 inject_pop = self.get_inject_pop()
-                [self.algs[i].migration_gen(inject_pop[i]) for i in range(len(self.algs))]
+                [self.algs[i].migration_gen(inject_pop[1 - i]) for i in range(len(self.algs))]
 
         return
 
@@ -65,7 +64,7 @@ class EMEA:
                     noise = source_pop.T
 
                     d, n = xx.shape
-                    xxb = np.ones(d + 1, n)
+                    xxb = np.ones([d + 1, n])
                     xxb[:d] = xx
                     noise_xb = np.ones_like(xxb)
                     noise_xb[:d] = noise
@@ -101,13 +100,15 @@ class EMEA:
             source_pop = self.algs[i].pop["variables"][source_pop_idx][:self.mig_size]
 
             source_dim = source_pop.shape[1]
-            target_dim = self.algs[1 - i].shape[1]
+            target_dim = self.algs[1 - i].pop["variables"].shape[1]
 
             if source_dim > target_dim:
-                source_pop[:, target_dim:] = 0
-                inject_pop.append(np.dot(self.matrix[source_idx][target_idx], source_pop.T).T)
-            elif target_dim > source_dim:
                 inject_pop.append\
-                    (np.dot(self.matrix[source_idx][target_idx], source_pop.T).T[:, :source_dim])
+                    (np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T[:, :target_dim])
+            elif target_dim > source_dim:
+                source_pop = self.padding_pop(source_pop, target_dim)
+                inject_pop.append(np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T)
+            else:
+                inject_pop.append(np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T)
 
         return inject_pop
