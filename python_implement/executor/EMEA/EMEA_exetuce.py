@@ -40,7 +40,7 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
     p = t.get_tasks()
 
     params.update({"start_time": datetime.now().isoformat()})
-    solver = MT_all_mig(params, p)
+    solver = EMEA(params, p)
 
     igd = np.zeros([2, params["n_trial"]])
 
