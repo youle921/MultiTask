@@ -51,7 +51,8 @@ class NSGAII_EMTIL(NSGAII):
 
         parents = self.selection()
 
-        self.offs["variables"] = self.mutation(self.crossover(parents))[nmig:]
+        # self.offs["variables"] = self.mutation(self.crossover(parents))[nmig:]
+        self.offs["variables"] = self.mutation(self.crossover(parents))
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
 
         self.split_injected_pop()

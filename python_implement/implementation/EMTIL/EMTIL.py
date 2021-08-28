@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-# from scipy.stats import norm
+
 
 from .nsgaii_for_EMTIL import NSGAII_EMTIL
 
