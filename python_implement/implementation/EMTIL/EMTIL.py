@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.stats import norm
+# from scipy.stats import norm
 
 from .nsgaii_for_EMTIL import NSGAII_EMTIL
+
+def norm_dist(x, mu, sigma, eps = 1e-8):
+
+    return (1 / (np.sqrt(2 * np.pi * sigma + eps))) * np.exp(-1 * ((x - mu)**2 / (2 * sigma + eps)))
 
 class EMTIL:
 
@@ -73,8 +77,6 @@ class EMTIL:
                     / neg_denom
                 self.sigma[i][0] = tmp_s0 - self.mu[i][0]**2
 
-
-
             if pos_n > 0:
 
                 pos_denom = self.learned_size[i][1] + pos_n
@@ -99,8 +101,7 @@ class EMTIL:
         n,dim = self.algs[0].pop["variables"].shape
 
         for i in range(len(self.algs)):
-            tmp = norm.pdf(self.algs[i].pop["variables"][:, None, :], loc = self.mu[i][None, :, :], scale = self.sigma[i][None, :, :])
-            conditional_prob = norm.pdf(self.algs[i].pop["variables"][:, None, :], loc = self.mu[i][None, :, :], scale = self.sigma[i][None, :, :]).prod(axis = 2)
+            conditional_prob = norm_dist(self.algs[i].pop["variables"][:, None, :], self.mu[i][None, :, :], self.sigma[i][None, :, :]).prod(axis = 2)
             label = (conditional_prob * self.class_probability[i]).argmax(axis = 1)
 
             remain = self.mig_size - (label == 1).sum()
