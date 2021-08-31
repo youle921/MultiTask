@@ -80,15 +80,22 @@ class EMTIL:
             if pos_n > 0:
 
                 pos_denom = self.learned_size[i][1] + pos_n
+                target_individual = injected_pop[i][in_front]
 
-                self.class_probability[i][1] = (self.learned_size[i].sum() * self.class_probability[i][1] + pos_n)\
-                    / (self.learned_size[i].sum() + n)
+            else:
 
-                tmp_s1 = ((self.sigma[i][1] + self.mu[i][1]**2) * self.learned_size[i][1] + (injected_pop[i][in_front].var(axis = 0) + injected_pop[i][in_front].mean(axis = 0)**2) *pos_n) / pos_denom
+                target_individual = self.algs[1 - i].pop["variables"][self.algs[1 - i].pop["pareto_rank"] == 0]
+                pos_n = target_individual.shape[0]
 
-                self.mu[i][1] = (self.learned_size[i][1] * self.mu[i][1] + injected_pop[i][in_front].sum(axis = 0))\
-                    / pos_denom
-                self.sigma[i][1] = tmp_s1 - self.mu[i][1]**2
+            pos_denom = self.learned_size[i][1] + pos_n
+            self.class_probability[i][1] = (self.learned_size[i].sum() * self.class_probability[i][1] + pos_n)\
+                / (self.learned_size[i].sum() + n)
+
+            tmp_s1 = ((self.sigma[i][1] + self.mu[i][1]**2) * self.learned_size[i][1] + (target_individual.var(axis = 0) + target_individual.mean(axis = 0)**2) *pos_n) / pos_denom
+
+            self.mu[i][1] = (self.learned_size[i][1] * self.mu[i][1] + target_individual.sum(axis = 0))\
+                / pos_denom
+            self.sigma[i][1] = tmp_s1 - self.mu[i][1]**2
 
             self.learned_size[i][0] += neg_n
             self.learned_size[i][1] += pos_n
