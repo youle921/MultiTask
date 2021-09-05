@@ -17,18 +17,6 @@ class NSGAII_EMTIL(NSGAII):
 
         self.offs = {}
 
-    def init_pop(self):
-
-        if self.code == "real":
-            self.pop["variables"][...] = np.random.rand(*self.pop["variables"].shape,)
-        elif self.code == "bin":
-            self.pop["variables"][...] = np.random.randint(2, size = self.pop["variables"].shape)
-
-        self.pop["objectives"] = self.eval_method(self.pop["variables"])
-        self.init_eval()
-
-        self.neval = self.npop
-
     def execute(self, ngen):
 
         for _ in range(ngen):
@@ -42,8 +30,9 @@ class NSGAII_EMTIL(NSGAII):
 
     def migration_gen(self, mig):
 
-        injected_pop = {}
         nmig = mig.shape[0]
+        
+        injected_pop = {}
         injected_pop["variables"] = mig
         injected_pop["objectives"] = self.eval_method(injected_pop["variables"])
 
@@ -51,8 +40,8 @@ class NSGAII_EMTIL(NSGAII):
 
         parents = self.selection()
 
-        # self.offs["variables"] = self.mutation(self.crossover(parents))[nmig:]
-        self.offs["variables"] = self.mutation(self.crossover(parents))
+        self.offs["variables"] = self.mutation(self.crossover(parents))[nmig:]
+        # self.offs["variables"] = self.mutation(self.crossover(parents))
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
 
         self.split_injected_pop()

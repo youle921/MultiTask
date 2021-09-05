@@ -13,7 +13,7 @@ import implementation
 from implementation.problems.MTO_benchmark import *
 from implementation.EMTIL import EMTIL
 
-task = NILS()
+task = CILS()
 
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
