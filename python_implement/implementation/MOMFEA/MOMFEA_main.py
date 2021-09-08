@@ -9,35 +9,9 @@ import numpy as np
 from ..NSGAII.NSGA_util import NDsorting, calc_cd
 from ..operator import *
 
-def mfea_crossover(parents, sf):
-
-    rmp = 0.9
-    offspring1 = parents[0].copy()
-    offspring2 = parents[1].copy()
-
-    inter_cross = (sf[0] != sf[1]) * (np.random.rand(sf[0].shape[0]) < rmp)
-    inter_mu = (sf[0] != sf[1]) != inter_cross
-
-    mask = (np.random.rand(offspring1.shape[0], 1) < 0.9) * (np.random.rand(*offspring1.shape,) < 0.5)
-    mask[inter_mu] = False
-
-    offspring1[mask] = parents[1][mask]
-    offspring2[mask] = parents[0][mask]
-
-    sf0 = sf[0].copy()
-    mask = inter_cross * (np.random.rand(inter_cross.shape[0]) < 0.5)
-    sf0[mask] = sf[1][mask]
-
-    sf1 = sf[1].copy()
-    mask = inter_cross * (np.random.rand(inter_cross.shape[0]) < 0.5)
-    sf1[mask] = sf[0][mask]
-
-    return np.vstack((offspring1, offspring2)), np.hstack((sf0, sf1))
-
 class MOMFEA:
 
     def __init__(self, params, problem_list):
-
 
         ndim = max([p.ndim for p in problem_list])
 
@@ -79,7 +53,7 @@ class MOMFEA:
             self.pops["objectives"][i] = p.evaluate(self.pops["variables"][i])
             self._init_eval(i)
 
-        self._set_factorial_rank(self.pops)
+        self._set_factorial_rank()
         self.neval =  self.npop* self.ntask
 
     def _init_eval(self, sf):
@@ -92,12 +66,10 @@ class MOMFEA:
 
     def execute(self, max_eval):
 
-        offs = {}
 
-        # offs["variables"] = np.zeros([self.ntask * self.noff, self.pops["variables"].shape[2]])
-        # offs["skill_factor"] = np.zeros(self.ntask * self.noff)
         n, mod= divmod(max_eval - self.neval, self.noff * self.ntask)
 
+        offs = {}
         for gen in range(n):
 
             parents = []
@@ -117,6 +89,8 @@ class MOMFEA:
                 off["variables"] = offs["variables"][mask]
                 off["objectives"] = p.evaluate(off["variables"])
                 self._update(off, task_no)
+                
+            self._set_factorial_rank()
 
         if mod != 0:
 
@@ -133,11 +107,11 @@ class MOMFEA:
 
         return
 
-    def _set_factorial_rank(self, pop):
+    def _set_factorial_rank(self):
 
-        cost = pop["pareto_rank"] + 1/(1 + pop["crowding_distance"])
+        cost = self.pops["pareto_rank"] + 1/(1 + self.pops["crowding_distance"])
         idx = cost.argsort(axis = 1).flatten()
-        pop["factorial_rank"][np.repeat(np.arange(cost.shape[0]), cost.shape[1]), idx] = np.array([np.arange(cost.shape[1])] * cost.shape[0]).flatten()
+        self.pops["factorial_rank"][np.repeat(np.arange(cost.shape[0]), cost.shape[1]), idx] = np.tile(np.arange(cost.shape[1]), cost.shape[0])
 
         return
 
@@ -161,12 +135,10 @@ class MOMFEA:
         offs = np.vstack([inner_offs[0], inter_offs[0], no_cross[0], \
                           inner_offs[1], inter_offs[1], no_cross[1]])
 
-        offs_sf = np.empty(offs.shape[0])
+        offs_sf = np.tile(sf[0], 2)
 
-        first_half = int(offs.shape[0] / 2)
-        mask = np.random.rand(first_half) < 0.5
-        offs_sf[:first_half] = (1-mask)*sf[0] + mask*sf[1]
-        offs_sf[first_half:] = (1-mask)*sf[1] + mask*sf[0]
+        mask = np.random.rand(*offs_sf.shape,) < 0.5
+        offs_sf[mask] = np.tile(sf[1], 2)[mask]
 
         return self.mutation(offs), offs_sf
 
