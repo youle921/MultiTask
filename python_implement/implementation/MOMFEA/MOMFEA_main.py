@@ -89,7 +89,7 @@ class MOMFEA:
                 off["variables"] = offs["variables"][mask]
                 off["objectives"] = p.evaluate(off["variables"])
                 self._update(off, task_no)
-                
+
             self._set_factorial_rank()
 
         if mod != 0:
@@ -125,7 +125,7 @@ class MOMFEA:
     def _mfea_crossover(self, parents, sf):
 
         inner_cross = sf[0] == sf[1]
-        inter_cross = ~inner_cross * (np.random.rand(self.noff) < self.rmp)
+        inter_cross = ~inner_cross & (np.random.rand(parents[0].shape[0]) < self.rmp)
         inter_mu = ~inner_cross != inter_cross
 
         inner_offs = np.split(self.crossover([parents[0][inner_cross], parents[1][inner_cross]]), 2)
@@ -135,12 +135,15 @@ class MOMFEA:
         offs = np.vstack([inner_offs[0], inter_offs[0], no_cross[0], \
                           inner_offs[1], inter_offs[1], no_cross[1]])
 
-        offs_sf = np.tile(sf[0], 2)
+        offs_sf = np.vstack([sf[0], sf[1]])
 
-        mask = np.random.rand(*offs_sf.shape,) < 0.5
-        offs_sf[mask] = np.tile(sf[1], 2)[mask]
+        no_cross_len = no_cross[0].shape[0]
+        mask = (np.random.rand(*offs_sf.shape,) < 0.5)[:-no_cross_len]
 
-        return self.mutation(offs), offs_sf
+        offs_sf[0][:-no_cross_len][mask[0]] = sf[1][:-no_cross_len][mask[0]]
+        offs_sf[1][:-no_cross_len][mask[1]] = sf[0][:-no_cross_len][mask[1]]
+
+        return self.mutation(offs), offs_sf.reshape([-1])
 
     def _update(self, offs, sf):
 
