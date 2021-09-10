@@ -69,12 +69,10 @@ class MOMFEA:
         n, mod= divmod(max_eval - self.neval, self.noff * self.ntask)
 
         offs = {}
-        off = {}
+        assigned_offs = {}
 
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
         skill_factor = np.empty(parents.shape[:2], dtype = int)
-
-        igd = np.empty([2, n])
 
         for gen in range(n):
 
@@ -87,12 +85,10 @@ class MOMFEA:
 
             for task_no, p in enumerate(self.problems):
 
-                off["variables"] = offs["variables"][offs["skill_factor"] == task_no]
-                off["objectives"] = p.evaluate(off["variables"])
+                assigned_offs["variables"] = offs["variables"][offs["skill_factor"] == task_no]
+                assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
-                self._update(off, task_no)
-
-                igd[task_no, gen] = p.calc_IGD(self.pops["objectives"][task_no])
+                self._update(assigned_offs, task_no)
 
             self._set_factorial_rank()
 
@@ -108,7 +104,6 @@ class MOMFEA:
         #     self.update(offs)
 
         self.neval = max_eval
-        igd_ = igd.T
 
         return
 
