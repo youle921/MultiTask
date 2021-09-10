@@ -138,7 +138,7 @@ class MOMFEA:
         offs_sf = np.vstack([sf[0], sf[1]])
 
         no_cross_len = no_cross[0].shape[0]
-        mask = (np.random.rand(*offs_sf.shape,) < 0.5)[:-no_cross_len]
+        mask = (np.random.rand(*offs_sf.shape,) < 0.5)[:, :-no_cross_len]
 
         offs_sf[0][:-no_cross_len][mask[0]] = sf[1][:-no_cross_len][mask[0]]
         offs_sf[1][:-no_cross_len][mask[1]] = sf[0][:-no_cross_len][mask[1]]
