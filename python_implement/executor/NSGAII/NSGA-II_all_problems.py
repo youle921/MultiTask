@@ -2,45 +2,62 @@
 """
 Created on Fri Apr 17 22:30:08 2020
 
-@author: t.urita
+@author: youle
 """
+
 import sys
 import os
-
-sys.path.append(os.pardir)
-
-from nsgaii_main import NSGAII
+sys.path.append(os.path.join(os.pardir, '..'))
 
 import numpy as np
-import matplotlib.pyplot as plt
 
-from problems.MTO_benchmark import *
+import json
+from datetime import datetime
+from collections import OrderedDict
 
-tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
-names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
+import implementation
+from implementation.problems.MTO_benchmark import *
+from implementation.NSGAII import NSGAII
 
-n_trial = 31
+tasks = task_list
+names = name_list
+
+with open("setting.json") as f:
+    params = json.load(f, object_pairs_hook=OrderedDict)
+
+path_parent = datetime.today().strftime("%m%d")
+os.makedirs(path_parent, exist_ok = True)
+
 results = np.empty((len(tasks), 2, 2))
 
 for t, n, task_no in zip(tasks, names, range(len(tasks))):
 
     for idx in range(2):
 
-        print(n + " Task" + str(idx + 1))
+        print(f'{n} Task {idx + 1}')
+
+        path = f'{path_parent}/{n}_Task{idx + 1}'
+        os.makedirs(path, exist_ok = True)
 
         p = t.get_tasks()[idx]
-        solver = NSGAII(50, 2, 100, 100, p, 'real')
 
-        igd = np.zeros(n_trial)
+        params.update({"start_time": datetime.now().isoformat()})
+        solver = NSGAII(params, p)
 
-        for i in range(n_trial):
-            solver.import_pop(n, idx + 1, i + 1)
-            # solver.init_pop()
-            solver.execute(100000)
+        igd = np.zeros(params["ntrial"])
+
+        for i in range(params["ntrial"]):
+
+            np.random.seed(i)
+
+            solver.init_pop()
+            solver.execute(params["neval"])
 
             igd[i] = p.calc_IGD(solver.pop["objectives"])
 
-        np.savetxt("SBX_java_result/" + n + "_Task" + str(idx + 1) + "IGD.csv", igd, delimiter = ",")
+        params.update({"end_time": datetime.now().isoformat()})
+        with open(F'{path}/setting_log.json', 'w') as f:
+            json.dump(params, f, indent = 0)
 
         print("---------mean IGD---------")
         results[task_no, idx, 0] = igd.mean()
@@ -50,4 +67,8 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
         results[task_no, idx, 1] = igd.std()
         print(results[task_no, idx, 1])
 
+        np.savetxt(f'{path}/all_IGDs.csv', igd, delimiter = ",")
+
     print("\n" + n +" Finished\n")
+
+np.savetxt(f'{path_parent}/all_results.csv', results.reshape([-1, 2]), delimiter = ",")

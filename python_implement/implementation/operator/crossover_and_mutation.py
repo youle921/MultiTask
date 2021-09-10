@@ -31,8 +31,9 @@ def SBX(parents, pc = 0.9, DI = 20, lower = 0, upper = 1):
     beta[~mask] = (2 - 2 * mu[~mask]) **(-1/(1+DI))
 
     beta = beta * (-1)**np.random.randint(0, high = 2, size = (*beta.shape,))
+
+    beta[np.random.rand(beta.shape[0]) > pc] = 1
     beta[np.random.rand(*beta.shape,) < 0.5] = 1
-    beta[np.random.rand(*beta.shape,) > pc] = 1
 
     off1 = (parents[0] + parents[1])/2 + beta * (parents[0] - parents[1])/2
     off2 = (parents[0] + parents[1])/2 - beta * (parents[0] - parents[1])/2
@@ -120,12 +121,11 @@ def SBX_java(parents, pc = 0.9, DI = 20):
 # binary
 def bitflip_mutation(offs):
 
-    off = offs
-    mutation_ratio = 1 / off.shape[1]
-    mutation_mask = np.random.rand(*off.shape,) < mutation_ratio
-    off[mutation_mask] = 1 - off[mutation_mask]
+    mutation_ratio = 1 / offs.shape[1]
+    mutation_mask = np.random.rand(*offs.shape,) < mutation_ratio
+    offs[mutation_mask] = 1 - offs[mutation_mask]
 
-    return off
+    return offs
 # binary end
 
 # real

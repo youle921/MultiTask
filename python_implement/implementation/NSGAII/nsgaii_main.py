@@ -16,6 +16,7 @@ class NSGAII(Algorithm):
 
         if ndim == None:
             ndim = problem.ndim
+
         self.pop = {}
         self.pop["variables"] = np.empty([params["npop"], ndim])
         self.pop["crowding_distance"] = np.empty(params["npop"])
@@ -109,6 +110,7 @@ class NSGAII(Algorithm):
 
         cd = calc_cd(union["objectives"][r == max(r)])
         remain = np.argsort(-cd)[:self.npop - offset]
+
         self.pop["objectives"][offset:] = union["objectives"][r == max(r)][remain]
         self.pop["variables"][offset:] = union["variables"][r == max(r)][remain]
         self.pop["pareto_rank"][offset:] = max(r)

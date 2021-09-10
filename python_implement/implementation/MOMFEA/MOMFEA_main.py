@@ -54,7 +54,7 @@ class MOMFEA:
             self._init_eval(i)
 
         self._set_factorial_rank()
-        self.neval =  self.npop* self.ntask
+        self.neval = self.npop* self.ntask
 
     def _init_eval(self, sf):
 
@@ -66,44 +66,49 @@ class MOMFEA:
 
     def execute(self, max_eval):
 
-
         n, mod= divmod(max_eval - self.neval, self.noff * self.ntask)
 
         offs = {}
+        off = {}
+
+        parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
+        skill_factor = np.empty(parents.shape[:2], dtype = int)
+
+        igd = np.empty([2, n])
+
         for gen in range(n):
 
-            parents = []
-            skill_factor = []
+            for t_idx in range(2):
 
-            for t_size in range(2):
-                p, sf = self._mfea_selection()
-                parents.append(self.pops["variables"][sf, p])
-                skill_factor.append(sf)
+                p, skill_factor[t_idx]= self._mfea_selection()
+                parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p]
 
-            offs["variables"], offs["skill_factor"]= self._mfea_crossover(parents, skill_factor)
+            offs["variables"], offs["skill_factor"] = self._mfea_crossover(parents, skill_factor)
 
             for task_no, p in enumerate(self.problems):
 
-                off = {}
-                mask = offs["skill_factor"] == task_no
-                off["variables"] = offs["variables"][mask]
+                off["variables"] = offs["variables"][offs["skill_factor"] == task_no]
                 off["objectives"] = p.evaluate(off["variables"])
+
                 self._update(off, task_no)
+
+                igd[task_no, gen] = p.calc_IGD(self.pops["objectives"][task_no])
 
             self._set_factorial_rank()
 
-        if mod != 0:
+        # if mod != 0:
 
-            parents = []
-            parents.append(self.pops["variables"][self.selection()])
-            parents.append(self.pops["variables"][self.selection()])
+        #     parents = []
+        #     parents.append(self.pops["variables"][self.selection()])
+        #     parents.append(self.pops["variables"][self.selection()])
 
-            offs["variables"] = self.mutation(self.crossover(parents))
-            offs["objectives"][:mod] = self.problem.evaluate(offs["variables"][:mod])
-            offs["objectives"][mod:] = 0
-            self.update(offs)
+        #     offs["variables"] = self.mutation(self.crossover(parents))
+        #     offs["objectives"][:mod] = self.problem.evaluate(offs["variables"][:mod])
+        #     offs["objectives"][mod:] = 0
+        #     self.update(offs)
 
         self.neval = max_eval
+        igd_ = igd.T
 
         return
 
@@ -124,24 +129,18 @@ class MOMFEA:
 
     def _mfea_crossover(self, parents, sf):
 
-        inner_cross = sf[0] == sf[1]
-        inter_cross = ~inner_cross & (np.random.rand(parents[0].shape[0]) < self.rmp)
-        inter_mu = ~inner_cross != inter_cross
+        offs = parents.copy()
 
-        inner_offs = np.split(self.crossover([parents[0][inner_cross], parents[1][inner_cross]]), 2)
-        inter_offs = np.split(self.crossover([parents[0][inter_cross], parents[1][inter_cross]]), 2)
-        no_cross = [parents[0][inter_mu], parents[1][inter_mu]]
-
-        offs = np.vstack([inner_offs[0], inter_offs[0], no_cross[0], \
-                          inner_offs[1], inter_offs[1], no_cross[1]])
+        do_cross = (np.random.rand(*sf[0].shape,) < self.rmp) | (sf[0] == sf[1])
+        offs[:, do_cross] = np.split(self.crossover([parents[0][do_cross], parents[1][do_cross]]), 2)
+        offs = offs.reshape([np.prod(offs.shape[:2]), -1])
 
         offs_sf = np.vstack([sf[0], sf[1]])
 
-        no_cross_len = no_cross[0].shape[0]
-        mask = (np.random.rand(*offs_sf.shape,) < 0.5)[:, :-no_cross_len]
+        mask = (np.random.rand(*offs_sf.shape,) < 0.5)[:, do_cross]
 
-        offs_sf[0][:-no_cross_len][mask[0]] = sf[1][:-no_cross_len][mask[0]]
-        offs_sf[1][:-no_cross_len][mask[1]] = sf[0][:-no_cross_len][mask[1]]
+        offs_sf[0][do_cross][mask[0]] = sf[1][do_cross][mask[0]]
+        offs_sf[1][do_cross][mask[1]] = sf[0][do_cross][mask[1]]
 
         return self.mutation(offs), offs_sf.reshape([-1])
 

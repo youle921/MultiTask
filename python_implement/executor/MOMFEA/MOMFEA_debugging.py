@@ -18,23 +18,24 @@ import implementation
 from implementation.problems.MTO_benchmark import *
 from implementation.MOMFEA import MOMFEA
 
-task = CIHS()
+task = [PIHS(), PILS()]
 
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
 
-p = task.get_tasks()
+for t in task:
+    p = t.get_tasks()
 
-solver = MOMFEA(params, p)
+    solver = MOMFEA(params, p)
 
-igd = np.zeros([2, params["n_trial"]])
+    igd = np.zeros([2, params["n_trial"]])
 
-for trial in range(params["n_trial"]):
+    for trial in range(params["n_trial"]):
 
-    np.random.seed(trial)
-    solver.init_pop()
-    solver.execute(params["n_eval"])
+        np.random.seed(trial)
+        solver.init_pop()
+        solver.execute(params["n_eval"])
 
-    for idx in range(2):
+        for idx in range(2):
 
-        igd[idx][trial] = p[idx].calc_IGD(solver.pops["objectives"][idx])
+            igd[idx][trial] = p[idx].calc_IGD(solver.pops["objectives"][idx])
