@@ -36,20 +36,18 @@ class MOMFEAII(MOMFEA):
 
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
         skill_factor = np.empty(parents.shape[:2], dtype = int)
-
-        rmp_log = []
+        p_idx = np.empty_like(skill_factor)
 
         for gen in range(n):
 
             self._learn_rmp()
-            rmp_log.append(self.rmp)
 
             for t_idx in range(2):
 
-                p, skill_factor[t_idx]= self._mfea_selection()
-                parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p]
+                p_idx[t_idx], skill_factor[t_idx]= self._mfea_selection()
+                parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p_idx[t_idx]]
 
-            offs["variables"], offs["skill_factor"] = self._mfea_crossover(parents, skill_factor)
+            offs["variables"], offs["skill_factor"] = self._mfea_crossover(p_idx, parents, skill_factor)
 
             for task_no, p in enumerate(self.problems):
 
@@ -75,20 +73,22 @@ class MOMFEAII(MOMFEA):
 
         return
 
-    def _mfea_crossover(self, parents, sf):
+    def _mfea_crossover(self, p_idx, parents, sf):
 
         offs = parents.copy()
 
         do_cross = (np.random.rand(*sf[0].shape,) < self.rmp) | (sf[0] == sf[1])
+        no_cross = ~do_cross
         offs[:, do_cross] = np.split(self.crossover([parents[0][do_cross], parents[1][do_cross]]), 2)
 
         offs_sf = np.vstack([sf[0], sf[1]])
 
-        inner_idx = np.random.randint(self.npop, size = [2, (~do_cross).sum()])
-        inner_parent = self.pops["variables"][offs_sf[:, ~do_cross], inner_idx]
+        inner_idx = np.random.randint(self.npop - 1, size = [2, no_cross.sum()])
+        inner_idx[inner_idx >= p_idx[:, no_cross]] += 1
+        inner_parent = self.pops["variables"][offs_sf[:, no_cross], inner_idx]
 
-        offs[0, ~do_cross] = np.split(self.crossover([parents[0][~do_cross], inner_parent[0]]), 2)[0]
-        offs[1, ~do_cross] = np.split(self.crossover([parents[1][~do_cross], inner_parent[1]]), 2)[0]
+        offs[0, no_cross] = np.split(self.crossover([parents[0][no_cross], inner_parent[0]]), 2)[0]
+        offs[1, no_cross] = np.split(self.crossover([parents[1][no_cross], inner_parent[1]]), 2)[0]
 
         offs = offs.reshape([np.prod(offs.shape[:2]), -1])
 
