@@ -24,7 +24,6 @@ def search_boundary(M, boundaries):
 
     return np.min(prj_lb, axis = 0), np.min(prj_ub, axis = 0)
 
-
 npop = 100
 ntask = 2
 ndim = [10, 15]
@@ -62,7 +61,8 @@ Ld = Dd - Wd
 
 eig_val, eig_vec = eig((Z.dot((L + Ls))).dot(Z.T), (Z.dot(Ld)).dot(Z.T))
 
-eig_idx = eig_val.argsort()[eig_val > 0]
+eig_idx = eig_val.argsort()
+M = eig_vec[:, eig_idx[np.in1d(eig_idx, eig_val.nonzero())]]
 
 M = eig_vec[eig_idx]
 to_latent_space = np.split(M, np.cumsum(ndim)[:-1])
