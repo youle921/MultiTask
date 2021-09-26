@@ -33,14 +33,15 @@ for t in task:
 
     solver = MOMFEAII(params, p)
 
-    igd = np.zeros([2, params["n_trial"]])
+    igd = np.zeros([params["n_trial"], 2])
 
     for trial in range(params["n_trial"]):
 
         np.random.seed(trial)
         solver.init_pop()
-        solver.execute(params["n_eval"])
+        solver.execute(20000)
+        # solver.execute(params["n_eval"])
 
         for idx in range(2):
 
-            igd[idx][trial] = p[idx].calc_IGD(solver.pops["objectives"][idx])
+            igd[trial][idx] = p[idx].calc_IGD(solver.pops["objectives"][idx])

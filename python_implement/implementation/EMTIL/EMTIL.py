@@ -58,7 +58,7 @@ class EMTIL:
             
         self.learning(inject_pop)
 
-        for g in range(1, max_gen):
+        for g in range(2, max_gen):
 
             inject_pop = self.get_inject_pop()
             

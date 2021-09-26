@@ -17,7 +17,7 @@ from collections import OrderedDict
 
 import implementation
 from implementation.problems.MTO_benchmark import *
-from implementation.MOMFEA import MOMFEA
+from implementation.MOMFEAII import MOMFEAII
 
 tasks = task_list
 names = name_list
@@ -40,7 +40,7 @@ for t, n, task_no in zip(tasks, names, range(len(tasks))):
     p = t.get_tasks()
 
     params.update({"start_time": datetime.now().isoformat()})
-    solver = MOMFEA(params, p)
+    solver = MOMFEAII(params, p)
 
     igd = np.zeros([2, params["n_trial"]])
 

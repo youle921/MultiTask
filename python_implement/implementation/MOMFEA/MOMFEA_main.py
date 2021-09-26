@@ -142,6 +142,7 @@ class MOMFEA:
     def _update(self, offs, sf):
 
         union = {}
+        
         union["variables"] = np.vstack((self.pops["variables"][sf] ,offs["variables"]))
         union["objectives"] = np.vstack((self.pops["objectives"][sf], offs["objectives"]))
 

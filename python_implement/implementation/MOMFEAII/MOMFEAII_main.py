@@ -37,6 +37,8 @@ class MOMFEAII(MOMFEA):
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
         skill_factor = np.empty(parents.shape[:2], dtype = int)
         p_idx = np.empty_like(skill_factor)
+        
+        igd = np.empty([n, 2])
 
         for gen in range(n):
 
@@ -55,6 +57,8 @@ class MOMFEAII(MOMFEA):
                 assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
                 self._update(assigned_offs, task_no)
+                
+                igd[gen, task_no] = p.calc_IGD(self.pops["objectives"][task_no])
 
             self._set_factorial_rank()
 
@@ -75,11 +79,11 @@ class MOMFEAII(MOMFEA):
 
     def _mfea_crossover(self, p_idx, parents, sf):
 
-        offs = parents.copy()
+        offs = np.empty_like(parents)
 
         do_cross = (np.random.rand(*sf[0].shape,) < self.rmp) | (sf[0] == sf[1])
         no_cross = ~do_cross
-        offs[:, do_cross] = np.split(self.crossover([parents[0][do_cross], parents[1][do_cross]]), 2)
+        offs[:, do_cross] = np.split(self.crossover(parents[:, do_cross]), 2)
 
         offs_sf = np.vstack([sf[0], sf[1]])
 
@@ -117,8 +121,8 @@ class MOMFEAII(MOMFEA):
 
         probmatrix = np.empty([2, self.npop, 2])
 
-        probmatrix[0] = (norm_dist(self.pops["variables"][:1], mean[:, None, :], var[:, None, :])).prod(axis = 2).T
-        probmatrix[1] = (norm_dist(self.pops["variables"][1:], mean[:, None, :], var[:, None, :])).prod(axis = 2).T
+        probmatrix[0] = (norm_dist(self.pops["variables"][:1], mean[:, None, :], var[:, None, :], eps = 0)).prod(axis = 2).T
+        probmatrix[1] = (norm_dist(self.pops["variables"][1:], mean[:, None, :], var[:, None, :], eps = 0)).prod(axis = 2).T
 
         rmp = opt.fminbound(loglik, 0, 1, args = ([probmatrix]))
 
