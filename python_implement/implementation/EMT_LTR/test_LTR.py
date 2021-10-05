@@ -22,7 +22,7 @@ def search_boundary(M, boundaries):
         prj_lb.append((lb * m).sum(axis = 0))
         prj_ub.append((ub * m).sum(axis = 0))
 
-    return np.min(prj_lb, axis = 0), np.min(prj_ub, axis = 0)
+    return np.min(prj_lb, axis = 0), np.max(prj_ub, axis = 0)
 
 npop = 100
 ntask = 2

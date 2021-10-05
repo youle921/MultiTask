@@ -37,12 +37,14 @@ class MOMFEAII(MOMFEA):
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
         skill_factor = np.empty(parents.shape[:2], dtype = int)
         p_idx = np.empty_like(skill_factor)
-        
+
         igd = np.empty([n, 2])
+        rmp = []
 
         for gen in range(n):
 
             self._learn_rmp()
+            rmp.append(self.rmp)
 
             for t_idx in range(2):
 
@@ -57,7 +59,7 @@ class MOMFEAII(MOMFEA):
                 assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
                 self._update(assigned_offs, task_no)
-                
+
                 igd[gen, task_no] = p.calc_IGD(self.pops["objectives"][task_no])
 
             self._set_factorial_rank()

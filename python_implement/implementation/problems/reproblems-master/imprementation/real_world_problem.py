@@ -108,7 +108,7 @@ class RE23():
         self.n_constraints = 0
         self.n_original_constraints = 3
 
-        self.lower = np.epmty(self.ndim)
+        self.lower = np.empty(self.ndim)
         self.lower[[0, 1]] = 1
         self.lower[[2, 3]] = 10
 
@@ -834,23 +834,32 @@ class RE91():
 
         return f.T
 
-if __name__ == '__main__':
-    np.random.seed(seed=1)
-    fun = RE21()
+def get_prob_pairs(prob_list):
+    return np.array(prob_list).reshape(-1, 2).tolist()
 
-    x = fun.lbound + (fun.ubound - fun.lbound) * np.random.rand(fun.n_variables)
-    print("Problem = {}".format(fun.problem_name))
-    print("Number of objectives = {}".format(fun.n_objectives))
-    print("Number of variables = {}".format(fun.n_variables))
-    print("Number of constraints = {}".format(fun.n_constraints))
-    print("Lower bounds = ", fun.lbound)
-    print("Upper bounds = ", fun.ubound)
-    print("x = ", x)
+def get_random_prob_pairs(prob_list):
+    np.random.shuffle(prob_list)
+    return get_prob_pairs(prob_list)
 
-    if 'CRE' in fun.problem_name:
-        f, g = fun.evaluate(x)
-        print("f(x) = {}".format(f))
-        print("g(x) = {}".format(g))
-    else:
-        f = fun.evaluate(x)
-        print("f(x) = {}".format(f))
+all_probs = [RE21(), RE22(), RE23(), RE24(), RE25(), RE31(), RE32(), RE33(), RE34(), RE35(), RE36(), RE37(), RE41(), RE42(), RE61(), RE91()]
+
+# if __name__ == '__main__':
+#     np.random.seed(seed=1)
+#     fun = RE21()
+
+#     x = fun.lbound + (fun.ubound - fun.lbound) * np.random.rand(fun.n_variables)
+#     print("Problem = {}".format(fun.problem_name))
+#     print("Number of objectives = {}".format(fun.n_objectives))
+#     print("Number of variables = {}".format(fun.n_variables))
+#     print("Number of constraints = {}".format(fun.n_constraints))
+#     print("Lower bounds = ", fun.lbound)
+#     print("Upper bounds = ", fun.ubound)
+#     print("x = ", x)
+
+#     if 'CRE' in fun.problem_name:
+#         f, g = fun.evaluate(x)
+#         print("f(x) = {}".format(f))
+#         print("g(x) = {}".format(g))
+#     else:
+#         f = fun.evaluate(x)
+#         print("f(x) = {}".format(f))
