@@ -34,6 +34,8 @@ class CIHS_t1(MTO_base_class):
 
         super().__init__()
 
+        self.problem_name = 'task1'
+
         self.ndim = 50
 
         self.dist_f = sphere
@@ -55,6 +57,8 @@ class CIHS_t2(MTO_base_class):
     def __init__(self):
 
         super().__init__()
+
+        self.problem_name = 'task2'
 
         self.ndim = 50
 

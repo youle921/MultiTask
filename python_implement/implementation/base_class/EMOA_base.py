@@ -64,7 +64,7 @@ class Algorithm(metaclass=ABCMeta):
         for key in self.save_list:
             self.saved_data[key] = []
 
-        self.analyzer_func = self.analyzer
+        self.analyst = self.analyzer
 
     def analyzer(self, gen):
 

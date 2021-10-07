@@ -998,8 +998,9 @@ class RE91(RE_base_class):
 
 
 def get_prob_pairs(prob_list):
-    return np.array(prob_list).reshape(-1, 2).tolist()
 
+    prob_pairs = np.array(prob_list).reshape(-1, 2).tolist()
+    return prob_pairs, [f'Problem Set{i}' for i in range(len(prob_pairs))]
 
 def get_random_prob_pairs(prob_list):
     np.random.shuffle(prob_list)
