@@ -46,11 +46,11 @@ class RE_base_class:
     def transforn_population(self, pop):
 
         if self.project_uss:
-            pop_ = self.reverse_normalize(pop)
+            pop_ = self.reverse_normalize(pop[:, :self.ndim])
         else:
-            pop_ = pop.copy()
+            pop_ = pop.copy()[:, :self.ndim]
 
-        return pop_[:, :self.ndim]
+        return pop_
 
     def reverse_normalize(self, pop):
 
@@ -71,6 +71,8 @@ class RE_base_class:
 class RE21(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Four bar truss design'
         self.set_reference_point("RE21")
@@ -87,11 +89,11 @@ class RE21(RE_base_class):
         self.lower[[0, 3]] = tmp_val
         self.lower[[1, 2]] = np.sqrt(2.0) * tmp_val
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
 
         x1, x2, x3, x4 = x.T
 
@@ -105,8 +107,8 @@ class RE21(RE_base_class):
         L = 200.0
 
         f[0] = L * ((2 * x1) + np.sqrt(2.0) * x2 + np.sqrt(x3) + x4)
-        f[1] = ((F * L) / E) * ((2.0 / x1) + (2.0 * np.sqrt(2.0) /
-                                              x2) - (2.0 * np.sqrt(2.0) / x3) + (2.0 / x4))
+        f[1] = ((F * L) / E) * ((2.0 / (x1 + eps)) + (2.0 * np.sqrt(2.0) /
+                                              (x2 + eps)) - (2.0 * np.sqrt(2.0) / (x3 + eps)) + (2.0 / (x4 + eps)))
 
         return f.T
 
@@ -114,6 +116,8 @@ class RE21(RE_base_class):
 class RE22(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Reinforced concrete beam design'
         self.set_reference_point("RE22")
@@ -131,17 +135,17 @@ class RE22(RE_base_class):
         self.upper[1] = 20
         self.upper[2] = 40
 
-        self.feasible_vals = np.array([[0.20, 0.31, 0.40, 0.44, 0.60, 0.62, 0.79, 0.80, 0.88, 0.93, 1.0, 1.20, 1.24, 1.32, 1.40, 1.55, 1.58, 1.60, 1.76, 1.80, 1.86, 2.0, 2.17, 2.20, 2.37, 2.40, 2.48, 2.60, 2.64, 2.79, 2.80, 3.0, 3.08, 3, 10, 3.16, 3.41,
-                                        3.52, 3.60, 3.72, 3.95, 3.96, 4.0, 4.03, 4.20, 4.34, 4.40, 4.65, 4.74, 4.80, 4.84, 5.0, 5.28, 5.40, 5.53, 5.72, 6.0, 6.16, 6.32, 6.60, 7.11, 7.20, 7.80, 7.90, 8.0, 8.40, 8.69, 9.0, 9.48, 10.27, 11.0, 11.06, 11.85, 12.0, 13.0, 14.0, 15.0]]).T
+        self.feasible_vals = np.array([0.20, 0.31, 0.40, 0.44, 0.60, 0.62, 0.79, 0.80, 0.88, 0.93, 1.0, 1.20, 1.24, 1.32, 1.40, 1.55, 1.58, 1.60, 1.76, 1.80, 1.86, 2.0, 2.17, 2.20, 2.37, 2.40, 2.48, 2.60, 2.64, 2.79, 2.80, 3.0, 3.08, 3, 10, 3.16, 3.41,
+                                       3.52, 3.60, 3.72, 3.95, 3.96, 4.0, 4.03, 4.20, 4.34, 4.40, 4.65, 4.74, 4.80, 4.84, 5.0, 5.28, 5.40, 5.53, 5.72, 6.0, 6.16, 6.32, 6.60, 7.11, 7.20, 7.80, 7.90, 8.0, 8.40, 8.69, 9.0, 9.48, 10.27, 11.0, 11.06, 11.85, 12.0, 13.0, 14.0, 15.0])
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
-        idx = np.abs(self.feasible_vals - x[:, 0]).argmin(axis=0)
+        idx = np.abs(self.feasible_vals[:, None] - x[:, 0]).argmin(axis=0)
         x1 = self.feasible_vals[idx]
         x2, x3 = x.T[1:]
 
@@ -152,8 +156,8 @@ class RE22(RE_base_class):
         f[0] = (29.4 * x1) + (0.6 * x2 * x3)
 
         # Original constraint functions
-        g[0] = (x1 * x3) - 7.735 * (x1**2 / x2) - 180.0
-        g[1] = 4.0 - (x3 / x2)
+        g[0] = (x1 * x3) - 7.735 * (x1**2 / (x2 + eps)) - 180.0
+        g[1] = 4.0 - (x3 / (x2 + eps))
         g = np.where(g < 0, -g, 0)
         f[1] = g.sum(axis=0)
 
@@ -163,6 +167,8 @@ class RE22(RE_base_class):
 class RE23(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Pressure vessel design'
         self.set_reference_point("RE23")
@@ -181,18 +187,18 @@ class RE23(RE_base_class):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
-        x1 = 0.0625 * int(np.round(x[:, 0]))
-        x2 = 0.0625 * int(np.round(x[:, 1]))
+        x1 = 0.0625 * np.round(x[:, 0])
+        x2 = 0.0625 * np.round(x[:, 1])
         x3, x4 = x.T[2:]
         # x3 = x[:, 2]
         # x4 = x[:, 3]
 
         # First original objective function
-        f[0] = (0.6224 * x1 * x3 * x4) + (1.7781 * x2 * x3**2) + \
-            (3.1661 * x1**2 * x4) + (19.84 * x1**2 * x3)
+        f[0] = (0.6224 * x1 * x3 * x4) + (1.7781 * x2 * x3**2)\
+             + (3.1661 * x1**2 * x4) + (19.84 * x1**2 * x3)
 
         # Original constraint functions
         g[0] = x1 - (0.0193 * x3)
@@ -207,6 +213,8 @@ class RE23(RE_base_class):
 class RE24(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Hatch cover design'
         self.set_reference_point("RE24")
@@ -221,12 +229,12 @@ class RE24(RE_base_class):
         self.upper[0] = 4
         self.upper[1] = 50
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2 = x.T
         # x1 = x[:, 0]
@@ -240,14 +248,14 @@ class RE24(RE_base_class):
         tau_max = 450
         delta_max = 1.5
         sigma_k = (E * x1**2) / 100
-        sigma_b = 4500 / (x1 * x2)
-        tau = 1800 / x2
-        delta = (56.2 * 10000) / (E * x1 * x2**2)
+        sigma_b = 4500 / (x1 * x2 + eps)
+        tau = 1800 / (x2 + eps)
+        delta = (56.2 * 10000) / (E * x1 * x2**2 + eps)
 
         g[0] = 1 - (sigma_b / sigma_b_max)
         g[1] = 1 - (tau / tau_max)
         g[2] = 1 - (delta / delta_max)
-        g[3] = 1 - (sigma_b / sigma_k)
+        g[3] = 1 - (sigma_b / sigma_k + eps)
         g = np.where(g < 0, -g, 0)
         f[1] = g.sum(axis=0)
 
@@ -257,6 +265,8 @@ class RE24(RE_base_class):
 class RE25(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Coil compression spring design'
         self.set_reference_point("RE25")
@@ -275,30 +285,30 @@ class RE25(RE_base_class):
         self.upper[1] = 3
         self.upper[2] = 0.5
 
-        self.feasible_vals = np.array([[0.009, 0.0095, 0.0104, 0.0118, 0.0128, 0.0132, 0.014, 0.015, 0.0162, 0.0173, 0.018, 0.02, 0.023, 0.025, 0.028, 0.032, 0.035, 0.041, 0.047,
-                                        0.054, 0.063, 0.072, 0.08, 0.092, 0.105, 0.12, 0.135, 0.148, 0.162, 0.177, 0.192, 0.207, 0.225, 0.244, 0.263, 0.283, 0.307, 0.331, 0.362, 0.394, 0.4375, 0.5]]).T
+        self.feasible_vals = np.array([0.009, 0.0095, 0.0104, 0.0118, 0.0128, 0.0132, 0.014, 0.015, 0.0162, 0.0173, 0.018, 0.02, 0.023, 0.025, 0.028, 0.032, 0.035, 0.041, 0.047,
+                                       0.054, 0.063, 0.072, 0.08, 0.092, 0.105, 0.12, 0.135, 0.148, 0.162, 0.177, 0.192, 0.207, 0.225, 0.244, 0.263, 0.283, 0.307, 0.331, 0.362, 0.394, 0.4375, 0.5])
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1 = np.round(x[:, 0])
         x2 = x[:, 1]
-        idx = np.abs(self.feasible_vals - x[:, 2]).argmin(axis=0)
+        idx = np.abs(self.feasible_vals[:, None] - x[:, 2]).argmin(axis=0)
         x3 = self.feasible_vals[idx]
 
         # first original objective function
         f[0] = (np.pi**2 * x2 * x3**2 * (x1 + 2)) / 4.0
 
         # constraint functions
-        Cf = ((4.0 * (x2 / x3) - 1) / (4.0 * (x2 / x3) - 4)) + (0.615 * x3 / x2)
+        Cf = ((4.0 * (x2 / x3 + eps) - 1) / (4.0 * (x2 / x3 + eps) - 4)) + (0.615 * x3 / x2 + eps)
         Fmax = 1000.0
         S = 189000.0
         G = 11.5 * 1e+6
-        K = (G * x3**4) / (8 * x1 * x2**3)
+        K = (G * x3**4) / (8 * x1 * x2**3 + eps) + eps
         lmax = 14.0
         lf = (Fmax / K) + 1.05 * (x1 + 2) * x3
         # dmin = 0.2
@@ -308,9 +318,9 @@ class RE25(RE_base_class):
         sigmaPM = 6
         sigmaW = 1.25
 
-        g[0] = -((8 * Cf * Fmax * x2) / (np.pi * x3**3)) + S
+        g[0] = -((8 * Cf * Fmax * x2) / (np.pi * x3**3 + eps)) + S
         g[1] = -lf + lmax
-        g[2] = -3 + (x2 / x3)
+        g[2] = -3 + (x2 / x3 + eps)
         g[3] = -sigmaP + sigmaPM
         g[4] = -sigmaP - ((Fmax - Fp) / K) - 1.05 * (x1 + 2) * x3 + lf
         g[5] = sigmaW - ((Fmax - Fp) / K)
@@ -324,6 +334,8 @@ class RE25(RE_base_class):
 class RE31(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Two bar truss design'
         self.set_reference_point("RE31")
@@ -340,12 +352,12 @@ class RE31(RE_base_class):
         self.upper[[0, 1]] = 100.0
         self.upper[2] = 3.0
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2, x3 = x.T
         # x1 = x[:, 0]
@@ -355,12 +367,12 @@ class RE31(RE_base_class):
         # First original objective function
         f[0] = x1 * np.sqrt(16.0 + x3**2) + x2 * np.sqrt(1.0 + x3**2)
         # Second original objective function
-        f[1] = (20.0 * np.sqrt(16.0 + x3**2)) / (x1 * x3)
+        f[1] = (20.0 * np.sqrt(16.0 + x3**2)) / (x1 * x3 + eps)
 
         # Constraint functions
         g[0] = 0.1 - f[0]
         g[1] = 100000.0 - f[1]
-        g[2] = 100000 - ((80.0 * np.sqrt(1.0 + x3**2)) / (x3 * x2))
+        g[2] = 100000 - ((80.0 * np.sqrt(1.0 + x3**2)) / (x3 * x2 + eps))
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 
@@ -370,6 +382,8 @@ class RE31(RE_base_class):
 class RE32(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Welded beam design'
         self.set_reference_point("RE32")
@@ -386,12 +400,12 @@ class RE32(RE_base_class):
         self.upper[[0, 3]] = 5.0
         self.upper[[1, 2]] = 10.0
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2, x3, x4 = x.T
         # x1 = x[:, 0]
@@ -411,7 +425,7 @@ class RE32(RE_base_class):
         # First original objective function
         f[0] = (1.10471 * x1**2 * x2) + (0.04811 * x3 * x4) * (14.0 + x2)
         # Second original objective function
-        f[1] = (4 * P * L**3) / (E * x4 * x3**3)
+        f[1] = (4 * P * L**3) / (E * x4 * x3**3 + eps)
 
         # Constraint functions
         M = P * (L + (x2 / 2))
@@ -420,12 +434,12 @@ class RE32(RE_base_class):
         tmpVar = (x2**2 / 12.0) + ((x1 + x3) / 2.0)**2
         J = 2 * np.sqrt(2) * x1 * x2 * tmpVar
 
-        tauDashDash = (M * R) / J
-        tauDash = P / (np.sqrt(2) * x1 * x2)
+        tauDashDash = (M * R) / (J + eps)
+        tauDash = P / (np.sqrt(2) * x1 * x2 + eps)
         tmpVar = tauDash**2 + \
-            ((2 * tauDash * tauDashDash * x2) / (2 * R)) + tauDashDash**2
+            ((2 * tauDash * tauDashDash * x2) / (2 * R + eps)) + tauDashDash**2
         tau = np.sqrt(tmpVar)
-        sigma = (6 * P * L) / (x4 * x3 * x3)
+        sigma = (6 * P * L) / (x4 * x3**2 + eps)
         tmpVar = 4.013 * E * np.sqrt((x3**2 * x4**6) / 36.0) / L**2
         tmpVar2 = (x3 / (2 * L)) * np.sqrt(E / (4 * G))
         PC = tmpVar * (1 - tmpVar2)
@@ -443,6 +457,8 @@ class RE32(RE_base_class):
 class RE33(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Disc breke design'
         self.set_reference_point("RE33")
@@ -463,12 +479,12 @@ class RE33(RE_base_class):
         self.upper[2] = 3000
         self.upper[3] = 20
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2, x3, x4 = x.T
         # x1 = x[:, 0]
@@ -479,15 +495,15 @@ class RE33(RE_base_class):
         # First original objective function
         f[0] = 4.9 * 1e-5 * (x2**2 - x1**2) * (x4 - 1.0)
         # Second original objective function
-        f[1] = ((9.82 * 1e6) * (x2**2 - x1**2)) / (x3 * x4 * (x2**3 - x1**3))
+        f[1] = ((9.82 * 1e6) * (x2**2 - x1**2)) / (x3 * x4 * (x2**3 - x1**3) + eps)
 
         # Reformulated objective functions
         g[0] = (x2 - x1) - 20.0
-        g[1] = 0.4 - (x3 / (3.14 * (x2**2 - x1**2)))
-        g[2] = 1.0 - (2.22 * 1e-3 * x3 * (x2**3 - x1**3)) / \
-            ((x2**2 - x1**2)**2)
-        g[3] = (2.66 * 1e-2 * x3 * x4 * (x2**3 - x1**3)) / \
-            (x2**2 - x1**2) - 900.0
+        g[1] = 0.4 - (x3 / (3.14 * (x2**2 - x1**2) + eps))
+        g[2] = 1.0 - (2.22 * 1e-3 * x3 * (x2**3 - x1**3))\
+             / ((x2**2 - x1**2)**2 + eps)
+        g[3] = (2.66 * 1e-2 * x3 * x4 * (x2**3 - x1**3))\
+             / (x2**2 - x1**2 + eps) - 900.0
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 
@@ -497,6 +513,8 @@ class RE33(RE_base_class):
 class RE34(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Vehicle crashworthiness design'
         self.set_reference_point("RE34")
@@ -512,8 +530,8 @@ class RE34(RE_base_class):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        # g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        # g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2, x3, x4, x5 = x.T
         # x1 = x[:, 0]
@@ -535,6 +553,8 @@ class RE34(RE_base_class):
 class RE35(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Speed reducer design'
         self.set_reference_point("RE35")
@@ -559,12 +579,12 @@ class RE35(RE_base_class):
         self.upper[5] = 3.9
         self.upper[6] = 5.5
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1, x2, x3, x4, x5, x6, x7 = x.T
         x3 = np.round(x3)
@@ -581,22 +601,22 @@ class RE35(RE_base_class):
             x6**2 + x7**2) + 7.477 * (x6**3 + x7**3) + 0.7854 * (x4 * x6**2 + x5 * x7**2)
 
         # Second original objective function (stress)
-        tmpVar = ((745.0 * x4) / (x2 * x3))**2.0 + 1.69 * 1e7
-        f[1] = np.sqrt(tmpVar) / (0.1 * x6**3)
+        tmpVar = ((745.0 * x4) / (x2 * x3 + eps))**2.0 + 1.69 * 1e7
+        f[1] = np.sqrt(tmpVar) / (0.1 * x6**3 + eps)
 
         # Constraint functions
-        g[0] = -(1.0 / (x1 * x2**2 * x3)) + 1.0 / 27.0
-        g[1] = -(1.0 / (x1 * x2**2 * x3**2)) + 1.0 / 397.5
-        g[2] = -x4**3 / (x2 * x3 * x6**4) + 1.0 / 1.93
-        g[3] = -(x5**3) / (x2 * x3 * x7**4) + 1.0 / 1.93
+        g[0] = -(1.0 / (x1 * x2**2 * x3 + eps)) + 1.0 / 27.0
+        g[1] = -(1.0 / (x1 * x2**2 * x3**2 + eps)) + 1.0 / 397.5
+        g[2] = -x4**3 / (x2 * x3 * x6**4 + eps) + 1.0 / 1.93
+        g[3] = -(x5**3) / (x2 * x3 * x7**4 + eps) + 1.0 / 1.93
         g[4] = -(x2 * x3) + 40.0
-        g[5] = -(x1 / x2) + 12.0
-        g[6] = -5.0 + (x1 / x2)
+        g[5] = -(x1 / (x2 + eps)) + 12.0
+        g[6] = -5.0 + (x1 / (x2 + eps))
         g[7] = -1.9 + x4 - 1.5 * x6
         g[8] = -1.9 + x5 - 1.1 * x7
         g[9] = -f[1] + 1300.0
-        tmpVar = ((745.0 * x5) / (x2 * x3))**2.0 + 1.575 * 1e8
-        g[10] = -np.sqrt(tmpVar) / (0.1 * x7**3) + 1100.0
+        tmpVar = ((745.0 * x5) / (x2 * x3 + eps))**2.0 + 1.575 * 1e8
+        g[10] = -np.sqrt(tmpVar) / (0.1 * x7**3 + eps) + 1100.0
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 
@@ -606,6 +626,8 @@ class RE35(RE_base_class):
 class RE36(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Gear train design'
         self.set_reference_point("RE36")
@@ -617,12 +639,12 @@ class RE36(RE_base_class):
         self.lower = np.full(self.ndim, 12)
         self.upper = np.full(self.ndim, 60)
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         # all the four variables must be inverger values
         x1,x2,x3,x4 = np.round(x.T)
@@ -632,7 +654,7 @@ class RE36(RE_base_class):
         # x4 = np.round(x[:, 3])
 
         # First original objective function
-        f[0] = np.abs(6.931 - ((x3 / x1) * (x4 / x2)))
+        f[0] = np.abs(6.931 - ((x3 / (x1 + eps)) * (x4 / (x2 + eps))))
         # Second original objective function (the maximum value among the four variables)
         f[1] = np.max([x1, x2, x3, x4], axis=0)
 
@@ -646,6 +668,8 @@ class RE36(RE_base_class):
 class RE37(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Rocket injector design'
         self.set_reference_point("RE37")
@@ -661,7 +685,7 @@ class RE37(RE_base_class):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
 
         xAlpha,xHA, xOA, xOPTT = x.T
 
@@ -687,6 +711,8 @@ class RE37(RE_base_class):
 class RE41(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Car side impact design'
         self.set_reference_point("RE41")
@@ -711,8 +737,8 @@ class RE41(RE_base_class):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1,x2,x3,x4,x5,x6,x7 = x.T
         # x1 = x[:, 0]
@@ -759,6 +785,8 @@ class RE41(RE_base_class):
 class RE42(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Conceptual marine design'
         self.set_reference_point("RE42")
@@ -783,13 +811,13 @@ class RE42(RE_base_class):
         self.upper[4] = 18.0
         self.upper[5] = 0.75
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
         # NOT g
-        constraintFuncs = np.zeros(self.n_original_constraints. x.shape[0])
+        constraintFuncs = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x_L, x_B,x_D,x_T, x_Vk, x_CB = x.T
 
@@ -803,7 +831,7 @@ class RE42(RE_base_class):
         displacement = 1.025 * x_L * x_B * x_T * x_CB
         V = 0.5144 * x_Vk
         g = 9.8065
-        Fn = V / np.power(g * x_L, 0.5)
+        Fn = V / (g * x_L + eps)**0.5
         a = (4977.06 * x_CB**2) - (8105.61 * x_CB) + 4456.51
         b = (-10847.2 * x_CB**2) + (12817.0 * x_CB) - 6960.32
 
@@ -847,9 +875,9 @@ class RE42(RE_base_class):
         f[2] = -annual_cargo
 
         # Reformulated objective functions
-        constraintFuncs[0] = (x_L / x_B) - 6.0
-        constraintFuncs[1] = -(x_L / x_D) + 15.0
-        constraintFuncs[2] = -(x_L / x_T) + 19.0
+        constraintFuncs[0] = (x_L / x_B + eps) - 6.0
+        constraintFuncs[1] = -(x_L / x_D + eps) + 15.0
+        constraintFuncs[2] = -(x_L / x_T + eps) + 19.0
         constraintFuncs[3] = 0.45 * DWT**0.31 - x_T
         constraintFuncs[4] = 0.7 * x_D + 0.7 - x_T
         constraintFuncs[5] = 500000.0 - DWT
@@ -857,7 +885,7 @@ class RE42(RE_base_class):
         constraintFuncs[7] = 0.32 - Fn
 
         KB = 0.53 * x_T
-        BMT = ((0.085 * x_CB - 0.002) * x_B**2) / (x_T * x_CB)
+        BMT = ((0.085 * x_CB - 0.002) * x_B**2) / (x_T * x_CB + eps)
         KG = 1.0 + 0.52 * x_D
         constraintFuncs[8] = (KB + BMT - KG) - (0.07 * x_B)
 
@@ -870,6 +898,8 @@ class RE42(RE_base_class):
 class RE61(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Water resource planning'
         self.set_reference_point("RE61")
@@ -884,12 +914,12 @@ class RE61(RE_base_class):
         self.upper[0] = 0.45
         self.upper[[1, 2]] = 0.10
 
-    def evaluate(self, pop):
+    def evaluate(self, pop, eps = 1e-7):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
-        g = np.zeros(self.n_original_constraints, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
+        g = np.zeros([self.n_original_constraints, x.shape[0]])
 
         x1,x2,x3 = x.T
         # x1 = x[:, 0]
@@ -905,16 +935,16 @@ class RE61(RE_base_class):
         # Fourth original objective function
         f[3] = 250 * 2289 * np.exp(-39.75 * x2 + 9.9 * x3 + 2.74)
         # Fifth original objective function
-        f[4] = 25 * (1.39 / (x1 * x2) + 4940 * x3 - 80)
+        f[4] = 25 * (1.39 / (x1 * x2 + eps) + 4940 * x3 - 80)
 
         # Constraint functions
-        g[0] = 1 - (0.00139 / (x1 * x2) + 4.94 * x3 - 0.08)
-        g[1] = 1 - (0.000306 / (x1 * x2) + 1.082 * x3 - 0.0986)
-        g[2] = 50000 - (12.307 / (x1 * x2) + 49408.24 * x3 + 4051.02)
-        g[3] = 16000 - (2.098 / (x1 * x2) + 8046.33 * x3 - 696.71)
-        g[4] = 10000 - (2.138 / (x1 * x2) + 7883.39 * x3 - 705.04)
+        g[0] = 1 - (0.00139 / (x1 * x2 + eps) + 4.94 * x3 - 0.08)
+        g[1] = 1 - (0.000306 / (x1 * x2 + eps) + 1.082 * x3 - 0.0986)
+        g[2] = 50000 - (12.307 / (x1 * x2 + eps) + 49408.24 * x3 + 4051.02)
+        g[3] = 16000 - (2.098 / (x1 * x2 + eps) + 8046.33 * x3 - 696.71)
+        g[4] = 10000 - (2.138 / (x1 * x2 + eps) + 7883.39 * x3 - 705.04)
         g[5] = 2000 - (0.417 * x1 * x2 + 1721.26 * x3 - 136.54)
-        g[6] = 550 - (0.164 / (x1 * x2) + 631.13 * x3 - 54.48)
+        g[6] = 550 - (0.164 / (x1 * x2 + eps) + 631.13 * x3 - 54.48)
 
         g = np.where(g < 0, -g, 0)
         f[5] = g.sum(axis=0)
@@ -925,6 +955,8 @@ class RE61(RE_base_class):
 class RE91(RE_base_class):
 
     def __init__(self):
+        
+        super().__init__()
 
         self.problem_name = 'Car cab design'
         self.set_reference_point("RE91")
@@ -949,7 +981,7 @@ class RE91(RE_base_class):
 
         x = self.transforn_population(pop)
 
-        f = np.zeros(self.n_objectives, x.shape[0])
+        f = np.zeros([self.n_objectives, x.shape[0]])
 
         x1, x2,x3,x4,x5,x6,x7 = x.T
         # x1 = x[:, 0]
@@ -969,8 +1001,8 @@ class RE91(RE_base_class):
         f[0] = 1.98 + 4.9 * x1 + 6.67 * x2 + 6.98 * x3 + \
             4.01 * x4 + 1.75 * x5 + 0.00001 * x6 + 2.73 * x7
         # Second function
-        f[1] = np.clip((1.16 - 0.3717 * x2 * x4 - 0.00931 * x2 *
-                        x10 - 0.484 * x3 * x9 + 0.01343 * x6 * x10)/1.0, 0, None)
+        f[1] = np.clip(1.16 - 0.3717 * x2 * x4 - 0.00931 * x2 *
+                       x10 - 0.484 * x3 * x9 + 0.01343 * x6 * x10, 0, None)
         # Third function
         f[2] = np.clip((0.261 - 0.0159 * x1 * x2 - 0.188 * x1 * x8 - 0.019 * x2 * x7 + 0.0144 * x3 * x5 +
                         0.87570001 * x5 * x10 + 0.08045 * x6 * x9 + 0.00139 * x8 * x11 + 0.00001575 * x10 * x11)/0.32, 0, None)
@@ -996,16 +1028,23 @@ class RE91(RE_base_class):
 
         return f.T
 
-
-def get_prob_pairs(prob_list):
-
-    prob_pairs = np.array(prob_list).reshape(-1, 2).tolist()
-    return prob_pairs, [f'Problem Set{i}' for i in range(len(prob_pairs))]
+class prob_set:
+    def __init__(self, tasks):
+        self.tasks = tasks
+    def get_tasks(self):
+        return self.tasks
+    
+def get_prob_pairs(prob_list = None):
+    
+    if prob_list is None:
+        p = np.array(all_probs).reshape(-1, 2).tolist()
+    else:
+        p = np.array(prob_list).reshape(-1, 2).tolist()
+    return [prob_set(t) for t in p], [f'Problem Set{i}' for i in range(len(p))]
 
 def get_random_prob_pairs(prob_list):
     np.random.shuffle(prob_list)
     return get_prob_pairs(prob_list)
-
 
 all_probs = [RE21(), RE22(), RE23(), RE24(), RE25(), RE31(), RE32(
 ), RE33(), RE34(), RE35(), RE36(), RE37(), RE41(), RE42(), RE61(), RE91()]

@@ -19,11 +19,8 @@ import implementation
 from implementation.problems.reproblems_master import *
 from implementation.NSGAII import NSGAII
 
-# tasks = [CIHS(), CIMS(), CILS(), PIHS(), PIMS(), PILS(), NIHS(), NIMS(), NILS()]
-# names = ["CIHS", "CIMS", "CILS", "PIHS", "PIMS", "PILS", "NIHS", "NIMS", "NILS"]
-
 tasks = get_prob_pairs()
-names = [f'Problem Set{i}' for i in range(len(tasks))]
+names = [f'Problem Set{i + 1}' for i in range(len(tasks))]
 
 with open("setting.json") as f:
     params = json.load(f, object_pairs_hook=OrderedDict)
