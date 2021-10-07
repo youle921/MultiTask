@@ -1040,7 +1040,7 @@ def get_prob_pairs(prob_list = None):
         p = np.array(all_probs).reshape(-1, 2).tolist()
     else:
         p = np.array(prob_list).reshape(-1, 2).tolist()
-    return [prob_set(t) for t in p], [f'Problem Set{i}' for i in range(len(p))]
+    return [prob_set(t) for t in p], [f'Problem Set{i + 1}' for i in range(len(p))]
 
 def get_random_prob_pairs(prob_list):
     np.random.shuffle(prob_list)
