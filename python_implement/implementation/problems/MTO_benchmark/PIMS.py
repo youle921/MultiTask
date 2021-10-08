@@ -20,6 +20,8 @@ class PIMS:
         self.t1 = PIMS_t1()
         self.t2 = PIMS_t2()
 
+        self.problem_name = "PIMS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

@@ -16,6 +16,8 @@ class PIHS:
         self.t1 = PIHS_t1()
         self.t2 = PIHS_t2()
 
+        self.problem_name = "PIHS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

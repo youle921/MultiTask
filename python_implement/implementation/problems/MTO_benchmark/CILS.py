@@ -20,6 +20,8 @@ class CILS:
         self.t1 = CILS_t1()
         self.t2 = CILS_t2()
 
+        self.problem_name = "CILS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

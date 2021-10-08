@@ -20,6 +20,8 @@ class NILS:
         self.t1 = NILS_t1()
         self.t2 = NILS_t2()
 
+        self.problem_name = "NILS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

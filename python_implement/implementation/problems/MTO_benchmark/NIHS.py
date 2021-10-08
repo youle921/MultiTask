@@ -20,6 +20,8 @@ class NIHS:
         self.t1 = NIHS_t1()
         self.t2 = NIHS_t2()
 
+        self.problem_name = "NIHS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

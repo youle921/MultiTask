@@ -34,6 +34,11 @@ class EMOA_runner:
         with open(f'{self.caller_path}/setting.json') as f:
             self.params = json.load(f, object_pairs_hook=OrderedDict)
 
+        if "n_eval" in self.params:
+            self.criteria = self.params["n_eval"]
+        elif "n_gen" in self.params:
+            self.criteria = self.params["n_gen"]
+
     def run(self):
 
         self.load_params()
@@ -58,12 +63,12 @@ class EMOA_runner:
             start_time = datetime.now()
             solver = self.alg(self.params, p)
 
-            for trial in range(self.params["ntrial"]):
+            for trial in range(self.params["n_trial"]):
 
                 np.random.seed(trial)
 
                 solver.init_pop()
-                solver.execute(self.params["neval"])
+                solver.execute(self.criteria)
 
                 final_objs.append(solver.pop["objectives"])
 
@@ -96,7 +101,7 @@ class EMOA_runner:
                 print(results[i, prob_no, 1])
 
                 np.savetxt(f'{path}/all_{name}s.csv', metric[i], delimiter = ",")
-                
+
             print(f'{p.problem_name} Finished\n')
 
         for name, result in zip(self.metric_names, results):

@@ -16,6 +16,8 @@ class PILS:
         self.t1 = PILS_t1()
         self.t2 = PILS_t2()
 
+        self.problem_name = "PILS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

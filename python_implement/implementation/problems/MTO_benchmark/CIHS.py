@@ -20,6 +20,8 @@ class CIHS:
         self.t1 = CIHS_t1()
         self.t2 = CIHS_t2()
 
+        self.problem_name = "CIHS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

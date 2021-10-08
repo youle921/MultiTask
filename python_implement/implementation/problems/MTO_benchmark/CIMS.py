@@ -20,6 +20,8 @@ class CIMS:
         self.t1 = CIMS_t1()
         self.t2 = CIMS_t2()
 
+        self.problem_name = "CIMS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]

@@ -20,6 +20,8 @@ class NIMS:
         self.t1 = NIMS_t1()
         self.t2 = NIMS_t2()
 
+        self.problem_name = "NIMS"
+
     def evaluate_value(self, population):
 
         return [self.t1.evaluate, self.t2.evaluate]
