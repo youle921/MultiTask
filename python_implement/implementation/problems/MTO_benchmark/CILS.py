@@ -6,31 +6,18 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-import os
-import sys
-sys.path.append(os.path.dirname(__file__))
-
-from base_class import MTO_base_class
+from MTO_base import MTO_base
 from distance_function import rastrigin, ackley
 
 class CILS:
 
     def __init__(self):
 
-        self.t1 = CILS_t1()
-        self.t2 = CILS_t2()
+        super().__init__([CILS_t1(), CILS_t2()])
 
         self.problem_name = "CILS"
 
-    def evaluate_value(self, population):
-
-        return [self.t1.evaluate, self.t2.evaluate]
-
-    def get_tasks(self):
-
-        return [self.t1, self.t2]
-
-class CILS_t1(MTO_base_class):
+class CILS_t1(MTO_base):
 
     def __init__(self):
 
@@ -44,7 +31,7 @@ class CILS_t1(MTO_base_class):
         self.lower = np.array([0] + [-2] * (self.ndim - 1))
         self.upper = np.array([1] + [2] * (self.ndim - 1))
 
-        self.set_reference_point("circle")
+        self.set_IGD_ref("circle")
 
     def f1(self, population):
 
@@ -54,7 +41,7 @@ class CILS_t1(MTO_base_class):
 
         return self.dist_f(population[:, :]) * np.sin(np.pi * population[:, 0] * 0.5)
 
-class CILS_t2(MTO_base_class):
+class CILS_t2(MTO_base):
 
     def __init__(self):
 
@@ -68,7 +55,7 @@ class CILS_t2(MTO_base_class):
         self.lower = np.array([0] + [-1] * (self.ndim - 1))
         self.upper = np.array([1] + [1] * (self.ndim - 1))
 
-        self.set_reference_point("convex")
+        self.set_IGD_ref("convex")
 
     def f1(self, population):
 

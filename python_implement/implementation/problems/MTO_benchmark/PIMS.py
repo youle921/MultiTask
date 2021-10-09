@@ -6,31 +6,18 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-import os
-import sys
-sys.path.append(os.path.dirname(__file__))
-
-from base_class import MTO_base_class
+from MTO_base import MTO_base
 from distance_function import sphere, rastrigin
 
 class PIMS:
 
     def __init__(self):
 
-        self.t1 = PIMS_t1()
-        self.t2 = PIMS_t2()
+        super().__init__([PIMS_t1(), PIMS_t2()])
 
         self.problem_name = "PIMS"
 
-    def evaluate_value(self, population):
-
-        return [self.t1.evaluate, self.t2.evaluate]
-
-    def get_tasks(self):
-
-        return [self.t1, self.t2]
-
-class PIMS_t1(MTO_base_class):
+class PIMS_t1(MTO_base):
 
     def __init__(self):
 
@@ -46,7 +33,7 @@ class PIMS_t1(MTO_base_class):
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_PIMS_1.txt")
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_1.txt")
-        self.set_reference_point("circle")
+        self.set_IGD_ref("circle")
 
     def f1(self, population):
 
@@ -56,7 +43,7 @@ class PIMS_t1(MTO_base_class):
 
         return self.dist_f(population[:, :]) * np.sin(np.pi * population[:, 0] * 0.5)
 
-class PIMS_t2(MTO_base_class):
+class PIMS_t2(MTO_base):
 
     def __init__(self):
 
@@ -71,7 +58,7 @@ class PIMS_t2(MTO_base_class):
         self.upper = np.array([1] + [1] * (self.ndim - 1))
 
         self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_2.txt")
-        self.set_reference_point("concave")
+        self.set_IGD_ref("concave")
 
     def f1(self, population):
 

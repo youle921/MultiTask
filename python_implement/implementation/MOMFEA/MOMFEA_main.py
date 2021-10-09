@@ -142,7 +142,7 @@ class MOMFEA:
     def _update(self, offs, sf):
 
         union = {}
-        
+
         union["variables"] = np.vstack((self.pops["variables"][sf] ,offs["variables"]))
         union["objectives"] = np.vstack((self.pops["objectives"][sf], offs["objectives"]))
 
@@ -167,3 +167,7 @@ class MOMFEA:
         self.pops["variables"][sf][offset:] = union["variables"][r == max(r)][remain]
         self.pops["pareto_rank"][sf][offset:] = max(r)
         self.pops["crowding_distance"][sf][offset:] = calc_cd(self.pops["objectives"][sf][offset:])
+
+    def get_populations(self):
+
+        return self.pops["objectives"]

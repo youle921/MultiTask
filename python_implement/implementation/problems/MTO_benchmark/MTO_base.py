@@ -7,25 +7,20 @@ Created on Wed Jul 29 01:45:26 2020
 import numpy as np
 import os
 
-class MTO_base_class:
+from ...base_class.base_problem import problem
+
+class MTO_base(problem):
 
     def __init__(self):
 
-        self.upper = None
-        self.lower = None
+        super().__init__()
 
         self.shift_vector = None
         self.rotation_matrix = None
 
-        self.IGD_ref = None
-        self.current_path = os.path.dirname(__file__)
+    def set_IGD_ref(self, pf_type):
 
-        self.code = 'real'
-        self.project_uss = True
-
-    def set_reference_point(self, pf_type):
-
-        self.IGD_ref = np.loadtxt(self.current_path + "/pf/" + pf_type + ".pf")
+        self.IGD_ref = np.loadtxt(f'{self.current_path}/PF/{pf_type}.csv', delimiter = ',')
 
     def evaluate(self, population):
 
@@ -36,16 +31,11 @@ class MTO_base_class:
 
         return np.vstack([f1_value, f2_value]).T
 
-    def repair_population(self, pop):
-
-        pop[pop > 1] = 1
-        pop[pop < 0] = 0
-
 # apply transformation(normalize + shift + rotate)
     def transforn_population(self, pop):
 
         if self.project_uss:
-            pop_ = self.reverse_normalize(pop)
+            pop_ = self.reverse_projection(pop)
         else:
             pop_ = pop.copy()
 
@@ -55,12 +45,6 @@ class MTO_base_class:
             pop_ = self.rotate_population(pop_)
 
         return pop_
-
-    def reverse_normalize(self, pop):
-
-        tf_pop = pop * (self.upper - self.lower)[None, :] + self.lower[None, :]
-
-        return tf_pop
 
     def shift_population(self, pop):
 
@@ -73,11 +57,3 @@ class MTO_base_class:
         pop[:, 1:] = np.dot(pop[:, 1:], self.rotation_matrix.T)
 
         return pop
-
-    def calc_IGD(self, objective):
-
-        dist = np.sqrt(np.sum((self.IGD_ref[:, None, :] - objective[None, :, :])**2, axis = 2))
-        min_dist = np.min(dist, axis = 1)
-        sqrt_sum =  np.sqrt((min_dist**2).sum())
-
-        return sqrt_sum/self.IGD_ref.shape[0]

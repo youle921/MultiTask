@@ -6,31 +6,18 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-import os
-import sys
-sys.path.append(os.path.dirname(__file__))
-
-from base_class import MTO_base_class
+from MTO_base import MTO_base
 from distance_function import griewank, ackley
 
 class NILS:
 
     def __init__(self):
 
-        self.t1 = NILS_t1()
-        self.t2 = NILS_t2()
+        super().__init__([NILS_t1(), NILS_t2()])
 
         self.problem_name = "NILS"
 
-    def evaluate_value(self, population):
-
-        return [self.t1.evaluate, self.t2.evaluate]
-
-    def get_tasks(self):
-
-        return [self.t1, self.t2]
-
-class NILS_t1(MTO_base_class):
+class NILS_t1(MTO_base):
 
     def __init__(self):
 
@@ -45,7 +32,7 @@ class NILS_t1(MTO_base_class):
         self.upper = np.array([1] + [1] + [50] * (self.ndim - 2))
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_NILS_1.txt")
-        self.set_reference_point("sphere")
+        self.set_IGD_ref("sphere")
 
     def f1(self, population):
 
@@ -75,7 +62,7 @@ class NILS_t1(MTO_base_class):
 
         return pop
 
-class NILS_t2(MTO_base_class):
+class NILS_t2(MTO_base):
 
     def __init__(self):
 
@@ -89,7 +76,7 @@ class NILS_t2(MTO_base_class):
         self.lower = np.array([0] + [0] + [-100] * (self.ndim - 2))
         self.upper = np.array([1] + [1] + [100] * (self.ndim - 2))
 
-        self.set_reference_point("concave")
+        self.set_IGD_ref("concave")
 
     def f1(self, population):
 

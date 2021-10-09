@@ -6,27 +6,18 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from base_class import MTO_base_class
+from MTO_base import MTO_base
 from distance_function import griewank, ackley
 
 class PILS:
 
     def __init__(self):
 
-        self.t1 = PILS_t1()
-        self.t2 = PILS_t2()
+        super().__init__([PILS_t1(), PILS_t2()])
 
         self.problem_name = "PILS"
 
-    def evaluate_value(self, population):
-
-        return [self.t1.evaluate, self.t2.evaluate]
-
-    def get_tasks(self):
-
-        return [self.t1, self.t2]
-
-class PILS_t1(MTO_base_class):
+class PILS_t1(MTO_base):
 
     def __init__(self):
 
@@ -40,7 +31,7 @@ class PILS_t1(MTO_base_class):
         self.lower = np.array([0] + [-50] * (self.ndim - 1))
         self.upper = np.array([1] + [50] * (self.ndim - 1))
 
-        self.set_reference_point("circle")
+        self.set_IGD_ref("circle")
 
     def f1(self, population):
 
@@ -50,7 +41,7 @@ class PILS_t1(MTO_base_class):
 
         return self.dist_f(population[:, :]) * np.sin(np.pi * population[:, 0] * 0.5)
 
-class PILS_t2(MTO_base_class):
+class PILS_t2(MTO_base):
 
     def __init__(self):
 
@@ -65,7 +56,7 @@ class PILS_t2(MTO_base_class):
         self.upper = np.array([1] + [100] * (self.ndim - 1))
 
         self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_PILS_2.txt")
-        self.set_reference_point("circle")
+        self.set_IGD_ref("circle")
 
     def f1(self, population):
 

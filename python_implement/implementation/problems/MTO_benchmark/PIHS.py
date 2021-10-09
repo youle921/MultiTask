@@ -6,27 +6,18 @@ Created on Wed Jul 29 01:34:16 2020
 """
 import numpy as np
 
-from base_class import MTO_base_class
+from MTO_base import MTO_base
 from distance_function import sphere, rastrigin
 
 class PIHS:
 
     def __init__(self):
 
-        self.t1 = PIHS_t1()
-        self.t2 = PIHS_t2()
+        super().__init__([PIHS_t1(), PIHS_t2()])
 
         self.problem_name = "PIHS"
 
-    def evaluate_value(self, population):
-
-        return [self.t1.evaluate, self.t2.evaluate]
-
-    def get_tasks(self):
-
-        return [self.t1, self.t2]
-
-class PIHS_t1(MTO_base_class):
+class PIHS_t1(MTO_base):
 
     def __init__(self):
 
@@ -40,7 +31,7 @@ class PIHS_t1(MTO_base_class):
         self.lower = np.array([0] + [-100] * (self.ndim - 1))
         self.upper = np.array([1] + [100] * (self.ndim - 1))
 
-        self.set_reference_point("convex")
+        self.set_IGD_ref("convex")
 
     def f1(self, population):
 
@@ -50,7 +41,7 @@ class PIHS_t1(MTO_base_class):
 
         return self.dist_f(population[:, :]) * (1 - (population[:, 0]/self.dist_f(population[:, :]))**0.5)
 
-class PIHS_t2(MTO_base_class):
+class PIHS_t2(MTO_base):
 
     def __init__(self):
 
@@ -65,7 +56,7 @@ class PIHS_t2(MTO_base_class):
         self.upper = np.array([1] + [100] * (self.ndim - 1))
 
         self.shift_vector = np.loadtxt(self.current_path +"/shift_data/S_PIHS_2.txt")
-        self.set_reference_point("convex")
+        self.set_IGD_ref("convex")
 
     def f1(self, population):
 
