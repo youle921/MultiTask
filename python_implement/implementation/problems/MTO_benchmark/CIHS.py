@@ -6,10 +6,12 @@ Created on Wed Jul 29 01:34:16 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import sphere, mean
+from ...base_class.base_problem_set import problem_set
 
-class CIHS:
+from .MTO_base import MTO_base
+from .distance_function import sphere, mean
+
+class CIHS(problem_set):
 
     def __init__(self):
 

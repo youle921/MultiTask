@@ -29,7 +29,7 @@ class RE32(RE_base):
         super().__init__()
 
         self.problem_name = 'Welded beam design'
-        self.set_reference_point("RE32")
+        self.set_IGD_ref("RE32")
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0

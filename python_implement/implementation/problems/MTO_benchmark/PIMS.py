@@ -6,10 +6,12 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import sphere, rastrigin
+from ...base_class.base_problem_set import problem_set
 
-class PIMS:
+from .MTO_base import MTO_base
+from .distance_function import sphere, rastrigin
+
+class PIMS(problem_set):
 
     def __init__(self):
 
@@ -31,8 +33,8 @@ class PIMS_t1(MTO_base):
         self.lower = np.array([0] + [0] * (self.ndim - 1))
         self.upper = np.array([1] + [1] * (self.ndim - 1))
 
-        self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_PIMS_1.txt")
-        self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_1.txt")
+        self.shift_vector = np.loadtxt(self.current_dir + "/shift_data/S_PIMS_1.txt")
+        self.rotation_matrix = np.loadtxt(self.current_dir + "/matrix_data/M_PIMS_1.txt")
         self.set_IGD_ref("circle")
 
     def f1(self, population):
@@ -57,7 +59,7 @@ class PIMS_t2(MTO_base):
         self.lower = np.array([0] + [0] * (self.ndim - 1))
         self.upper = np.array([1] + [1] * (self.ndim - 1))
 
-        self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_PIMS_2.txt")
+        self.rotation_matrix = np.loadtxt(self.current_dir + "/matrix_data/M_PIMS_2.txt")
         self.set_IGD_ref("concave")
 
     def f1(self, population):

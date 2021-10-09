@@ -5,7 +5,6 @@ Created on Sun Oct 10 00:52:15 2021
 @author: youle
 """
 
-import os
 from abc import ABCMeta, abstractmethod
 
 class problem(metaclass = ABCMeta):
@@ -21,8 +20,6 @@ class problem(metaclass = ABCMeta):
 
         self.IGD_ref = None
         self.HV_ref = None
-
-        self.current_dir = os.path.dirname(__file__)
 
         self.code = 'real'
         self.project_uss = True

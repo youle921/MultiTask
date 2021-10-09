@@ -6,10 +6,12 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import rosenbrock, sphere
+from ...base_class.base_problem_set import problem_set
 
-class NIMS:
+from .MTO_base import MTO_base
+from .distance_function import rosenbrock, sphere
+
+class NIMS(problem_set):
 
     def __init__(self):
 
@@ -69,7 +71,7 @@ class NIMS_t2(MTO_base):
         self.lower = np.array([0] + [0] + [-20] * (self.ndim - 2))
         self.upper = np.array([1] + [1] + [20] * (self.ndim - 2))
 
-        self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_NIMS_2.txt")
+        self.rotation_matrix = np.loadtxt(self.current_dir + "/matrix_data/M_NIMS_2.txt")
         self.set_IGD_ref("concave")
 
     def f1(self, population):

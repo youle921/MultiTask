@@ -17,10 +17,12 @@ class MTO_base(problem):
 
         self.shift_vector = None
         self.rotation_matrix = None
+        
+        self.current_dir = os.path.dirname(__file__)
 
     def set_IGD_ref(self, pf_type):
 
-        self.IGD_ref = np.loadtxt(f'{self.current_path}/PF/{pf_type}.csv', delimiter = ',')
+        self.IGD_ref = np.loadtxt(f'{self.current_dir}/PF/{pf_type}.csv', delimiter = ',')
 
     def evaluate(self, population):
 

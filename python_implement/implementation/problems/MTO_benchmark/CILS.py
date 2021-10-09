@@ -6,10 +6,12 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import rastrigin, ackley
+from ...base_class.base_problem_set import problem_set
 
-class CILS:
+from .MTO_base import MTO_base
+from .distance_function import rastrigin, ackley
+
+class CILS(problem_set):
 
     def __init__(self):
 

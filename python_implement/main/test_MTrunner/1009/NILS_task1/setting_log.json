@@ -2,8 +2,8 @@
 "npop": 100,
 "noff": 100,
 "n_trial": 31,
-"n_eval": 1000,
-"start_time": "2021-10-09T03:32:06.956977",
-"end_time": "2021-10-09T03:32:08.556988",
-"computational time[s]": 1.600011
+"n_eval": 200000,
+"start_time": "2021-10-09T04:09:41.486462",
+"end_time": "2021-10-09T04:13:23.698011",
+"computational time[s]": 222.211549
 }

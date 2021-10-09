@@ -6,10 +6,12 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import griewank, ackley
+from ...base_class.base_problem_set import problem_set
 
-class NILS:
+from .MTO_base import MTO_base
+from .distance_function import griewank, ackley
+
+class NILS(problem_set):
 
     def __init__(self):
 
@@ -31,7 +33,7 @@ class NILS_t1(MTO_base):
         self.lower = np.array([0] + [0] + [-50] * (self.ndim - 2))
         self.upper = np.array([1] + [1] + [50] * (self.ndim - 2))
 
-        self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_NILS_1.txt")
+        self.shift_vector = np.loadtxt(self.current_dir + "/shift_data/S_NILS_1.txt")
         self.set_IGD_ref("sphere")
 
     def f1(self, population):

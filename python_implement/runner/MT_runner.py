@@ -26,7 +26,7 @@ class MT_runner(EMOA_runner):
 
         if "IGD" in metric:
             self.metric_calculator.append(
-                [[IGD.IGD(p.IGD_ref) for p in problem.get_tasks()] for problem in self.problemset])
+                [[IGD.IGD(p.IGD_ref) for p in problem.tasks] for problem in self.problemset])
             self.metric_names.append("IGD")
         if "HV" in metric:
             self.metric_calculator.append(
@@ -46,7 +46,7 @@ class MT_runner(EMOA_runner):
         for prob, prob_no in zip(self.problemset, range(len(self.problemset))):
 
             # preprocessing
-            print(f'{ prob.problem_name} Started '.center(30, '*'))
+            print(f'  {prob.problem_name} Started  '.center(50, '*'))
 
             metric = np.empty([len(self.metric_calculator),
                                2, self.params["n_trial"]])
@@ -69,7 +69,7 @@ class MT_runner(EMOA_runner):
                 solver.init_pop()
                 solver.execute(self.criteria)
 
-                for i, obj in enumerate(solver.get_populations):
+                for i, obj in enumerate(solver.get_populations()):
                     final_objs[i].append(obj)
 
             # finish running algorithm
@@ -94,21 +94,21 @@ class MT_runner(EMOA_runner):
                         *map(calculator[prob_no][task_no].compute, final_objs[task_no])]
 
             for i, name in enumerate(self.metric_names):
-                print(f'{name:^30}')
+                print(f'{name:^50}')
 
-                print(f'{" median ":-^30}')
+                print(f'{" median ":-^50}')
                 results[i, prob_no, :, 0] = np.median(metric[i], axis=1)
-                print(results[i, prob_no, :, 0])
+                print(*results[i, prob_no, :, 0],)
 
-                print(f'{" standard deviation ":-^30}')
+                print(f'{" standard deviation ":-^50}')
                 results[i, prob_no, :, 1] = metric[i].std(axis=1)
-                print(results[i, prob_no, :, 1])
+                print(*results[i, prob_no, :, 1],)
 
             for task_no in range(2):
                 np.savetxt(f'{path[task_no]}/all_{name}s.csv',
                            metric[i, task_no], delimiter=",")
 
-            print(f' {prob.problem_name} Finished '.center(30, '*'), "\n")
+            print(f'  {prob.problem_name} Finished  '.center(50, '*'), "\n\n")
 
         for name, result in zip(self.metric_names, results):
             np.savetxt(f'{parent_path}/all_{name}_results.csv',

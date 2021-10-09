@@ -6,10 +6,12 @@ Created on Wed Sep  9 00:48:07 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import rosenbrock, mean
+from ...base_class.base_problem_set import problem_set
 
-class CIMS:
+from .MTO_base import MTO_base
+from .distance_function import rosenbrock, mean
+
+class CIMS(problem_set):
 
     def __init__(self):
 
@@ -55,8 +57,8 @@ class CIMS_t2(MTO_base):
         self.lower = np.array([0] + [-5] * (self.ndim - 1))
         self.upper = np.array([1] + [5] * (self.ndim - 1))
 
-        self.shift_vector = np.loadtxt(self.current_path + "/shift_data/S_CIMS_2.txt")
-        self.rotation_matrix = np.loadtxt(self.current_path + "/matrix_data/M_CIMS_2.txt")
+        self.shift_vector = np.loadtxt(self.current_dir + "/shift_data/S_CIMS_2.txt")
+        self.rotation_matrix = np.loadtxt(self.current_dir + "/matrix_data/M_CIMS_2.txt")
         self.set_IGD_ref("circle")
 
     def f1(self, population):

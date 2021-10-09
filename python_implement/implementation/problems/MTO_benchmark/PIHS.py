@@ -6,10 +6,12 @@ Created on Wed Jul 29 01:34:16 2020
 """
 import numpy as np
 
-from MTO_base import MTO_base
-from distance_function import sphere, rastrigin
+from ...base_class.base_problem_set import problem_set
 
-class PIHS:
+from .MTO_base import MTO_base
+from .distance_function import sphere, rastrigin
+
+class PIHS(problem_set):
 
     def __init__(self):
 
@@ -55,7 +57,7 @@ class PIHS_t2(MTO_base):
         self.lower = np.array([0] + [-100] * (self.ndim - 1))
         self.upper = np.array([1] + [100] * (self.ndim - 1))
 
-        self.shift_vector = np.loadtxt(self.current_path +"/shift_data/S_PIHS_2.txt")
+        self.shift_vector = np.loadtxt(self.current_dir +"/shift_data/S_PIHS_2.txt")
         self.set_IGD_ref("convex")
 
     def f1(self, population):
