@@ -32,5 +32,8 @@ class problem(metaclass = ABCMeta):
         pass
 
     def reverse_projection(self, pop):
-
-        return pop[:, :self.ndim] * (self.upper - self.lower)[None, :] + self.lower[None, :]
+        
+        if self.project_uss:
+            return pop[:, :self.ndim] * (self.upper - self.lower)[None, :] + self.lower[None, :]
+        else:
+            return pop[:, :self.ndim]

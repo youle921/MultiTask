@@ -21,7 +21,7 @@ class EMEA:
         for alg in self.algs:
             alg.init_pop()
 
-        self.learn_matrix()
+        self._learn_matrix()
 
     def execute(self, max_gen):
 
@@ -31,12 +31,12 @@ class EMEA:
                 [alg.execute(1) for alg in self.algs]
 
             else:
-                inject_pop = self.get_inject_pop()
+                inject_pop = self._get_inject_pop()
                 [self.algs[i].migration_gen(inject_pop[1 - i]) for i in range(len(self.algs))]
 
         return
 
-    def learn_matrix(self):
+    def _learn_matrix(self):
 
         for alg_idx in range(len(self.algs)):
             for source_obj in range(self.algs[alg_idx].pop["objectives"].shape[1]):
@@ -56,9 +56,9 @@ class EMEA:
 
                     if d1 != d2:
                         if d1 > d2:
-                            target_pop = self.padding_pop(target_pop, d1)
+                            target_pop = self._padding_pop(target_pop, d1)
                         else:
-                            source_pop = self.padding_pop(source_pop, d2)
+                            source_pop = self._padding_pop(source_pop, d2)
 
                     xx = target_pop.T
                     noise = source_pop.T
@@ -81,14 +81,14 @@ class EMEA:
 
         return
 
-    def padding_pop(self, target, dim):
+    def _padding_pop(self, target, dim):
 
         padded_pop = np.zeros([target.shape[0], dim])
         padded_pop[:, :target.shape[1]] = target
 
         return padded_pop
 
-    def get_inject_pop(self):
+    def _get_inject_pop(self):
 
         inject_pop = []
 
@@ -106,9 +106,13 @@ class EMEA:
                 inject_pop.append\
                     (np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T[:, :target_dim])
             elif target_dim > source_dim:
-                source_pop = self.padding_pop(source_pop, target_dim)
+                source_pop = self._padding_pop(source_pop, target_dim)
                 inject_pop.append(np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T)
             else:
                 inject_pop.append(np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T)
 
         return inject_pop
+    
+    def get_populations(self):
+        
+        return [alg.pop["objectives"] for alg in self.algs]

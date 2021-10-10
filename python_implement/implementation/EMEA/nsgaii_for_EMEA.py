@@ -40,7 +40,7 @@ class NSGAII_EMEA(NSGAII):
 
             parents = self.selection()
 
-            self.offs["variables"] = self.mutation(self.crossover(parents, lower = self.lb, upper = self.ub), \
+            self.offs["variables"] = self.mutation(self.crossover(parents), \
                                                    lower = self.lb, upper = self.ub)
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self.update(self.offs)
@@ -52,27 +52,27 @@ class NSGAII_EMEA(NSGAII):
         injected_pop["variables"] = np.clip(mig, self.lb, self.ub)
         injected_pop["objectives"] = self.eval_method(injected_pop["variables"])
 
-        self.injection(injected_pop)
+        self._injection(injected_pop)
 
         parents = self.selection()
 
-        self.offs["variables"] = self.mutation(self.crossover(parents, lower = self.lb, upper = self.ub),\
+        self.offs["variables"] = self.mutation(self.crossover(parents),\
                                                lower = self.lb, upper = self.ub)[nmig:]
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
 
-        self.split_injected_pop()
+        self._split_injected_pop()
         self.offs = self.concat_pops(self.offs, injected_pop)
 
         self.update(self.offs)
 
-    def split_injected_pop(self):
+    def _split_injected_pop(self):
 
         self.pop["objectives"] = self.pop["objectives"][:self.npop]
         self.pop["variables"] = self.pop["variables"][:self.npop]
         self.pop["pareto_rank"] = np.empty(self.npop)
         self.pop["crowding_distance"] = np.empty(self.npop)
 
-    def injection(self, injected_pop):
+    def _injection(self, injected_pop):
 
         union = self.concat_pops(self.pop, injected_pop)
         n_union = union["objectives"].shape[0]

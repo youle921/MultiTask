@@ -51,9 +51,9 @@ class EMOA_runner:
         for p, prob_no in zip(self.problem, range(len(self.problem))):
 
             # preprocessing
-            print(f'{p.problem_name} Started')
+            print(f'  {p.problem_name} Started  '.center(50, '*'))
 
-            metric = np.empty([len(self.metric_calculator), self.params["ntrial"]])
+            metric = np.empty([len(self.metric_calculator), self.params["n_trial"]])
             final_objs = []
 
             path = f'{parent_path}/{p.problem_name}'
@@ -90,19 +90,19 @@ class EMOA_runner:
                 metric[idx] = [*map(calculator[prob_no].compute, final_objs)]
 
             for i, name in enumerate(self.metric_names):
-                print(f'{name:^30}')
+                print(f'{name:^50}')
 
-                print(f'{" median ":-^30}')
+                print(f'{" median ":-^50}')
                 results[i, prob_no, 0] = np.median(metric[i])
                 print(results[i, prob_no, 0])
 
-                print(f'{" standard deviation ":-^30}')
+                print(f'{" standard deviation ":-^50}')
                 results[i, prob_no, 1] = metric[i].std()
                 print(results[i, prob_no, 1])
 
                 np.savetxt(f'{path}/all_{name}s.csv', metric[i], delimiter = ",")
 
-            print(f'{p.problem_name} Finished\n')
+            print(f'  {p.problem_name} Finished  '.center(50, '*'), '\n\n')
 
         for name, result in zip(self.metric_names, results):
             np.savetxt(f'{parent_path}/all_{name}_results.csv', result, delimiter = ',')
