@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Apr 14 22:04:37 2020
+
+@author: youle
+"""
+import numpy as np
+
+from ..NSGAII.nsgaii_main import NSGAII
+from ..NSGAII.NSGA_util import calc_cd, NDsorting, mating
+
+class NSGAII_Island(NSGAII):
+
+    def __init__(self, params, problem, ndim):
+
+        super().__init__(params, problem, ndim)
+        self.mating_pool = dict(
+                                variables = np.empty_like(self.pop["varialbes"]),
+                                objectives = np.empty_like(self.pop["objectives"]),
+                                pareto_rank = np.empty_like(self.pop["pareto_rank"]),
+                                crowding_distance = np.empty_like(self.pop["crowding_distance"])
+                                )
+
+    def execute(self, ngen):
+
+        for _ in range(ngen):
+
+            parents = self._selection()
+
+            self.offs["variables"] = self.mutation(self.crossover(parents))
+            self.offs["objectives"] = self.eval_method(self.offs["variables"])
+            self._update(self.offs)
+
+    def migration_gen(self, mig):
+
+        injected_pop = {}
+        injected_pop["variables"] = mig
+        injected_pop["objectives"] = self.eval_method(injected_pop["variables"])
+
+        parents = self._selection_mig_gen(injected_pop)
+
+        self.offs["variables"] = self.mutation(self.crossover(parents))
+        self.offs["objectives"] = self.eval_method(self.offs["variables"])
+
+        self.offs = self.concat_pops(self.offs, injected_pop)
+
+        self._update(self.offs)
+
+    def _selection_mig_gen(self, mig):
+
+        # create mating pool
+        internal_size = self.npop - mig.shape[0]
+
+        r = self.pop["pareto_rank"]
+        max_r = self.pop["pareto_rank"].argsort()[internal_size]
+
+        mask = r < max_r
+        offset = mask.sum()
+
+        self.mating_pool["objectives"][:offset] = self.pop["objectives"][mask]
+        self.mating_pool["variables"][:offset]= self.pop["variables"][mask]
+
+        cd = self.pop["crowding_distance"][r == max_r]
+        remain = np.argsort(-cd)[: internal_size - offset]
+
+        self.mating_pool["objectives"][offset:internal_size] = self.pop["objectives"][r == max_r][remain]
+        self.mating_pool["variables"][offset:internal_size] = self.pop["variables"][r == max_r][remain]
+
+        self.mating_pool["objectives"][internal_size:] = mig["objectives"]
+        self.mating_pool["variables"][internal_size:] = mig["variables"]
+
+        self.mating_pool["pareto_rank"] = NDsorting(self.mating_pool["objectives"], self.npop)
+        for i in range(r + 1):
+            self.mating_pool["crowding_distance"][self.mating_pool["pareto_rank"] == i] = \
+                calc_cd(self.mating_pool["objectives"][self.mating_pool["pareto_rank"] == i])
+
+        # parent selection
+        parents = [self.mating_pool["variables"]\
+                   [mating(self.mating_pool["pareto_rank"],self.mating_pool["crowding_distance"],
+                           int((self.noff - mig.shape[0]) / 2))] for _ in range(2)]
+
+        return parents
+
+    def _split_injected_pop(self):
+
+        self.pop["objectives"] = self.pop["objectives"][:self.npop]
+        self.pop["variables"] = self.pop["variables"][:self.npop]
+        self.pop["pareto_rank"] = np.empty(self.npop)
+        self.pop["crowding_distance"] = np.empty(self.npop)
+
+    def _injection(self, injected_pop):
+
+        union = self.concat_pops(self.pop, injected_pop)
+        n_union = union["objectives"].shape[0]
+
+        self.pop["variables"] = union["variables"]
+        self.pop["objectives"] = union["objectives"]
+
+        r = NDsorting(union["objectives"], n_union)
+        self.pop["pareto_rank"] = r
+
+        self.pop["crowding_distance"] = np.empty_like(self.pop["pareto_rank"])
+
+        for i in range(max(r) + 1):
+
+            self.pop["crowding_distance"][r == i] = calc_cd(self.pop["objectives"][r == i])

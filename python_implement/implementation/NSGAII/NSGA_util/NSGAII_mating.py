@@ -8,11 +8,10 @@ import numpy as np
 
 def mating(pr, cd, num):
 
-    rand_idx = np.random.randint(pr.shape[0], size = [num, 2])
+    cost = pr + 1/(1 + cd)
+    rank = cost.argsort()
 
-    idx = np.argmin([pr[rand_idx[:, 0]], pr[rand_idx[:, 1]]], axis = 0)
-    same_pr = pr[rand_idx[:, 0]] == pr[rand_idx[:, 1]]
-    idx[same_pr] = np.argmax([cd[rand_idx[same_pr, 0]],\
-                              cd[rand_idx[same_pr, 1]]], axis = 0)
+    rand_idx = np.random.randint(pr.shape[0], size = [num, 2])
+    idx = rank[rand_idx].argmin(axis = 1)
 
     return rand_idx[range(rand_idx.shape[0]), idx]

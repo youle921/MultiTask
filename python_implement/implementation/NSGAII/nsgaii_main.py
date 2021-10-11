@@ -10,9 +10,9 @@ from ..base_class.EMOA_base import Algorithm
 from ..operator import *
 from .NSGA_util import NDsorting, calc_cd, mating
 
-class NSGAII(Algorithm):
 
-    def __init__(self, params, problem, ndim = None):
+class NSGAII(Algorithm):
+    def __init__(self, params, problem, ndim=None):
 
         if ndim == None:
             ndim = problem.ndim
@@ -33,6 +33,7 @@ class NSGAII(Algorithm):
             self.crossover = SBX
             self.mutation = PM
             self.concat_pops = self.create_union
+
         elif self.code == "bin":
             self.crossover = uniform_crossover
             self.mutation = bitflip_mutation
@@ -41,56 +42,59 @@ class NSGAII(Algorithm):
     def init_pop(self):
 
         if self.code == "real":
-            self.pop["variables"][...] = np.random.rand(*self.pop["variables"].shape,)
+            self.pop["variables"][...] = \
+                np.random.rand(*self.pop["variables"].shape,)
+
         elif self.code == "bin":
-            self.pop["variables"][...] = np.random.randint(2, size = self.pop["variables"].shape)
+            self.pop["variables"][...] = \
+                np.random.randint(2, size=self.pop["variables"].shape)
 
         self.pop["objectives"] = self.eval_method(self.pop["variables"])
-        self.init_eval()
+        self._init_eval()
 
         self.neval = self.npop
 
-    def init_eval(self):
+    def _init_eval(self):
 
         r = NDsorting(self.pop["objectives"], self.npop)
         self.pop["pareto_rank"] = r
 
         for i in range(max(r) + 1):
 
-            self.pop["crowding_distance"][r == i] = calc_cd(self.pop["objectives"][r == i])
+            self.pop["crowding_distance"][r == i] = calc_cd(
+                self.pop["objectives"][r == i])
 
     def execute(self, max_eval):
 
-        n, mod= divmod(max_eval - self.neval, self.noff)
+        n, mod = divmod(max_eval - self.neval, self.noff)
 
         for i in range(n):
 
-            parents = self.selection()
+            parents = self._selection()
 
-            self.offs["variables"] = self.mutation(self.crossover(parents, pc = 0.9))
+            self.offs["variables"] = self.mutation(self.crossover(parents, pc=0.9))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
-            self.update(self.offs)
+            self._updata(self.offs)
 
         if mod != 0:
 
-            parents = self.selection()
+            parents = self._selection()
 
             self.offs["variables"] = self.mutation(self.crossover(parents[:mod]))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
-            self.update(self.offs)
+            self._updata(self.offs)
 
         self.neval = max_eval
 
-    def selection(self):
+    def _selection(self):
 
         parents = [self.pop["variables"]\
-                   [mating(self.pop["pareto_rank"], self.pop["crowding_distance"],\
-                           int(self.noff/2))]\
-                   for _ in range(2)]
+                   [mating(self.pop["pareto_rank"],self.pop["crowding_distance"],
+                           int(self.noff / 2))] for _ in range(2)]
 
         return parents
 
-    def update(self, offs):
+    def _update(self, offs):
 
         union = self.concat_pops(self.pop, offs)
 
@@ -101,17 +105,16 @@ class NSGAII(Algorithm):
 
             n = sum(r == i)
 
-            self.pop["objectives"][offset:offset + n] = union["objectives"][r == i]
-            self.pop["variables"][offset:offset + n] = union["variables"][r == i]
-            self.pop["pareto_rank"][offset:offset + n] = i
-            self.pop["crowding_distance"][offset:offset + n] = calc_cd(union["objectives"][r == i])
+            self.pop["objectives"][offset: offset + n] = union["objectives"][r == i]
+            self.pop["variables"][offset: offset + n] = union["variables"][r == i]
+            self.pop["pareto_rank"][offset: offset + n] = i
+            self.pop["crowding_distance"][offset: offset + n] = calc_cd(union["objectives"][r == i])
 
-            offset +=n
-
+            offset += n
         cd = calc_cd(union["objectives"][r == max(r)])
-        remain = np.argsort(-cd)[:self.npop - offset]
+        remain = np.argsort(-cd)[: self.npop - offset]
 
-        self.pop["objectives"][offset:] = union["objectives"][r == max(r)][remain]
-        self.pop["variables"][offset:] = union["variables"][r == max(r)][remain]
+        self.pop["objectives"][offset:] = union["objectives"][r ==max(r)][remain]
+        self.pop["variables"][offset:] = union["variables"][r ==max(r)][remain]
         self.pop["pareto_rank"][offset:] = max(r)
         self.pop["crowding_distance"][offset:] = calc_cd(self.pop["objectives"][offset:])
