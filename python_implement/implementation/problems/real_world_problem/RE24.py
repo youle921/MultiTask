@@ -30,6 +30,7 @@ class RE24(RE_base):
 
         self.problem_name = 'Hatch cover design'
         self.set_IGD_ref("RE24")
+        self.set_HV_ref("RE24")
         self.n_objectives = 2
         self.ndim = 2
         self.n_constraints = 0

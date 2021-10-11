@@ -30,6 +30,7 @@ class RE22(RE_base):
 
         self.problem_name = 'Reinforced concrete beam design'
         self.set_IGD_ref("RE22")
+        self.set_HV_ref("RE22")
         self.n_objectives = 2
         self.ndim = 3
         self.n_constraints = 0

@@ -30,6 +30,7 @@ class RE33(RE_base):
 
         self.problem_name = 'Disc breke design'
         self.set_IGD_ref("RE33")
+        self.set_HV_ref("RE33")
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0

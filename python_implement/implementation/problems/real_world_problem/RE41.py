@@ -30,6 +30,7 @@ class RE41(RE_base):
 
         self.problem_name = 'Car side impact design'
         self.set_IGD_ref("RE41")
+        self.set_HV_ref("RE41")
         self.n_objectives = 4
         self.ndim = 7
         self.n_constraints = 0

@@ -29,6 +29,7 @@ class RE42(RE_base):
 
         self.problem_name = 'Conceptual marine design'
         self.set_IGD_ref("RE42")
+        self.set_HV_ref("RE42")
         self.n_objectives = 4
         self.ndim = 6
         self.n_constraints = 0

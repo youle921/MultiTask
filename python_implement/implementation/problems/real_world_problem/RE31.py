@@ -30,6 +30,7 @@ class RE31(RE_base):
 
         self.problem_name = 'Two bar truss design'
         self.set_IGD_ref("RE31")
+        self.set_HV_ref("RE31")
         self.n_objectives = 3
         self.ndim = 3
         self.n_constraints = 0

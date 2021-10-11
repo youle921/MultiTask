@@ -10,14 +10,24 @@ import os
 from ...base_class.base_problem import problem
 
 class RE_base(problem):
-    
+
     def __init__(self):
-        
+
         super().__init__()
-        
+
         self.current_dir = os.path.dirname(__file__)
 
     def set_IGD_ref(self, name):
 
         self.IGD_ref = np.loadtxt(
             f'{self.current_dir}/approximated_Pareto_fronts/{name}.csv', delimiter=',')
+
+    def set_HV_ref(self, name):
+
+        self.HV_ref = np.full(self.ndim, 1.1)
+        self.nadir = np.loadtxt(f'nadir_point_{name}.dat')
+        self.ideal = np.loadtxt(f'ideal_point{name}.dat')
+
+    def normalize_objective(self, pop):
+
+        return (pop - self.ideal) / (self.nadir - self.ideal)

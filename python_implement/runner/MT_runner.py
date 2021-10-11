@@ -88,10 +88,16 @@ class MT_runner(EMOA_runner):
                     json.dump(self.params, f, indent=0)
 
             # calculate and show metrics
-            for idx, calculator in enumerate(self.metric_calculator):
+            for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
                 for task_no in range(2):
-                    metric[idx, task_no] = [
-                        *map(calculator[prob_no][task_no].compute, final_objs[task_no])]
+                    if metric_name == "HV" and "normalize_objective" in dir(prob[task_no]):
+                        metric[idx, task_no] = [
+                            *map(lambda p:calculator[prob_no][task_no]
+                                         .compute(prob[task_no].normalize_objective(p)),
+                                 final_objs[task_no])]
+                    else:
+                        metric[idx, task_no] = [
+                            *map(calculator[prob_no][task_no].compute, final_objs[task_no])]
 
             for i, name in enumerate(self.metric_names):
                 print(f'{name:^50}')

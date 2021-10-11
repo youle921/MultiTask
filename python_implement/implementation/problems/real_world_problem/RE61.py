@@ -31,6 +31,7 @@ class RE61(RE_base):
 
         self.problem_name = 'Water resource planning'
         self.set_IGD_ref("RE61")
+        self.set_HV_ref("RE61")
         self.n_objectives = 6
         self.ndim = 3
         self.n_constraints = 0

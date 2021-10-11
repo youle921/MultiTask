@@ -17,6 +17,7 @@ class RE91(RE_base):
 
         self.problem_name = 'Car cab design'
         self.set_IGD_ref("RE91")
+        self.set_HV_ref("RE91")
         self.n_objectives = 9
         self.ndim = 7
         self.n_constraints = 0

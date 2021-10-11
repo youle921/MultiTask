@@ -30,6 +30,7 @@ class RE34(RE_base):
 
         self.problem_name = 'Vehicle crashworthiness design'
         self.set_IGD_ref("RE34")
+        self.set_HV_ref("RE34")
         self.n_objectives = 3
         self.ndim = 5
         self.n_constraints = 0

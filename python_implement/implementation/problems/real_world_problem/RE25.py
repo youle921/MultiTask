@@ -30,6 +30,7 @@ class RE25(RE_base):
 
         self.problem_name = 'Coil compression spring design'
         self.set_IGD_ref("RE25")
+        self.set_HV_ref("RE25")
         self.n_objectives = 2
         self.ndim = 3
         self.n_constraints = 0

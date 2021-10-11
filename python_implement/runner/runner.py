@@ -86,8 +86,12 @@ class EMOA_runner:
                 json.dump(self.params, f, indent = 0)
 
             # calculate and show metrics
-            for idx, calculator in enumerate(self.metric_calculator):
-                metric[idx] = [*map(calculator[prob_no].compute, final_objs)]
+            for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
+                if metric_name == "HV" and "normalize_ovjective" in dir(p):
+                    metric[idx] = [*map(lambda obj:calculator[prob_no].compute
+                                        (p.normalize_ovjective(obj)), final_objs)]
+                else:
+                    metric[idx] = [*map(calculator[prob_no].compute, final_objs)]
 
             for i, name in enumerate(self.metric_names):
                 print(f'{name:^50}')

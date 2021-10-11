@@ -30,6 +30,8 @@ class RE21(RE_base):
 
         self.problem_name = 'Four bar truss design'
         self.set_IGD_ref("RE21")
+        self.set_HV_ref("RE21")
+
         self.n_objectives = 2
         self.ndim = 4
 

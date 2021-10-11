@@ -30,6 +30,7 @@ class RE23(RE_base):
 
         self.problem_name = 'Pressure vessel design'
         self.set_IGD_ref("RE23")
+        self.set_HV_ref("RE23")
         self.n_objectives = 2
         self.ndim = 4
         self.n_constraints = 0
