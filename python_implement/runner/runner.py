@@ -55,6 +55,7 @@ class EMOA_runner:
 
             metric = np.empty([len(self.metric_calculator), self.params["n_trial"]])
             final_objs = []
+            final_nd_objs = []
 
             path = f'{parent_path}/{p.problem_name}'
             os.makedirs(path, exist_ok = True)
@@ -71,6 +72,7 @@ class EMOA_runner:
                 solver.execute(self.criteria)
 
                 final_objs.append(solver.pop["objectives"])
+                final_nd_objs.append(solver.get_NDsolution)
 
             # finish running algorithm
             end_time = datetime.now()
@@ -85,11 +87,17 @@ class EMOA_runner:
             with open(F'{path}/setting_log.json', 'w') as f:
                 json.dump(self.params, f, indent = 0)
 
+            print(f'{"metric calculating...":^50}')
             # calculate and show metrics
             for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
-                if metric_name == "HV" and "normalize_ovjective" in dir(p):
-                    metric[idx] = [*map(lambda obj:calculator[prob_no].compute
-                                        (p.normalize_ovjective(obj)), final_objs)]
+
+                if metric_name == "HyperVolume":
+                    if "normalize_objective" in dir(p):
+                        metric[idx] = [*map(lambda obj:calculator[prob_no].compute
+                                            (p.normalize_objective(obj)), final_objs)]
+                    else:
+                        metric[idx] = [*map(calculator[prob_no].compute, final_nd_objs)]
+
                 else:
                     metric[idx] = [*map(calculator[prob_no].compute, final_objs)]
 

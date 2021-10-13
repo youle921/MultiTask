@@ -24,9 +24,9 @@ class RE_base(problem):
 
     def set_HV_ref(self, name):
 
-        self.HV_ref = np.full(self.ndim, 1.1)
-        self.nadir = np.loadtxt(f'nadir_point_{name}.dat')
-        self.ideal = np.loadtxt(f'ideal_point{name}.dat')
+        self.HV_ref = np.full(self.n_objectives, 1.1)
+        self.nadir = np.loadtxt(f'{self.current_dir}/ideal_nadir_points/nadir_point_{name}.dat')
+        self.ideal = np.loadtxt(f'{self.current_dir}/ideal_nadir_points/ideal_point_{name}.dat')
 
     def normalize_objective(self, pop):
 

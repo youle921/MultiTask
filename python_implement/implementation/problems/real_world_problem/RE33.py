@@ -29,12 +29,14 @@ class RE33(RE_base):
         super().__init__()
 
         self.problem_name = 'Disc breke design'
-        self.set_IGD_ref("RE33")
-        self.set_HV_ref("RE33")
+
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0
         self.n_original_constraints = 4
+
+        self.set_IGD_ref("RE33")
+        self.set_HV_ref("RE33")
 
         self.lower = np.empty(self.ndim)
         self.lower[0] = 55
@@ -48,7 +50,7 @@ class RE33(RE_base):
         self.upper[2] = 3000
         self.upper[3] = 20
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -61,15 +63,15 @@ class RE33(RE_base):
         f[0] = 4.9 * 1e-5 * (x2**2 - x1**2) * (x4 - 1.0)
         # Second original objective function
         f[1] = ((9.82 * 1e6) * (x2**2 - x1**2)) / \
-            (x3 * x4 * (x2**3 - x1**3) + eps)
+            (x3 * x4 * (x2**3 - x1**3))
 
         # Reformulated objective functions
         g[0] = (x2 - x1) - 20.0
-        g[1] = 0.4 - (x3 / (3.14 * (x2**2 - x1**2) + eps))
+        g[1] = 0.4 - (x3 / (3.14 * (x2**2 - x1**2)))
         g[2] = 1.0 - (2.22 * 1e-3 * x3 * (x2**3 - x1**3))\
-            / ((x2**2 - x1**2)**2 + eps)
+            / ((x2**2 - x1**2)**2)
         g[3] = (2.66 * 1e-2 * x3 * x4 * (x2**3 - x1**3))\
-            / (x2**2 - x1**2 + eps) - 900.0
+            / (x2**2 - x1**2) - 900.0
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 

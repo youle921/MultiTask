@@ -15,7 +15,7 @@ class Algorithm(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update(self):
+    def _update(self):
         pass
 
     def create_union(self, pop, offs):
@@ -44,7 +44,9 @@ class Algorithm(metaclass=ABCMeta):
 
     def get_NDsolution(self):
 
-        is_feasible = self.pop["violations"].sum(axis = 1) == 0
+        is_feasible = np.ones_like(self.pop["crowding_distance"], dtype = bool)
+        if "violations" in self.pop:
+            is_feasible[...] = self.pop["violations"].sum(axis = 1) == 0
         feasible_sol = self.pop["objectives"][is_feasible]
 
         # for minmization problem(compalator: >)

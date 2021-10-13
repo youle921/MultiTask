@@ -29,11 +29,12 @@ class RE21(RE_base):
         super().__init__()
 
         self.problem_name = 'Four bar truss design'
-        self.set_IGD_ref("RE21")
-        self.set_HV_ref("RE21")
 
         self.n_objectives = 2
         self.ndim = 4
+
+        self.set_IGD_ref("RE21")
+        self.set_HV_ref("RE21")
 
         F = 10.0
         sigma = 10.0
@@ -45,7 +46,7 @@ class RE21(RE_base):
         self.lower[[0, 3]] = tmp_val
         self.lower[[1, 2]] = np.sqrt(2.0) * tmp_val
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -58,7 +59,7 @@ class RE21(RE_base):
         L = 200.0
 
         f[0] = L * ((2 * x1) + np.sqrt(2.0) * x2 + np.sqrt(x3) + x4)
-        f[1] = ((F * L) / E) * ((2.0 / (x1 + eps)) + (2.0 * np.sqrt(2.0) /
-                                                      (x2 + eps)) - (2.0 * np.sqrt(2.0) / (x3 + eps)) + (2.0 / (x4 + eps)))
+        f[1] = ((F * L) / E) * ((2.0 / x1) + (2.0 * np.sqrt(2.0) /
+                                                      x2) - (2.0 * np.sqrt(2.0) / x3) + (2.0 / x4))
 
         return f.T

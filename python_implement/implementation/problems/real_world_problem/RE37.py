@@ -29,12 +29,14 @@ class RE37(RE_base):
         super().__init__()
 
         self.problem_name = 'Rocket injector design'
-        self.set_IGD_ref("RE37")
-        self.set_HV_ref("RE37")
+
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0
         self.n_original_constraints = 0
+
+        self.set_IGD_ref("RE37")
+        self.set_HV_ref("RE37")
 
         self.lower = np.full(self.ndim, 0)
         self.upper = np.full(self.ndim, 1)

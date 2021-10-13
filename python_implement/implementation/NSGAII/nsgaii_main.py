@@ -72,9 +72,9 @@ class NSGAII(Algorithm):
 
             parents = self._selection()
 
-            self.offs["variables"] = self.mutation(self.crossover(parents, pc=0.9))
+            self.offs["variables"] = self.mutation(self.crossover(parents))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
-            self._updata(self.offs)
+            self._update(self.offs)
 
         if mod != 0:
 

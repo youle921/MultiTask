@@ -29,12 +29,14 @@ class RE31(RE_base):
         super().__init__()
 
         self.problem_name = 'Two bar truss design'
-        self.set_IGD_ref("RE31")
-        self.set_HV_ref("RE31")
+
         self.n_objectives = 3
         self.ndim = 3
         self.n_constraints = 0
         self.n_original_constraints = 3
+
+        self.set_IGD_ref("RE31")
+        self.set_HV_ref("RE31")
 
         self.lower = np.empty(self.ndim)
         self.lower[[0, 1]] = 0.00001
@@ -44,7 +46,7 @@ class RE31(RE_base):
         self.upper[[0, 1]] = 100.0
         self.upper[2] = 3.0
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -56,12 +58,12 @@ class RE31(RE_base):
         # First original objective function
         f[0] = x1 * np.sqrt(16.0 + x3**2) + x2 * np.sqrt(1.0 + x3**2)
         # Second original objective function
-        f[1] = (20.0 * np.sqrt(16.0 + x3**2)) / (x1 * x3 + eps)
+        f[1] = (20.0 * np.sqrt(16.0 + x3**2)) / (x1 * x3)
 
         # Constraint functions
         g[0] = 0.1 - f[0]
         g[1] = 100000.0 - f[1]
-        g[2] = 100000 - ((80.0 * np.sqrt(1.0 + x3**2)) / (x3 * x2 + eps))
+        g[2] = 100000 - ((80.0 * np.sqrt(1.0 + x3**2)) / (x3 * x2))
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 

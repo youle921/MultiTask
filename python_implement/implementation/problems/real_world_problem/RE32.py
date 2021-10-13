@@ -29,12 +29,14 @@ class RE32(RE_base):
         super().__init__()
 
         self.problem_name = 'Welded beam design'
-        self.set_IGD_ref("RE32")
-        self.set_HV_ref("RE32")
+
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0
         self.n_original_constraints = 4
+
+        self.set_IGD_ref("RE32")
+        self.set_HV_ref("RE32")
 
         self.lower = np.empty(self.ndim)
         self.lower[[0, 3]] = 0.125
@@ -44,7 +46,7 @@ class RE32(RE_base):
         self.upper[[0, 3]] = 5.0
         self.upper[[1, 2]] = 10.0
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -65,7 +67,7 @@ class RE32(RE_base):
         # First original objective function
         f[0] = (1.10471 * x1**2 * x2) + (0.04811 * x3 * x4) * (14.0 + x2)
         # Second original objective function
-        f[1] = (4 * P * L**3) / (E * x4 * x3**3 + eps)
+        f[1] = (4 * P * L**3) / (E * x4 * x3**3)
 
         # Constraint functions
         M = P * (L + (x2 / 2))
@@ -74,12 +76,12 @@ class RE32(RE_base):
         tmpVar = (x2**2 / 12.0) + ((x1 + x3) / 2.0)**2
         J = 2 * np.sqrt(2) * x1 * x2 * tmpVar
 
-        tauDashDash = (M * R) / (J + eps)
-        tauDash = P / (np.sqrt(2) * x1 * x2 + eps)
+        tauDashDash = (M * R) / J
+        tauDash = P / (np.sqrt(2) * x1 * x2)
         tmpVar = tauDash**2 + \
-            ((2 * tauDash * tauDashDash * x2) / (2 * R + eps)) + tauDashDash**2
+            ((2 * tauDash * tauDashDash * x2) / (2 * R)) + tauDashDash**2
         tau = np.sqrt(tmpVar)
-        sigma = (6 * P * L) / (x4 * x3**2 + eps)
+        sigma = (6 * P * L) / (x4 * x3**2)
         tmpVar = 4.013 * E * np.sqrt((x3**2 * x4**6) / 36.0) / L**2
         tmpVar2 = (x3 / (2 * L)) * np.sqrt(E / (4 * G))
         PC = tmpVar * (1 - tmpVar2)

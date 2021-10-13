@@ -29,12 +29,14 @@ class RE22(RE_base):
         super().__init__()
 
         self.problem_name = 'Reinforced concrete beam design'
-        self.set_IGD_ref("RE22")
-        self.set_HV_ref("RE22")
+
         self.n_objectives = 2
         self.ndim = 3
         self.n_constraints = 0
         self.n_original_constraints = 2
+
+        self.set_IGD_ref("RE22")
+        self.set_HV_ref("RE22")
 
         self.lower = np.empty(self.ndim)
         self.lower[0] = 0.2

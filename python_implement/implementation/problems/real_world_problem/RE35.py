@@ -29,12 +29,14 @@ class RE35(RE_base):
         super().__init__()
 
         self.problem_name = 'Speed reducer design'
-        self.set_IGD_ref("RE35")
-        self.set_HV_ref("RE35")
+
         self.n_objectives = 3
         self.ndim = 7
         self.n_constraints = 0
         self.n_original_constraints = 11
+
+        self.set_IGD_ref("RE35")
+        self.set_HV_ref("RE35")
 
         self.lower = np.empty(self.ndim)
         self.lower[0] = 2.6
@@ -52,7 +54,7 @@ class RE35(RE_base):
         self.upper[5] = 3.9
         self.upper[6] = 5.5
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -67,22 +69,22 @@ class RE35(RE_base):
             x6**2 + x7**2) + 7.477 * (x6**3 + x7**3) + 0.7854 * (x4 * x6**2 + x5 * x7**2)
 
         # Second original objective function (stress)
-        tmpVar = ((745.0 * x4) / (x2 * x3 + eps))**2.0 + 1.69 * 1e7
-        f[1] = np.sqrt(tmpVar) / (0.1 * x6**3 + eps)
+        tmpVar = ((745.0 * x4) / (x2 * x3))**2.0 + 1.69 * 1e7
+        f[1] = np.sqrt(tmpVar) / (0.1 * x6**3)
 
         # Constraint functions
-        g[0] = -(1.0 / (x1 * x2**2 * x3 + eps)) + 1.0 / 27.0
-        g[1] = -(1.0 / (x1 * x2**2 * x3**2 + eps)) + 1.0 / 397.5
-        g[2] = -x4**3 / (x2 * x3 * x6**4 + eps) + 1.0 / 1.93
-        g[3] = -(x5**3) / (x2 * x3 * x7**4 + eps) + 1.0 / 1.93
+        g[0] = -(1.0 / (x1 * x2**2 * x3)) + 1.0 / 27.0
+        g[1] = -(1.0 / (x1 * x2**2 * x3**2)) + 1.0 / 397.5
+        g[2] = -x4**3 / (x2 * x3 * x6**4) + 1.0 / 1.93
+        g[3] = -(x5**3) / (x2 * x3 * x7**4) + 1.0 / 1.93
         g[4] = -(x2 * x3) + 40.0
-        g[5] = -(x1 / (x2 + eps)) + 12.0
-        g[6] = -5.0 + (x1 / (x2 + eps))
+        g[5] = -(x1 / (x2 )) + 12.0
+        g[6] = -5.0 + x1 / x2
         g[7] = -1.9 + x4 - 1.5 * x6
         g[8] = -1.9 + x5 - 1.1 * x7
         g[9] = -f[1] + 1300.0
-        tmpVar = ((745.0 * x5) / (x2 * x3 + eps))**2.0 + 1.575 * 1e8
-        g[10] = -np.sqrt(tmpVar) / (0.1 * x7**3 + eps) + 1100.0
+        tmpVar = ((745.0 * x5) / (x2 * x3))**2.0 + 1.575 * 1e8
+        g[10] = -np.sqrt(tmpVar) / (0.1 * x7**3) + 1100.0
         g = np.where(g < 0, -g, 0)
         f[2] = g.sum(axis=0)
 

@@ -90,7 +90,7 @@ class MT_runner(EMOA_runner):
             # calculate and show metrics
             for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
                 for task_no in range(2):
-                    if metric_name == "HV" and "normalize_objective" in dir(prob[task_no]):
+                    if metric_name == "HyperVolume" and "normalize_objective" in dir(prob[task_no]):
                         metric[idx, task_no] = [
                             *map(lambda p:calculator[prob_no][task_no]
                                          .compute(prob[task_no].normalize_objective(p)),

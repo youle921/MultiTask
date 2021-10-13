@@ -29,17 +29,19 @@ class RE36(RE_base):
         super().__init__()
 
         self.problem_name = 'Gear train design'
-        self.set_IGD_ref("RE36")
-        self.set_HV_ref("RE36")
+
         self.n_objectives = 3
         self.ndim = 4
         self.n_constraints = 0
         self.n_original_constraints = 1
 
+        self.set_IGD_ref("RE36")
+        self.set_HV_ref("RE36")
+
         self.lower = np.full(self.ndim, 12)
         self.upper = np.full(self.ndim, 60)
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -50,7 +52,7 @@ class RE36(RE_base):
         x1, x2, x3, x4 = np.round(x.T)
 
         # First original objective function
-        f[0] = np.abs(6.931 - ((x3 / (x1 + eps)) * (x4 / (x2 + eps))))
+        f[0] = np.abs(6.931 - ((x3 / x1) * (x4 / x2)))
         # Second original objective function (the maximum value among the four variables)
         f[1] = np.max([x1, x2, x3, x4], axis=0)
 

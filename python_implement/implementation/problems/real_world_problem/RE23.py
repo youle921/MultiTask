@@ -29,12 +29,14 @@ class RE23(RE_base):
         super().__init__()
 
         self.problem_name = 'Pressure vessel design'
-        self.set_IGD_ref("RE23")
-        self.set_HV_ref("RE23")
+
         self.n_objectives = 2
         self.ndim = 4
         self.n_constraints = 0
         self.n_original_constraints = 3
+
+        self.set_IGD_ref("RE23")
+        self.set_HV_ref("RE23")
 
         self.lower = np.empty(self.ndim)
         self.lower[[0, 1]] = 1

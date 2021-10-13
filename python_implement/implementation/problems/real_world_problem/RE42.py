@@ -28,12 +28,14 @@ class RE42(RE_base):
         super().__init__()
 
         self.problem_name = 'Conceptual marine design'
-        self.set_IGD_ref("RE42")
-        self.set_HV_ref("RE42")
+
         self.n_objectives = 4
         self.ndim = 6
         self.n_constraints = 0
         self.n_original_constraints = 9
+
+        self.set_IGD_ref("RE42")
+        self.set_HV_ref("RE42")
 
         self.lower = np.empty(self.ndim)
         self.lower[0] = 150.0
@@ -51,7 +53,7 @@ class RE42(RE_base):
         self.upper[4] = 18.0
         self.upper[5] = 0.75
 
-    def evaluate(self, pop, eps = 1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -64,7 +66,7 @@ class RE42(RE_base):
         displacement = 1.025 * x_L * x_B * x_T * x_CB
         V = 0.5144 * x_Vk
         g = 9.8065
-        Fn = V / (g * x_L + eps)**0.5
+        Fn = V / (g * x_L)**0.5
         a = (4977.06 * x_CB**2) - (8105.61 * x_CB) + 4456.51
         b = (-10847.2 * x_CB**2) + (12817.0 * x_CB) - 6960.32
 
@@ -108,9 +110,9 @@ class RE42(RE_base):
         f[2] = -annual_cargo
 
         # Reformulated objective functions
-        constraintFuncs[0] = (x_L / x_B + eps) - 6.0
-        constraintFuncs[1] = -(x_L / x_D + eps) + 15.0
-        constraintFuncs[2] = -(x_L / x_T + eps) + 19.0
+        constraintFuncs[0] = x_L / x_B - 6.0
+        constraintFuncs[1] = -(x_L / x_D) + 15.0
+        constraintFuncs[2] = -(x_L / x_T) + 19.0
         constraintFuncs[3] = 0.45 * DWT**0.31 - x_T
         constraintFuncs[4] = 0.7 * x_D + 0.7 - x_T
         constraintFuncs[5] = 500000.0 - DWT
@@ -118,7 +120,7 @@ class RE42(RE_base):
         constraintFuncs[7] = 0.32 - Fn
 
         KB = 0.53 * x_T
-        BMT = ((0.085 * x_CB - 0.002) * x_B**2) / (x_T * x_CB + eps)
+        BMT = ((0.085 * x_CB - 0.002) * x_B**2) / (x_T * x_CB)
         KG = 1.0 + 0.52 * x_D
         constraintFuncs[8] = (KB + BMT - KG) - (0.07 * x_B)
 

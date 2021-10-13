@@ -29,12 +29,14 @@ class RE24(RE_base):
         super().__init__()
 
         self.problem_name = 'Hatch cover design'
-        self.set_IGD_ref("RE24")
-        self.set_HV_ref("RE24")
+
         self.n_objectives = 2
         self.ndim = 2
         self.n_constraints = 0
         self.n_original_constraints = 4
+
+        self.set_IGD_ref("RE24")
+        self.set_HV_ref("RE24")
 
         self.lower = np.full(self.ndim, 0.5)
 
@@ -42,7 +44,7 @@ class RE24(RE_base):
         self.upper[0] = 4
         self.upper[1] = 50
 
-    def evaluate(self, pop, eps=1e-7):
+    def evaluate(self, pop):
 
         x = self.reverse_projection(pop)
 
@@ -59,14 +61,14 @@ class RE24(RE_base):
         tau_max = 450
         delta_max = 1.5
         sigma_k = (E * x1**2) / 100
-        sigma_b = 4500 / (x1 * x2 + eps)
-        tau = 1800 / (x2 + eps)
-        delta = (56.2 * 10000) / (E * x1 * x2**2 + eps)
+        sigma_b = 4500 / (x1 * x2)
+        tau = 1800 / x2
+        delta = (56.2 * 10000) / (E * x1 * x2**2)
 
         g[0] = 1 - (sigma_b / sigma_b_max)
         g[1] = 1 - (tau / tau_max)
         g[2] = 1 - (delta / delta_max)
-        g[3] = 1 - (sigma_b / sigma_k + eps)
+        g[3] = 1 - (sigma_b / sigma_k)
         g = np.where(g < 0, -g, 0)
         f[1] = g.sum(axis=0)
 

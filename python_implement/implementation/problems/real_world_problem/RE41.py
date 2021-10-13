@@ -29,12 +29,14 @@ class RE41(RE_base):
         super().__init__()
 
         self.problem_name = 'Car side impact design'
-        self.set_IGD_ref("RE41")
-        self.set_HV_ref("RE41")
+
         self.n_objectives = 4
         self.ndim = 7
         self.n_constraints = 0
         self.n_original_constraints = 10
+
+        self.set_IGD_ref("RE41")
+        self.set_HV_ref("RE41")
 
         self.lower = np.empty(self.ndim)
         self.lower[[0, 2, 3]] = 0.5
