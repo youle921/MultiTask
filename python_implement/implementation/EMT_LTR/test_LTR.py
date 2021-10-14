@@ -64,7 +64,6 @@ eig_val, eig_vec = eig((Z.dot((L + Ls))).dot(Z.T), (Z.dot(Ld)).dot(Z.T))
 eig_idx = eig_val.argsort()
 M = eig_vec[:, eig_idx[np.in1d(eig_idx, eig_val.nonzero())]]
 
-M = eig_vec[eig_idx]
 to_latent_space = np.split(M, np.cumsum(ndim)[:-1])
 to_decision_space = [np.linalg.pinv(m) for m in to_latent_space]
 

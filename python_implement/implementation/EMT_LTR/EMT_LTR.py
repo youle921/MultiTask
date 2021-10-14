@@ -75,10 +75,15 @@ class EMTLTR(MOMFEA):
                 #                                             self.to_decision_space[task_no]),\
                 #                                       self.lb[task_no] ,self.ub[task_no])
                 assigned_offs["variables"] = \
-                    self.mutation(np.dot(offs["variables"][offs["skill_factor"] == task_no],\
-                                         self.to_decision_space[task_no]),\
+                    self.mutation(np.dot(offs["variables"][offs["skill_factor"] == task_no],
+                                          self.to_decision_space[task_no]),
                                   lower = self.lb[task_no], upper = self.ub[task_no])
 
+                # assigned_offs["variables"] = \
+                #     np.clip(np.dot(self.mutation(offs["variables"][offs["skill_factor"] == task_no],
+                #                          lower = self.prj_lb[task_no], upper = self.prj_ub[task_no]),
+                #                    self.to_decision_space[task_no]),
+                #             self.lb[task_no], self.ub[task_no])
                 assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
                 self._update(assigned_offs, task_no)
@@ -94,8 +99,8 @@ class EMTLTR(MOMFEA):
         offs = parents.copy()
 
         do_cross = (np.random.rand(*sf[0].shape,) < self.rmp) | (sf[0] == sf[1])
-        offs[:, do_cross] = np.split(self.crossover([parents[0][do_cross], parents[1][do_cross]])\
-                                     , 2)
+        offs[:, do_cross] = np.split(self.crossover([parents[0][do_cross],
+                                                     parents[1][do_cross]]), 2)
         offs = offs.reshape([np.prod(offs.shape[:2]), -1])
 
         offs_sf = np.vstack([sf[0], sf[1]])
@@ -110,8 +115,8 @@ class EMTLTR(MOMFEA):
 
     def _search_boundary(self, M, boundaries):
 
-        prj_lb = []
-        prj_ub = []
+        self.prj_lb = []
+        self.prj_ub = []
         d = M[0].shape[1]
 
         for m, b in zip(M, boundaries):
@@ -120,43 +125,38 @@ class EMTLTR(MOMFEA):
             lb_, ub_ = np.repeat(b, d, axis = 1).reshape([2, -1, d])
             lb = lb_ * (~mask) + ub_ * mask
             ub = ub_ * (~mask) + lb_ * mask
-            prj_lb.append((lb * m).sum(axis = 0))
-            prj_ub.append((ub * m).sum(axis = 0))
+            self.prj_lb.append((lb * m).sum(axis = 0))
+            self.prj_ub.append((ub * m).sum(axis = 0))
 
-        return np.min(prj_lb, axis = 0), np.max(prj_ub, axis = 0)
+        # return np.min(prj_lb, axis = 0), np.max(prj_ub, axis = 0)
 
     def _LTR(self):
 
-        sol1_class, sol2_class = np.empty([2, self.npop]).astype("int")
-        for i, s in enumerate([sol1_class, sol2_class]):
+        sol_class = np.empty([self.ntask, self.npop])
+        for i in range(self.ntask):
 
             is_front = self.pops["pareto_rank"][i] == 0
             sum_obj_front = self.pops["objectives"][i][is_front].sum(axis = 1)
-            s[is_front] = sum_obj_front > np.median(sum_obj_front)
+            sol_class[i][is_front] = sum_obj_front > np.median(sum_obj_front)
 
             sum_obj_no_front = self.pops["objectives"][i][~is_front].sum(axis = 1)
-            s[~is_front] = 2 + (sum_obj_no_front > np.median(sum_obj_no_front))
+            sol_class[i][~is_front] = 2 + (sum_obj_no_front > np.median(sum_obj_no_front))
 
+        sol_class = sol_class.reshape(-1)
         Z = np.zeros([self.npop * self.ntask, sum(self.ndim)])
+        L = np.zeros([self.npop * self.ntask] * 2)
+
         for i, sol in enumerate(self.pops["variables"]):
+
+            dist = distance.cdist(sol, sol, metric = 'euclidean')
+            L[i * self.npop: (i + 1) * self.npop, i * self.npop: (i + 1) * self.npop] = \
+                -(w := np.exp(-dist)) + np.eye(self.npop) *w.sum(axis = 1)
+
             Z[i * self.npop:(i + 1) * self.npop, sum(self.ndim[:i]):sum(self.ndim[:i + 1])] = sol
 
         Z = Z.T
 
-        dist_s1 = distance.cdist(self.pops["variables"][0], self.pops["variables"][0], metric='euclidean')
-        w1 = np.exp(-dist_s1)
-        d1 = np.eye(self.npop) * dist_s1.sum(axis = 1)
-
-        dist_s2 = distance.cdist(self.pops["variables"][1], self.pops["variables"][1], metric='euclidean')
-        w2 = np.exp(-dist_s2)
-        d2 = np.eye(self.npop) * dist_s2.sum(axis = 1)
-
-        L = np.zeros([self.npop * self.ntask] * 2)
-        for i, (d, w) in enumerate(zip([d1, d2], [w1, w2])):
-            L[i * self.npop: (i + 1) * self.npop, i * self.npop: (i + 1) * self.npop] = d - w
-
-        all_sol_class = np.array([*sol1_class, *sol2_class,])
-        Ws = all_sol_class[:, None] == all_sol_class[None, :]
+        Ws = sol_class[:, None] == sol_class[None, :]
         Ds = np.eye(self.npop * self.ntask) * Ws.sum(axis = 1)
         Ls = Ds - Ws
 
@@ -164,13 +164,26 @@ class EMTLTR(MOMFEA):
         Dd = np.eye(self.npop * self.ntask) * Wd.sum(axis = 1)
         Ld = Dd - Wd
 
+        l_factor = Z @ (L + Ls) @ (Z.T)
+        r_factor = Z @ Ld @ Z.T
+
+        sym_l = (tri := np.tril(l_factor)) + tri.T -np.diag(l_factor.diagonal())
+        sym_r = (tri := np.tril(r_factor)) + tri.T -np.diag(r_factor.diagonal())
+
+        # if not(np.allclose(l_factor, l_factor.T)) or not(np.allclose(r_factor, r_factor.T)):
+        #     print("cannot use eigh")
+        #     eig_val, eig_vec = eig(Z @ (L + Ls) @ (Z.T), Z @ Ld @Z.T)
+
         try:
-            eig_val, eig_vec = eigh(Z @ (L + Ls) @ (Z.T), Z @ Ld @Z.T)
+            # eig_val, eig_vec = eigh((Z.dot(L + Ls)).dot(Z.T), (Z.dot(Ld)).dot(Z.T))
+            # eig_val, eig_vec = eigh(sym_l/sym_r.max(), sym_r/sym_r.max())
+            eig_val, eig_vec = eigh(sym_l, sym_r)
+            eig_vec /= np.linalg.norm(eig_vec, axis = 0)
         except:
-            # print("cannot use eigh")
-            eig_val, eig_vec = eig(Z @ (L + Ls) @ (Z.T), Z @ Ld @Z.T)
+            eig_val, eig_vec = eig(sym_l, sym_r)
 
         eig_idx = eig_val.argsort()
+        M = eig_vec[:, eig_idx[np.in1d(eig_idx, eig_val.nonzero())]]
         if type(eig_val[0]) is np.float64:
             M = eig_vec[:, eig_idx[np.in1d(eig_idx, eig_val.nonzero())]]
         else:
