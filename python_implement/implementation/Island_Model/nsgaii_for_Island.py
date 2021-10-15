@@ -10,16 +10,17 @@ from ..NSGAII.nsgaii_main import NSGAII
 from ..NSGAII.NSGA_util import calc_cd, NDsorting, mating
 
 class NSGAII_Island(NSGAII):
-
-    def __init__(self, params, problem, ndim):
-
-        super().__init__(params, problem, ndim)
+        
+    def init_pop(self):
+        
+        super().init_pop()
         self.mating_pool = dict(
-                                variables = np.empty_like(self.pop["varialbes"]),
-                                objectives = np.empty_like(self.pop["objectives"]),
-                                pareto_rank = np.empty_like(self.pop["pareto_rank"]),
-                                crowding_distance = np.empty_like(self.pop["crowding_distance"])
-                                )
+                        variables = np.empty_like(self.pop["variables"]),
+                        objectives = np.empty_like(self.pop["objectives"]),
+                        pareto_rank = np.empty_like(self.pop["pareto_rank"]),
+                        crowding_distance = np.empty_like(self.pop["crowding_distance"])
+                        )
+        
 
     def execute(self, ngen):
 
@@ -49,7 +50,7 @@ class NSGAII_Island(NSGAII):
     def _selection_mig_gen(self, mig):
 
         # create mating pool
-        internal_size = self.npop - mig.shape[0]
+        internal_size = self.npop - mig["objectives"].shape[0]
 
         r = self.pop["pareto_rank"]
         max_r = self.pop["pareto_rank"].argsort()[internal_size]
@@ -70,14 +71,14 @@ class NSGAII_Island(NSGAII):
         self.mating_pool["variables"][internal_size:] = mig["variables"]
 
         self.mating_pool["pareto_rank"] = NDsorting(self.mating_pool["objectives"], self.npop)
-        for i in range(r + 1):
+        for i in range(self.mating_pool["pareto_rank"].max() + 1):
             self.mating_pool["crowding_distance"][self.mating_pool["pareto_rank"] == i] = \
                 calc_cd(self.mating_pool["objectives"][self.mating_pool["pareto_rank"] == i])
 
         # parent selection
         parents = [self.mating_pool["variables"]\
                    [mating(self.mating_pool["pareto_rank"],self.mating_pool["crowding_distance"],
-                           int((self.noff - mig.shape[0]) / 2))] for _ in range(2)]
+                           int((self.noff - mig["objectives"].shape[0]) / 2))] for _ in range(2)]
 
         return parents
 
