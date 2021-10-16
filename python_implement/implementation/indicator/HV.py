@@ -47,9 +47,10 @@ class HyperVolume:
 
         relevantPoints = []
 
-        if self.referencePoint is None:
-            referencePoint = np.zeros(len(front[0]))
         referencePoint = self.referencePoint
+        if referencePoint is None:
+            referencePoint = np.zeros(len(front[0]))
+
 
         dimensions = len(referencePoint)
 
@@ -286,7 +287,7 @@ class MultiList:
 
 if __name__ == "__main__":
     # Example:
-    referencePoint = [2, 2, 2]
+    referencePoint = [2, 2]
     hv = HyperVolume(referencePoint)
-    front = [[1, 0, 1], [0, 1, 0]]
+    front = [[1, 0], [0, 1]]
     volume = hv.compute(front)

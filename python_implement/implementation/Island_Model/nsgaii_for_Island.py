@@ -10,9 +10,9 @@ from ..NSGAII.nsgaii_main import NSGAII
 from ..NSGAII.NSGA_util import calc_cd, NDsorting, mating
 
 class NSGAII_Island(NSGAII):
-        
+
     def init_pop(self):
-        
+
         super().init_pop()
         self.mating_pool = dict(
                         variables = np.empty_like(self.pop["variables"]),
@@ -20,7 +20,8 @@ class NSGAII_Island(NSGAII):
                         pareto_rank = np.empty_like(self.pop["pareto_rank"]),
                         crowding_distance = np.empty_like(self.pop["crowding_distance"])
                         )
-        
+
+        self.logger()
 
     def execute(self, ngen):
 
@@ -31,6 +32,8 @@ class NSGAII_Island(NSGAII):
             self.offs["variables"] = self.mutation(self.crossover(parents))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self._update(self.offs)
+
+            self.logger()
 
     def migration_gen(self, mig):
 
@@ -47,25 +50,18 @@ class NSGAII_Island(NSGAII):
 
         self._update(self.offs)
 
+        self.logger()
+
     def _selection_mig_gen(self, mig):
 
         # create mating pool
         internal_size = self.npop - mig["objectives"].shape[0]
 
-        r = self.pop["pareto_rank"]
-        max_r = self.pop["pareto_rank"].argsort()[internal_size]
+        rank = np.argsort(self.pop["pareto_rank"] + 1 / (1 + self.pop["crowding_distance"]))
+        mask = rank < internal_size
 
-        mask = r < max_r
-        offset = mask.sum()
-
-        self.mating_pool["objectives"][:offset] = self.pop["objectives"][mask]
-        self.mating_pool["variables"][:offset]= self.pop["variables"][mask]
-
-        cd = self.pop["crowding_distance"][r == max_r]
-        remain = np.argsort(-cd)[: internal_size - offset]
-
-        self.mating_pool["objectives"][offset:internal_size] = self.pop["objectives"][r == max_r][remain]
-        self.mating_pool["variables"][offset:internal_size] = self.pop["variables"][r == max_r][remain]
+        self.mating_pool["objectives"][:internal_size] = self.pop["objectives"][mask]
+        self.mating_pool["varialbes"][:internal_size] = self.pop["variables"][mask]
 
         self.mating_pool["objectives"][internal_size:] = mig["objectives"]
         self.mating_pool["variables"][internal_size:] = mig["variables"]
@@ -81,27 +77,3 @@ class NSGAII_Island(NSGAII):
                            int((self.noff - mig["objectives"].shape[0]) / 2))] for _ in range(2)]
 
         return parents
-
-    def _split_injected_pop(self):
-
-        self.pop["objectives"] = self.pop["objectives"][:self.npop]
-        self.pop["variables"] = self.pop["variables"][:self.npop]
-        self.pop["pareto_rank"] = np.empty(self.npop)
-        self.pop["crowding_distance"] = np.empty(self.npop)
-
-    def _injection(self, injected_pop):
-
-        union = self.concat_pops(self.pop, injected_pop)
-        n_union = union["objectives"].shape[0]
-
-        self.pop["variables"] = union["variables"]
-        self.pop["objectives"] = union["objectives"]
-
-        r = NDsorting(union["objectives"], n_union)
-        self.pop["pareto_rank"] = r
-
-        self.pop["crowding_distance"] = np.empty_like(self.pop["pareto_rank"])
-
-        for i in range(max(r) + 1):
-
-            self.pop["crowding_distance"][r == i] = calc_cd(self.pop["objectives"][r == i])

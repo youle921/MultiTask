@@ -69,12 +69,12 @@ class EMEA:
                     noise_xb = np.ones_like(xxb)
                     noise_xb[:d] = noise
 
-                    Q = np.dot(noise_xb, noise_xb.T)
-                    P = np.dot(xxb , noise_xb.T)
+                    Q = noise_xb @ noise_xb.T
+                    P = xxb @ noise_xb.T
 
                     reg = 1e-5 * np.eye(d + 1)
                     reg[-1, -1] = 0
-                    W = np.dot(P, np.linalg.inv(Q + reg))
+                    W = P @ np.linalg.inv(Q + reg)
 
                     W_list.append(W[:d, :d])
                 self.matrix[alg_idx].append(W_list)
@@ -112,7 +112,16 @@ class EMEA:
                 inject_pop.append(np.dot(self.matrix[i][source_idx][target_idx], source_pop.T).T)
 
         return inject_pop
-    
-    def get_populations(self):
-        
+
+    def get_objectives(self):
+
         return [alg.pop["objectives"] for alg in self.algs]
+
+    def get_NDsolution(self):
+
+        return [alg.pop.get_NDsolution() for alg in self.algs]
+
+    def output_log(self, paths, trial):
+
+        for p, alg in zip(paths, self.algs):
+            alg.output_log(p, trial)

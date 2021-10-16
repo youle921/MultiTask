@@ -8,8 +8,9 @@ import numpy as np
 
 from ..NSGAII.NSGA_util import NDsorting, calc_cd
 from ..operator import *
+from ..base_class.MT_base import MT_Algorithm
 
-class MOMFEA:
+class MOMFEA(MT_Algorithm()):
 
     def __init__(self, params, problem_list):
 
@@ -37,9 +38,17 @@ class MOMFEA:
         if self.code == "real":
             self.crossover = SBX
             self.mutation = PM
+            self.concat_pops = self.create_union
+
         elif self.code == "bin":
             self.crossover = uniform_crossover
             self.mutation = bitflip_mutation
+            self.concat_pops = self.create_unique_union
+
+        if "save_list" in params:
+            self.set_datalogger(params["save_list"])
+        else:
+            self.logger = lambda :None
 
     def init_pop(self):
 
@@ -53,7 +62,6 @@ class MOMFEA:
             self.pops["objectives"][i] = p.evaluate(self.pops["variables"][i])
             self._init_eval(i)
 
-        self._set_factorial_rank()
         self.neval = self.npop* self.ntask
 
     def _init_eval(self, sf):
@@ -66,9 +74,14 @@ class MOMFEA:
 
     def execute(self, max_eval):
 
+        self.logger()
         n, mod= divmod(max_eval - self.neval, self.noff * self.ntask)
 
-        offs = {}
+        self.offs = dict(
+                         variables = np.empty([self.noff * self.ntask,
+                                               self.pops["objectives"].shape[-1]]),
+                         skill_factor = np.empty([self.noff * self.ntask])
+                         )
         assigned_offs = {}
 
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
@@ -76,32 +89,38 @@ class MOMFEA:
 
         for gen in range(n):
 
-            for t_idx in range(2):
+            self._set_factorial_rank()
 
-                p, skill_factor[t_idx]= self._mfea_selection()
+            for t_idx in range(2):
+                p, skill_factor[t_idx] = self._mfea_selection()
                 parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p]
 
-            offs["variables"], offs["skill_factor"] = self._mfea_crossover(parents, skill_factor)
+            self.offs["variables"][...], self.offs["skill_factor"][...] = self._mfea_crossover(parents, skill_factor)
 
             for task_no, p in enumerate(self.problems):
-
-                assigned_offs["variables"] = offs["variables"][offs["skill_factor"] == task_no]
+                assigned_offs["variables"] = self.offs["variables"][self.offs["skill_factor"] == task_no]
                 assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
                 self._update(assigned_offs, task_no)
 
-            self._set_factorial_rank()
+            self.logger()
 
-        # if mod != 0:
+        if mod != 0:
 
-        #     parents = []
-        #     parents.append(self.pops["variables"][self.selection()])
-        #     parents.append(self.pops["variables"][self.selection()])
+            for t_idx in range(2):
+                p, skill_factor[t_idx] = self._mfea_selection()
+                parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p]
 
-        #     offs["variables"] = self.mutation(self.crossover(parents))
-        #     offs["objectives"][:mod] = self.problem.evaluate(offs["variables"][:mod])
-        #     offs["objectives"][mod:] = 0
-        #     self.update(offs)
+            self.offs["variables"][...], self.offs["skill_factor"][...] = self._mfea_crossover(parents, skill_factor)
+            self.offs["skill_factor"][mod:] = -1
+
+            for task_no, p in enumerate(self.problems):
+                assigned_offs["variables"] = self.offs["variables"][self.offs["skill_factor"] == task_no]
+                assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
+
+                self._update(assigned_offs, task_no)
+
+            self.logger()
 
         self.neval = max_eval
 
@@ -141,10 +160,7 @@ class MOMFEA:
 
     def _update(self, offs, sf):
 
-        union = {}
-
-        union["variables"] = np.vstack((self.pops["variables"][sf] ,offs["variables"]))
-        union["objectives"] = np.vstack((self.pops["objectives"][sf], offs["objectives"]))
+        union = self.concat_pops({"variables":self.pops["variables"][sf], "objectives":self.pops["objectives"]}, offs)
 
         r = NDsorting(union["objectives"], self.npop)
 
@@ -167,7 +183,3 @@ class MOMFEA:
         self.pops["variables"][sf][offset:] = union["variables"][r == max(r)][remain]
         self.pops["pareto_rank"][sf][offset:] = max(r)
         self.pops["crowding_distance"][sf][offset:] = calc_cd(self.pops["objectives"][sf][offset:])
-
-    def get_populations(self):
-
-        return self.pops["objectives"]

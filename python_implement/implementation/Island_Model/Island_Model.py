@@ -35,6 +35,15 @@ class Island_Model:
 
         return
 
-    def get_populations(self):
+    def get_objectives(self):
 
         return [alg.pop["objectives"] for alg in self.algs]
+
+    def get_NDsolution(self):
+
+        return [alg.pop.get_NDsolution() for alg in self.algs]
+
+    def output_log(self, paths, trial):
+
+        for p, alg in zip(paths, self.algs):
+            alg.output_log(p, trial)

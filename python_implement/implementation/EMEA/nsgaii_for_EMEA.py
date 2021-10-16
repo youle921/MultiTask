@@ -34,6 +34,8 @@ class NSGAII_EMEA(NSGAII):
 
         self.neval = self.npop
 
+        self.logger()
+
     def execute(self, ngen):
 
         for _ in range(ngen):
@@ -44,6 +46,8 @@ class NSGAII_EMEA(NSGAII):
                                                    lower = self.lb, upper = self.ub)
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self.update(self.offs)
+
+            self.logger()
 
     def migration_gen(self, mig):
 
@@ -64,6 +68,8 @@ class NSGAII_EMEA(NSGAII):
         self.offs = self.concat_pops(self.offs, injected_pop)
 
         self.update(self.offs)
+
+        self.logger()
 
     def _split_injected_pop(self):
 

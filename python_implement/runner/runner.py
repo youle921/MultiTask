@@ -71,6 +71,8 @@ class EMOA_runner:
                 solver.init_pop()
                 solver.execute(self.criteria)
 
+                solver.output_lot(path, trial)
+
                 final_objs.append(solver.pop["objectives"])
                 final_nd_objs.append(solver.get_NDsolution)
 

@@ -27,8 +27,6 @@ class NSGAII(Algorithm):
         self.npop = params["npop"]
         self.noff = params["noff"]
 
-        self.offs = {}
-
         if self.code == "real":
             self.crossover = SBX
             self.mutation = PM
@@ -38,6 +36,11 @@ class NSGAII(Algorithm):
             self.crossover = uniform_crossover
             self.mutation = bitflip_mutation
             self.concat_pops = self.create_unique_union
+
+        if "save_list" in params:
+            self.set_datalogger(params["save_list"])
+        else:
+            self.logger = lambda :None
 
     def init_pop(self):
 
@@ -66,15 +69,23 @@ class NSGAII(Algorithm):
 
     def execute(self, max_eval):
 
+        self.logger()
         n, mod = divmod(max_eval - self.neval, self.noff)
+
+        self.offs = dict(
+                         variables = self.np.empty([self.npop, self.pop["variables"].shape[1]]),
+                         objectives = self.np.empty([self.noff, self.pop["objectives"].shape[1]])
+                         )
 
         for i in range(n):
 
             parents = self._selection()
 
-            self.offs["variables"] = self.mutation(self.crossover(parents))
-            self.offs["objectives"] = self.eval_method(self.offs["variables"])
+            self.offs["variables"][...] = self.mutation(self.crossover(parents))
+            self.offs["objectives"][...] = self.eval_method(self.offs["variables"])
             self._update(self.offs)
+
+            self.logger()
 
         if mod != 0:
 
@@ -83,6 +94,8 @@ class NSGAII(Algorithm):
             self.offs["variables"] = self.mutation(self.crossover(parents[:mod]))
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
             self._updata(self.offs)
+
+            self.logger()
 
         self.neval = max_eval
 

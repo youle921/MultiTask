@@ -51,6 +51,7 @@ class MT_runner(EMOA_runner):
             metric = np.empty([len(self.metric_calculator),
                                2, self.params["n_trial"]])
             final_objs = [[], []]
+            final_nd_objs = [[], []]
 
             task = prob.tasks
 
@@ -69,8 +70,12 @@ class MT_runner(EMOA_runner):
                 solver.init_pop()
                 solver.execute(self.criteria)
 
-                for i, obj in enumerate(solver.get_populations()):
+                solver.output_log(path, trial)
+
+                for i, (obj, nd_obj) in enumerate(zip(solver.get_objectives(), solver.get_NOsolution())):
                     final_objs[i].append(obj)
+                    final_nd_objs[i].append(nd_obj)
+
 
             # finish running algorithm
             end_time = datetime.now()
@@ -94,7 +99,7 @@ class MT_runner(EMOA_runner):
                         metric[idx, task_no] = [
                             *map(lambda p:calculator[prob_no][task_no]
                                          .compute(prob[task_no].normalize_objective(p)),
-                                 final_objs[task_no])]
+                                 final_nd_objs[task_no])]
                     else:
                         metric[idx, task_no] = [
                             *map(calculator[prob_no][task_no].compute, final_objs[task_no])]

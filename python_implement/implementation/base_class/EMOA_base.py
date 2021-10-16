@@ -57,22 +57,27 @@ class Algorithm(metaclass=ABCMeta):
 
         return self.pop["objectives"][is_feasible][NDsolution]
 
-    def set_analyzer(self, save_list, dulation):
+    def set_datalogger(self, save_list):
 
         self.saved_data = {}
-        self.save_list = save_list
-        self.dulation = dulation
 
         for key in self.save_list:
             self.saved_data[key] = []
 
-        self.analyst = self.analyzer
+        self.logger = self.datalogger
 
-    def analyzer(self, gen):
+    def datalogger(self):
 
-        if gen % self.dulation == 0 or gen == 1:
-            for key in self.save_list:
-                self.saved_data[key].append(self.pop[key].copy())
+        for key in self.saved_data:
+            self.saved_data[key].append(self.pop[key].copy())
+
+    def output_log(self, path, trial):
+
+        if "saved_data" in dir(self):
+            for key in self.saved_data:
+                np.savez_compressed(f'{path}/trial{trial}_{key}', self.saved_data[key])
+                self.saved_data[key].clear()
+
 
 # 以降の関数は未検証，たぶん動かない？
     def plot_kp_sols(i, sol, pf):
