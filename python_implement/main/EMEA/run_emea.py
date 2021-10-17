@@ -8,5 +8,5 @@ from implementation.EMEA import EMEA
 from runner.MT_runner import MT_runner
 
 task_list = get_prob_pairs()
-runner = MT_runner(EMEA, task_list, os.path.dirname(__file__), ["IGD"])
+runner = MT_runner(EMEA, task_list, os.path.join(__file__, '..'), ["IGD", "HV"])
 runner.run()

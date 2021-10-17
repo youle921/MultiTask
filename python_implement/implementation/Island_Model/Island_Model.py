@@ -41,7 +41,7 @@ class Island_Model:
 
     def get_NDsolution(self):
 
-        return [alg.pop.get_NDsolution() for alg in self.algs]
+        return [alg.get_NDsolution() for alg in self.algs]
 
     def output_log(self, paths, trial):
 

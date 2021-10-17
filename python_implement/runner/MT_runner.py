@@ -30,7 +30,7 @@ class MT_runner(EMOA_runner):
             self.metric_names.append("IGD")
         if "HV" in metric:
             self.metric_calculator.append(
-                [[HV.HyperVolume(p.HV_ref) for p in problem] for problem in self.problemset])
+                [[HV.HyperVolume(p.HV_ref) for p in problem.tasks] for problem in self.problemset])
             self.metric_names.append("HyperVolume")
 
     def run(self):
@@ -70,9 +70,9 @@ class MT_runner(EMOA_runner):
                 solver.init_pop()
                 solver.execute(self.criteria)
 
-                solver.output_log(path, trial)
+                solver.output_log(path, trial + 1)
 
-                for i, (obj, nd_obj) in enumerate(zip(solver.get_objectives(), solver.get_NOsolution())):
+                for i, (obj, nd_obj) in enumerate(zip(solver.get_objectives(), solver.get_NDsolution())):
                     final_objs[i].append(obj)
                     final_nd_objs[i].append(nd_obj)
 
@@ -95,10 +95,10 @@ class MT_runner(EMOA_runner):
             # calculate and show metrics
             for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
                 for task_no in range(2):
-                    if metric_name == "HyperVolume" and "normalize_objective" in dir(prob[task_no]):
+                    if metric_name == "HyperVolume" and "normalize_objective" in dir(task[task_no]):
                         metric[idx, task_no] = [
                             *map(lambda p:calculator[prob_no][task_no]
-                                         .compute(prob[task_no].normalize_objective(p)),
+                                         .compute(task[task_no].normalize_objective(p)),
                                  final_nd_objs[task_no])]
                     else:
                         metric[idx, task_no] = [
@@ -115,9 +115,9 @@ class MT_runner(EMOA_runner):
                 results[i, prob_no, :, 1] = metric[i].std(axis=1)
                 print(*results[i, prob_no, :, 1],)
 
-            for task_no in range(2):
-                np.savetxt(f'{path[task_no]}/all_{name}s.csv',
-                           metric[i, task_no], delimiter=",")
+                for task_no in range(2):
+                    np.savetxt(f'{path[task_no]}/all_{name}s.csv',
+                               metric[i, task_no], delimiter=",")
 
             print(f'  {prob.problem_name} Finished  '.center(50, '*'), "\n\n")
 

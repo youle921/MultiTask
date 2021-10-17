@@ -22,6 +22,7 @@ class NSGAII_Island(NSGAII):
                         )
 
         self.logger()
+        self.offs = {}
 
     def execute(self, ngen):
 
@@ -61,7 +62,7 @@ class NSGAII_Island(NSGAII):
         mask = rank < internal_size
 
         self.mating_pool["objectives"][:internal_size] = self.pop["objectives"][mask]
-        self.mating_pool["varialbes"][:internal_size] = self.pop["variables"][mask]
+        self.mating_pool["variables"][:internal_size] = self.pop["variables"][mask]
 
         self.mating_pool["objectives"][internal_size:] = mig["objectives"]
         self.mating_pool["variables"][internal_size:] = mig["variables"]

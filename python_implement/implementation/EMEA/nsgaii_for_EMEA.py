@@ -30,7 +30,7 @@ class NSGAII_EMEA(NSGAII):
             self.pop["variables"][...] = np.random.randint(2, size = self.pop["variables"].shape)
 
         self.pop["objectives"] = self.eval_method(self.pop["variables"])
-        self.init_eval()
+        self._init_eval()
 
         self.neval = self.npop
 
@@ -40,12 +40,12 @@ class NSGAII_EMEA(NSGAII):
 
         for _ in range(ngen):
 
-            parents = self.selection()
+            parents = self._selection()
 
             self.offs["variables"] = self.mutation(self.crossover(parents), \
                                                    lower = self.lb, upper = self.ub)
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
-            self.update(self.offs)
+            self._update(self.offs)
 
             self.logger()
 
@@ -58,7 +58,7 @@ class NSGAII_EMEA(NSGAII):
 
         self._injection(injected_pop)
 
-        parents = self.selection()
+        parents = self._selection()
 
         self.offs["variables"] = self.mutation(self.crossover(parents),\
                                                lower = self.lb, upper = self.ub)[nmig:]
@@ -67,7 +67,7 @@ class NSGAII_EMEA(NSGAII):
         self._split_injected_pop()
         self.offs = self.concat_pops(self.offs, injected_pop)
 
-        self.update(self.offs)
+        self._update(self.offs)
 
         self.logger()
 

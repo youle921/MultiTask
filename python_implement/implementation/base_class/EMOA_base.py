@@ -61,7 +61,7 @@ class Algorithm(metaclass=ABCMeta):
 
         self.saved_data = {}
 
-        for key in self.save_list:
+        for key in save_list:
             self.saved_data[key] = []
 
         self.logger = self.datalogger

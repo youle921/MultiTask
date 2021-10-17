@@ -10,7 +10,7 @@ from ..NSGAII.NSGA_util import NDsorting, calc_cd
 from ..operator import *
 from ..base_class.MT_base import MT_Algorithm
 
-class MOMFEA(MT_Algorithm()):
+class MOMFEA(MT_Algorithm):
 
     def __init__(self, params, problem_list):
 
@@ -79,7 +79,7 @@ class MOMFEA(MT_Algorithm()):
 
         self.offs = dict(
                          variables = np.empty([self.noff * self.ntask,
-                                               self.pops["objectives"].shape[-1]]),
+                                               self.pops["variables"].shape[-1]]),
                          skill_factor = np.empty([self.noff * self.ntask])
                          )
         assigned_offs = {}
@@ -160,7 +160,7 @@ class MOMFEA(MT_Algorithm()):
 
     def _update(self, offs, sf):
 
-        union = self.concat_pops({"variables":self.pops["variables"][sf], "objectives":self.pops["objectives"]}, offs)
+        union = self.concat_pops({"variables":self.pops["variables"][sf], "objectives":self.pops["objectives"][sf]}, offs)
 
         r = NDsorting(union["objectives"], self.npop)
 

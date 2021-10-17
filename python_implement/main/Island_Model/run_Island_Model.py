@@ -3,9 +3,10 @@ import os
 sys.path.append(os.path.join(os.pardir, '..'))
 
 import implementation
-from implementation.problems.MTO_benchmark import task_list
+from implementation.problems.real_world_problem import get_prob_pairs
 from implementation.Island_Model import Island_Model
 from runner.MT_runner import MT_runner
 
-runner = MT_runner(Island_Model, task_list, os.path.dirname(__file__), ["IGD"])
+task_list = get_prob_pairs()
+runner = MT_runner(Island_Model, task_list, os.path.join(__file__, '..'), ["IGD", "HV"])
 runner.run()

@@ -3,6 +3,11 @@
     "noff": 100,
 
     "n_trial": 31,
-    "n_eval": 20000
+    "n_eval": 200000,
+    
+    "save_list": [
+        "objectives",
+        "variables"
+    ]
 
 }

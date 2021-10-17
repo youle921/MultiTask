@@ -4,7 +4,7 @@ from . import RE21, RE22, RE23, RE24, RE25, RE31, RE32, RE33, RE34, RE35, RE36, 
 from ...base_class.base_problem_set import problem_set
 
 all_probs = [RE21.RE21(), RE22.RE22(), RE23.RE23(), RE24.RE24(), RE25.RE25(), RE31.RE31(), RE32.RE32(), RE33.RE33(),
-             RE34.RE34(), RE35.RE35(), RE36.RE36(), RE37.RE37(), RE41.RE41(), RE42.RE42(), RE61.RE61(), RE91.RE91()]
+             RE34.RE34(), RE35.RE35(), RE36.RE36(), RE37.RE37(), RE41.RE41(), RE42.RE42()]
 
 
 def get_prob_pairs(prob_list=None):

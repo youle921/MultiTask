@@ -3,9 +3,14 @@
     "noff": 100,
 
     "n_trial": 31,
-    "n_gen": 100,
+    "n_gen": 1000,
 
     "interval": 10,
-    "migration_size": 10
+    "migration_size": 10,
+    
+    "save_list":[
+        "objectives",
+        "variables"
+    ]
 
 }

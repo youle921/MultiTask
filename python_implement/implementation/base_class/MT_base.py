@@ -19,6 +19,7 @@ class MT_Algorithm(metaclass=ABCMeta):
     def create_union(self, pop, offs):
 
         union = {}
+
         for k in ["variables", "objectives"]:
             size_p, dim = pop[k].shape
             size_o = offs[k].shape[0]
@@ -68,19 +69,21 @@ class MT_Algorithm(metaclass=ABCMeta):
 
         self.saved_data = {}
 
-        for key in self.save_list:
-            self.saved_data[key] = []
+        for key in save_list:
+            self.saved_data[key] = [[] for _ in range(self.ntask)]
 
         self.logger = self.datalogger
 
     def datalogger(self):
 
         for key in self.saved_data:
-            self.saved_data[key].append(self.pops[key].copy())
+            for i, d in enumerate(self.pops[key].copy()):
+                self.saved_data[key][i].append(d)
 
     def output_log(self, paths, trial):
 
-        for key in self.saved_data:
-            for p, data in zip(paths, self.saved_data[key]):
-                np.savez_compressed(f'{p}/trial_{trial}{key}', data)
-            self.saved_data[key].clear()
+        if "saved_data" in dir(self):
+            for key in self.saved_data:
+                for p, data in zip(paths, self.saved_data[key]):
+                    np.savez_compressed(f'{p}/trial{trial}_{key}', data)
+                    data.clear()
