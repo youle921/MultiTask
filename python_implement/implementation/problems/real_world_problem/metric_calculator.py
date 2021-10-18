@@ -62,6 +62,10 @@ class calculator:
                         np.savetxt(f'{paths[task_no]}/{metric_name}_log_trial{i}.csv', metric[idx, task_no, i], delimiter = ",")
 
             for t in range(len(self.problemset)):
+                print(self.problemset[t].problem_name)
                 for metric, data in zip(self.metric_names, metric[:, t]):
+                    print(metric)
+                    print(f'5,000 eval: {np.median(data[:, 49]):.4e}')
+                    print(f'20,000 eval: {np.median(data[:, 199]):.4e}')
                     np.savetxt(f'{paths[t]}/all_{metric}_log.csv', np.vstack([np.median(data, axis = 0), data.std(axis = 0)]).T)
 
