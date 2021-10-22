@@ -77,8 +77,8 @@ class MT_Algorithm(metaclass=ABCMeta):
     def datalogger(self):
 
         for key in self.saved_data:
-            for i, d in enumerate(self.pops[key].copy()):
-                self.saved_data[key][i].append(d)
+            for i, d in enumerate(self.pops[key]):
+                self.saved_data[key][i].append(d.copy())
 
     def output_log(self, paths, trial):
 

@@ -28,10 +28,17 @@ def loglik(rmp, probmatrix):
 class MOMFEAII(MOMFEA):
 
     def execute(self, max_eval):
+        
+        self.logger()
 
         n, mod= divmod(max_eval - self.neval, self.noff * self.ntask)
 
-        offs = {}
+        self.offs = dict(
+                         variables = np.empty([self.noff * self.ntask,
+                                               self.pops["variables"].shape[-1]]),
+                         skill_factor = np.empty([self.noff * self.ntask])
+                         )
+        
         assigned_offs = {}
 
         parents = np.empty([2, int(self.noff * self.ntask * 0.5), self.pops["variables"].shape[2]])
@@ -41,39 +48,47 @@ class MOMFEAII(MOMFEA):
         for gen in range(n):
 
             self._learn_rmp()
+            self._set_factorial_rank()
 
             for t_idx in range(2):
 
                 p_idx[t_idx], skill_factor[t_idx]= self._mfea_selection()
                 parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p_idx[t_idx]]
 
-            offs["variables"], offs["skill_factor"] = self._mfea_crossover(p_idx, parents, skill_factor)
+            self.offs["variables"][...], self.offs["skill_factor"][...] = self._mfeaii_crossover(p_idx, parents, skill_factor)
 
             for task_no, p in enumerate(self.problems):
 
-                assigned_offs["variables"] = offs["variables"][offs["skill_factor"] == task_no]
+                assigned_offs["variables"] = self.offs["variables"][self.offs["skill_factor"] == task_no]
                 assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
 
                 self._update(assigned_offs, task_no)
 
-            self._set_factorial_rank()
+            self.logger()
 
-        # if mod != 0:
+        if mod != 0:
 
-        #     parents = []
-        #     parents.append(self.pops["variables"][self.selection()])
-        #     parents.append(self.pops["variables"][self.selection()])
+            for t_idx in range(2):
+                
+                p, skill_factor[t_idx] = self._mfea_selection()
+                parents[t_idx] = self.pops["variables"][skill_factor[t_idx], p]
 
-        #     offs["variables"] = self.mutation(self.crossover(parents))
-        #     offs["objectives"][:mod] = self.problem.evaluate(offs["variables"][:mod])
-        #     offs["objectives"][mod:] = 0
-        #     self.update(offs)
+            self.offs["variables"][...], self.offs["skill_factor"][...] = self._mfeaii_crossover(p_idx, parents, skill_factor)
+            self.offs["skill_factor"][mod:] = -1
+
+            for task_no, p in enumerate(self.problems):
+                assigned_offs["variables"] = self.offs["variables"][self.offs["skill_factor"] == task_no]
+                assigned_offs["objectives"] = p.evaluate(assigned_offs["variables"])
+
+                self._update(assigned_offs, task_no)
+
+            self.logger()
 
         self.neval = max_eval
 
         return
 
-    def _mfea_crossover(self, p_idx, parents, sf):
+    def _mfeaii_crossover(self, p_idx, parents, sf):
 
         offs = np.empty_like(parents)
 
