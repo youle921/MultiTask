@@ -13,8 +13,9 @@ class Island_Model_tracing(Island_Model):
         self.mig_size = params["migration_size"]
 
         self.algs = []
+        ndim = max([p.ndim for p in problem_list])
         for task in problem_list:
-            self.algs.append(NSGAII_Island_tracing(params, task))
+            self.algs.append(NSGAII_Island_tracing(params, task, ndim))
 
         self.matrix = [[] for i in range(len(problem_list))]
 

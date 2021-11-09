@@ -10,6 +10,7 @@ names = [f'../{alg}/1019' for alg in ["MO-MFEA", "MO-MFEA-II"]]
 names.extend([f'../{alg}/1017' for alg in ["EMEA", "Island_Model"]])
 for n in names:
     print(n)
-    # ins.calculation(os.path.join(__file__, n))
-# ins.single_calculation(os.path.join(__file__, "../NSGA-II/1017"))
-ins.visualization(os.path.join(__file__, names[0]))
+    ins.visualization(os.path.join(__file__, n))
+    ins.visualization_fix_range(os.path.join(__file__, n))
+ins.single_visualization(os.path.join(__file__, "../NSGA-II/1017"))
+ins.single_visualization_fix_range(os.path.join(__file__, "../NSGA-II/1017"))

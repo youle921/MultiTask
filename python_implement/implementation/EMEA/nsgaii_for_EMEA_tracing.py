@@ -9,7 +9,7 @@ import numpy as np
 from ..NSGAII.nsgaii_main_tracing import NSGAII_tracing
 from ..NSGAII.NSGA_util import calc_cd, NDsorting
 
-class NSGAII_EMEA_traciing(NSGAII_tracing):
+class NSGAII_EMEA_tracing(NSGAII_tracing):
 
     def __init__(self, params, problem):
 
@@ -34,7 +34,7 @@ class NSGAII_EMEA_traciing(NSGAII_tracing):
 
         self.neval = self.npop
 
-        self.tarce_log = []
+        self.trace_log = []
 
     def execute(self, ngen):
 
@@ -45,7 +45,7 @@ class NSGAII_EMEA_traciing(NSGAII_tracing):
             self.offs["variables"] = self.mutation(self.crossover(parents), \
                                                    lower = self.lb, upper = self.ub)
             self.offs["objectives"] = self.eval_method(self.offs["variables"])
-            self.tarce_log.append(self._update(self.offs, np.ones(self.noff)))
+            self.trace_log.append(self._update(self.offs, np.ones(self.noff)))
 
     def migration_gen(self, mig):
 
@@ -57,13 +57,38 @@ class NSGAII_EMEA_traciing(NSGAII_tracing):
         self._injection(injected_pop)
 
         parents = self._selection()
-        inter_cross = np.isin(parents, injected_pop).min(axis = 2).max(axis = 0) + 1
+        parents = [p[int(nmig/2):] for p in parents]
+        inter_cross = np.isin(parents, injected_pop).min(axis = 2).reshape(-1) + 1
 
         self.offs["variables"] = self.mutation(self.crossover(parents),\
-                                               lower = self.lb, upper = self.ub)[nmig:]
+                                               lower = self.lb, upper = self.ub)
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
 
         self._split_injected_pop()
         self.offs = self.concat_pops(self.offs, injected_pop)
 
-        self.tarce_log.append(self._update(self.offs, np.hstack([inter_cross, [3] * nmig])))
+        self.trace_log.append(self._update(self.offs, np.hstack([inter_cross, [3] * nmig])))
+
+    def _split_injected_pop(self):
+
+        self.pop["objectives"] = self.pop["objectives"][:self.npop]
+        self.pop["variables"] = self.pop["variables"][:self.npop]
+        self.pop["pareto_rank"] = np.empty(self.npop)
+        self.pop["crowding_distance"] = np.empty(self.npop)
+
+    def _injection(self, injected_pop):
+
+        union = self.concat_pops(self.pop, injected_pop)
+        n_union = union["objectives"].shape[0]
+
+        self.pop["variables"] = union["variables"]
+        self.pop["objectives"] = union["objectives"]
+
+        r = NDsorting(union["objectives"], n_union)
+        self.pop["pareto_rank"] = r
+
+        self.pop["crowding_distance"] = np.empty_like(self.pop["pareto_rank"])
+
+        for i in range(max(r) + 1):
+
+            self.pop["crowding_distance"][r == i] = calc_cd(self.pop["objectives"][r == i])

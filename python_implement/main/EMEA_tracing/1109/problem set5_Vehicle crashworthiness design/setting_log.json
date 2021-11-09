@@ -1,0 +1,11 @@
+{
+"npop": 100,
+"noff": 100,
+"n_trial": 31,
+"n_gen": 200,
+"interval": 10,
+"migration_size": 10,
+"start_time": "2021-11-09T22:17:03.919930",
+"end_time": "2021-11-09T22:17:32.529387",
+"computational time[s]": 28.609457
+}

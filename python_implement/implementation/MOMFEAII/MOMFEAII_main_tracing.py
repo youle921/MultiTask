@@ -9,6 +9,7 @@ import numpy as np
 import scipy.optimize as opt
 
 from . import MOMFEAII
+from ..NSGAII.NSGA_util import NDsorting, calc_cd
 
 def norm_dist(x, mu, var, eps = 1e-8):
 
@@ -87,7 +88,7 @@ class MOMFEAII_tracing(MOMFEAII):
 
         self.neval = max_eval
 
-        return
+        return trace_log
 
     def _mfeaii_crossover(self, p_idx, parents, sf):
 
@@ -117,4 +118,34 @@ class MOMFEAII_tracing(MOMFEAII):
         inter_cross[:, (sf[0] != sf[1]) & do_cross] = 2
 
         return self.mutation(offs), offs_sf.reshape(-1), inter_cross.reshape(-1)
+    
+    def _update(self, offs, sf, inter_cross):
+
+        union = self.concat_pops({"variables":self.pops["variables"][sf], "objectives":self.pops["objectives"][sf]}, offs)
+        tmp = np.hstack([[0] * self.npop, inter_cross])
+        trace = np.empty(self.npop, dtype = int)
+        r = NDsorting(union["objectives"], self.npop)
+
+        offset = 0
+        for i in range(max(r)):
+
+            n = sum(r == i)
+
+            self.pops["objectives"][sf][offset:offset + n] = union["objectives"][r == i]
+            self.pops["variables"][sf][offset:offset + n] = union["variables"][r == i]
+            self.pops["pareto_rank"][sf][offset:offset + n] = i
+            self.pops["crowding_distance"][sf][offset:offset + n] = calc_cd(union["objectives"][r == i])
+            trace[offset:offset + n] = tmp[r == i]
+            offset +=n
+
+        cd = calc_cd(union["objectives"][r == max(r)])
+        remain = np.argsort(-cd)[:self.npop - offset]
+
+        self.pops["objectives"][sf][offset:] = union["objectives"][r == max(r)][remain]
+        self.pops["variables"][sf][offset:] = union["variables"][r == max(r)][remain]
+        self.pops["pareto_rank"][sf][offset:] = max(r)
+        self.pops["crowding_distance"][sf][offset:] = calc_cd(self.pops["objectives"][sf][offset:])
+        trace[offset:] = tmp[r == max(r)][remain]
+
+        return trace
 

@@ -9,7 +9,7 @@ import numpy as np
 from ..NSGAII.nsgaii_main_tracing import NSGAII_tracing
 from ..NSGAII.NSGA_util import calc_cd, NDsorting, mating
 
-class NSGAII_Island(NSGAII_tracing):
+class NSGAII_Island_tracing(NSGAII_tracing):
 
     def init_pop(self):
 
@@ -46,7 +46,7 @@ class NSGAII_Island(NSGAII_tracing):
 
         parents = self._selection_mig_gen(injected_pop)
 
-        inter_cross = np.isin(parents, injected_pop).min(axis = 2).max(axis = 0) + 1
+        inter_cross = np.isin(parents, injected_pop).min(axis = 2).reshape(-1) + 1
 
         self.offs["variables"] = self.mutation(self.crossover(parents))
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
