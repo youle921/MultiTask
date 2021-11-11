@@ -15,12 +15,12 @@ def get_NDsolution(sol):
     return sol[NDsolution]
 
 def get_NDsolution_3dim(sol):
-    
+
     is_dominated = (sol[:, :, None, :] >= sol[:, None, :, :]).prod(axis = -1) &\
         (sol[:, :, None, :] > sol[:, None, :, :]).max(axis = -1)
-        
+
     NDsolution = is_dominated.max(axis = -1) == 0
-    
+
     return [s[nd] for s, nd in zip(sol, NDsolution)]
 
 class calculator:
@@ -40,7 +40,10 @@ class calculator:
             self.metric_calculator.append(
                 [[HV.HyperVolume(p.HV_ref) for p in problem.tasks] for problem in self.problemset])
             self.metric_names.append("HyperVolume")
-            
+        if "normalized_IGD" in metric:
+            self.metric_calculator.append(
+                [[IGD.IGD(p.normalize_objective(p.IGD_ref)) for p in problem.tasks] for problem in self.problemset])
+            self.metric_names.append("Normalized IGD")
         self.single_calculator = []
         for calc in self.metric_calculator:
             self.single_calculator.append([c for calc_pair in calc for c in calc_pair])
@@ -68,6 +71,11 @@ class calculator:
                                 *map(lambda p:calculator[prob_no][task_no]
                                              .compute(task[task_no].normalize_objective(p)),
                                      get_NDsolution_3dim(obj[task_no]))]
+                        elif metric_name == "Normalized IGD" and "normalize_objective" in dir(task[task_no]):
+                            metric[idx, task_no, i] = [
+                                *map(lambda p:calculator[prob_no][task_no]
+                                             .compute(task[task_no].normalize_objective(p)),
+                                     obj[task_no])]
                         else:
                             metric[idx, task_no, i] = [
                                 *map(calculator[prob_no][task_no].compute, obj[task_no])]
@@ -75,17 +83,17 @@ class calculator:
                         np.savetxt(f'{paths[task_no]}/{metric_name}_log_trial{i + 1}.csv', metric[idx, task_no, i], delimiter = ",")
 
             print(f'{"*":*^50}')
-            
+
             for t in range(len(task)):
                 print(f'{task[t].problem_name:^50}')
-                
+
                 for met, data in zip(self.metric_names, metric[:, t]):
-                    
+
                     print(f'{met:-^50}')
-                    
+
                     print(f'5,000 eval: {np.median(data[:, 49]):.4e}')
                     print(f'20,000 eval: {np.median(data[:, 199]):.4e}')
-                    
+
                     np.savetxt(f'{paths[t]}/all_{met}_log.csv', np.vstack([np.median(data, axis = 0), data.std(axis = 0)]).T, delimiter = ",")
 
 
@@ -101,7 +109,7 @@ class calculator:
                 obj = np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"]
 
                 for idx, (calculator, metric_name) in enumerate(zip(self.single_calculator, self.metric_names)):
-    
+
                     if metric_name == "HyperVolume":
                         if "normalize_objective" in dir(task):
                             metric[idx, i] = [*map(lambda p:calculator[prob_no].compute
@@ -115,10 +123,10 @@ class calculator:
 
             print(f'{task.problem_name:^50}')
             for met, data in zip(self.metric_names, metric):
-                
+
                 print(f'{met:-^50}')
-                
+
                 print(f'5,000 eval: {np.median(data[:, 49]):.4e}')
                 print(f'20,000 eval: {np.median(data[:, 199]):.4e}')
-                
+
                 np.savetxt(f'{path}/all_{met}_log.csv', np.vstack([np.median(data, axis = 0), data.std(axis = 0)]).T, delimiter = ",")
