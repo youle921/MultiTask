@@ -43,7 +43,7 @@ class calculator:
         if "normalized_IGD" in metric:
             self.metric_calculator.append(
                 [[IGD.IGD(p.normalize_objective(p.IGD_ref)) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("Normalized IGD")
+            self.metric_names.append("normalized_IGD")
         self.single_calculator = []
         for calc in self.metric_calculator:
             self.single_calculator.append([c for calc_pair in calc for c in calc_pair])

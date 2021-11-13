@@ -10,7 +10,7 @@ class IGD:
     def __init__(self, ref):
         self.ref = ref
 
-    def compute(self, objective, power = 2):
+    def compute(self, objective, power = 1):
 
         dist = np.sqrt(np.sum((self.ref[:, None, :] - objective[None, :, :])**2, axis = 2))
         min_dist = np.min(dist, axis = 1)

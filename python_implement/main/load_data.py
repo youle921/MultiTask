@@ -43,3 +43,22 @@ def load_IGD_log(parent_path):
         median_igd_data[key] = np.loadtxt(str(*d.glob("all_IGD_log.csv")), delimiter = ",")
 
     return all_igd_data, median_igd_data
+
+def load_normalized_IGD_log(parent_path):
+
+    p = pathlib.Path(parent_path)
+    dirs = p.glob("*design/")
+
+    all_igd_data = {}
+    median_igd_data = {}
+
+    for d in dirs:
+
+        igd_files = d.glob("normalized_IGD_log*.csv")
+
+        key = str(d.name).split("_")[-1]
+        all_igd_data[key] = np.vstack([np.loadtxt(ip, delimiter = ",") for ip in igd_files])
+
+        median_igd_data[key] = np.loadtxt(str(*d.glob("all_normalized_IGD_log.csv")), delimiter = ",")
+        
+    return all_igd_data, median_igd_data
