@@ -71,7 +71,7 @@ class calculator:
                                 *map(lambda p:calculator[prob_no][task_no]
                                              .compute(task[task_no].normalize_objective(p)),
                                      get_NDsolution_3dim(obj[task_no]))]
-                        elif metric_name == "Normalized IGD" and "normalize_objective" in dir(task[task_no]):
+                        elif metric_name == "normalized_IGD" and "normalize_objective" in dir(task[task_no]):
                             metric[idx, task_no, i] = [
                                 *map(lambda p:calculator[prob_no][task_no]
                                              .compute(task[task_no].normalize_objective(p)),
@@ -99,7 +99,7 @@ class calculator:
 
     def single_calculation(self, parent_path):
 
-        for task, prob_no in zip(self.problems, range(len(self.problems))):
+        for prob_no, task in enumerate(self.problems):
 
             path = f'{parent_path}/{task.problem_name}'
             metric = np.empty([2, 31, 1000])
@@ -111,9 +111,11 @@ class calculator:
                 for idx, (calculator, metric_name) in enumerate(zip(self.single_calculator, self.metric_names)):
 
                     if metric_name == "HyperVolume":
-                        if "normalize_objective" in dir(task):
-                            metric[idx, i] = [*map(lambda p:calculator[prob_no].compute
-                                                (task.normalize_objective(p)), get_NDsolution_3dim(obj))]
+                        metric[idx, i] = [*map(lambda p:calculator[prob_no].compute
+                                            (task.normalize_objective(p)), get_NDsolution_3dim(obj))]
+                    elif metric_name == "normalized_IGD":
+                        metric[idx, i] = [*map(lambda p: calculator[prob_no].compute
+                                               (task.normalize_objective(p)), obj)]
                     else:
                         metric[idx, i] = [*map(calculator[prob_no].compute, obj)]
 
