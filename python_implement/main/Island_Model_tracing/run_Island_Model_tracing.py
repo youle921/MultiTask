@@ -8,5 +8,5 @@ from implementation.Island_Model import Island_Model_tracing
 from runner.MT_runner import MT_runner
 
 task_list = get_prob_pairs()
-runner = MT_runner(Island_Model_tracing, task_list, os.path.join(__file__, '..'), ["IGD", "HV"])
+runner = MT_runner(Island_Model_tracing, task_list, os.path.join(__file__, '..'), ["IGD"])
 runner.run_tracing()
