@@ -58,7 +58,7 @@ class NSGAII_EMEA_tracing(NSGAII_tracing):
 
         parents = self._selection()
         parents = [p[int(nmig/2):] for p in parents]
-        inter_cross = np.isin(parents, injected_pop).min(axis = 2).reshape(-1) + 1
+        inter_cross = np.isin(parents, injected_pop["variables"]).min(axis = 2).reshape(-1) + 1
 
         self.offs["variables"] = self.mutation(self.crossover(parents),\
                                                lower = self.lb, upper = self.ub)

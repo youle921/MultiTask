@@ -84,7 +84,7 @@ for k in key:
     hv_ax.xaxis.set_major_formatter("{x:,.0f}")
     hv_ax.grid()
     hv_ax.set(xlabel = "Number of Generations", ylabel = "HyperVolume")
-    hv_ax.legend()
+    hv_ax.legend(framealpha = 0.3)
 
     # hv_fig.savefig(f'{k}_HyperVolume.svg', bbox_inches = "tight", transparent = True)
 
@@ -96,7 +96,7 @@ for k in key:
     igd_ax.legend()
 
     # igd_fig.savefig(f'{k}_IGD.svg', bbox_inches = "tight", transparent = True)
-    
+
 # %% normalized igd plots
 for k in key:
 
@@ -111,6 +111,6 @@ for k in key:
     igd_ax.xaxis.set_major_formatter("{x:,.0f}")
     igd_ax.grid()
     igd_ax.set(xlabel = "Number of Generations", ylabel = "IGD")
-    igd_ax.legend()
+    igd_ax.legend(framealpha = 0.3)
 
     igd_fig.savefig(f'{k}_normalized_IGD_50gen.svg', bbox_inches = "tight", transparent = True)

@@ -46,7 +46,7 @@ class NSGAII_Island_tracing(NSGAII_tracing):
 
         parents = self._selection_mig_gen(injected_pop)
 
-        inter_cross = np.isin(parents, injected_pop).min(axis = 2).reshape(-1) + 1
+        inter_cross = np.isin(parents, injected_pop["variables"]).min(axis = 2).reshape(-1) + 1
 
         self.offs["variables"] = self.mutation(self.crossover(parents))
         self.offs["objectives"] = self.eval_method(self.offs["variables"])
