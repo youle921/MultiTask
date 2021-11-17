@@ -29,21 +29,19 @@ class calculator:
 
         self.problemset = get_prob_pairs()
         self.problems = all_probs
-        self.metric_calculator = []
-        self.metric_names = []
+        self.metric_calculator = {}
 
         if "IGD" in metric:
-            self.metric_calculator.append(
-                [[IGD.IGD(p.IGD_ref) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("IGD")
+            self.metric_calculator["IGD"] = [[IGD.IGD(p.IGD_ref) for p in problem.tasks]
+                                             for problem in self.problemset]
+
         if "HV" in metric:
-            self.metric_calculator.append(
-                [[HV.HyperVolume(p.HV_ref) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("HyperVolume")
+            self.metric_calculator["HV"] = [[HV.HyperVolume(p.HV_ref) for p in problem.tasks]
+                                            for problem in self.problemset]
+
         if "normalized_IGD" in metric:
-            self.metric_calculator.append(
-                [[IGD.IGD(p.normalize_objective(p.IGD_ref)) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("normalized_IGD")
+            self.metric_calculator["normalized_IGD"] = [[IGD.normalized_IGD(p.IGD_ref) for p in problem.tasks]
+                                                        for problem in self.problemset]
         self.single_calculator = []
         for calc in self.metric_calculator:
             self.single_calculator.append([c for calc_pair in calc for c in calc_pair])
@@ -63,7 +61,7 @@ class calculator:
                 obj = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
 
                 # calculate and show metrics
-                for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
+                for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator.values(), self.metric_calculator.keys())):
 
                     for task_no in range(2):
                         if metric_name == "HyperVolume" and "normalize_objective" in dir(task[task_no]):
@@ -71,11 +69,6 @@ class calculator:
                                 *map(lambda p:calculator[prob_no][task_no]
                                              .compute(task[task_no].normalize_objective(p)),
                                      get_NDsolution_3dim(obj[task_no]))]
-                        elif metric_name == "normalized_IGD" and "normalize_objective" in dir(task[task_no]):
-                            metric[idx, task_no, i] = [
-                                *map(lambda p:calculator[prob_no][task_no]
-                                             .compute(task[task_no].normalize_objective(p)),
-                                     obj[task_no])]
                         else:
                             metric[idx, task_no, i] = [
                                 *map(calculator[prob_no][task_no].compute, obj[task_no])]
@@ -108,14 +101,11 @@ class calculator:
 
                 obj = np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"]
 
-                for idx, (calculator, metric_name) in enumerate(zip(self.single_calculator, self.metric_names)):
+                for idx, (calculator, metric_name) in enumerate(zip(self.single_calculator, self.metric_calculator.keys())):
 
                     if metric_name == "HyperVolume":
                         metric[idx, i] = [*map(lambda p:calculator[prob_no].compute
                                             (task.normalize_objective(p)), get_NDsolution_3dim(obj))]
-                    elif metric_name == "normalized_IGD":
-                        metric[idx, i] = [*map(lambda p: calculator[prob_no].compute
-                                               (task.normalize_objective(p)), obj)]
                     else:
                         metric[idx, i] = [*map(calculator[prob_no].compute, obj)]
 
