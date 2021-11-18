@@ -6,13 +6,10 @@ Created on Tue Apr 14 22:04:37 2020
 """
 import numpy as np
 
-from ..base_class.EMOA_base import Algorithm
-from ..operator import *
-from .NSGA_util import NDsorting, calc_cd, mating
+from .NSGA_util import NDsorting, calc_cd
 from. import NSGAII
 
 class NSGAII_tracing(NSGAII):
-
 
     def init_pop(self):
 
@@ -30,6 +27,38 @@ class NSGAII_tracing(NSGAII):
         self.neval = self.npop
 
         self.trace_log = []
+
+    def execute(self, max_eval):
+
+        self.logger()
+        n, mod = divmod(max_eval - self.neval, self.noff)
+
+        self.offs = dict(
+                         variables = np.empty([self.noff, self.pop["variables"].shape[1]]),
+                         objectives = np.empty([self.noff, self.pop["objectives"].shape[1]])
+                         )
+
+        for i in range(n):
+
+            parents = self._selection()
+
+            self.offs["variables"][...] = self.mutation(self.crossover(parents))
+            self.offs["objectives"][...] = self.eval_method(self.offs["variables"])
+            self._update(self.offs, np.ones(self.noff))
+
+            self.logger()
+
+        if mod != 0:
+
+            parents = self._selection()
+
+            self.offs["variables"] = self.mutation(self.crossover(parents[:mod]))
+            self.offs["objectives"] = self.eval_method(self.offs["variables"])
+            self._updata(self.offs)
+
+            self.logger()
+
+        self.neval = max_eval
 
     def _update(self, offs, inter_cross):
 

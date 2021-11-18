@@ -43,7 +43,7 @@ class calculator:
             self.metric_calculator["normalized_IGD"] = [[IGD.normalized_IGD(p.IGD_ref) for p in problem.tasks]
                                                         for problem in self.problemset]
         self.single_calculator = []
-        for calc in self.metric_calculator:
+        for calc in self.metric_calculator.values():
             self.single_calculator.append([c for calc_pair in calc for c in calc_pair])
 
     def calculation(self, parent_path):
@@ -61,7 +61,7 @@ class calculator:
                 obj = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
 
                 # calculate and show metrics
-                for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator.values(), self.metric_calculator.keys())):
+                for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator.items())):
 
                     for task_no in range(2):
                         if metric_name == "HyperVolume" and "normalize_objective" in dir(task[task_no]):

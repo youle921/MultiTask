@@ -73,7 +73,7 @@ class NSGAII(Algorithm):
         n, mod = divmod(max_eval - self.neval, self.noff)
 
         self.offs = dict(
-                         variables = np.empty([self.npop, self.pop["variables"].shape[1]]),
+                         variables = np.empty([self.noff, self.pop["variables"].shape[1]]),
                          objectives = np.empty([self.noff, self.pop["objectives"].shape[1]])
                          )
 

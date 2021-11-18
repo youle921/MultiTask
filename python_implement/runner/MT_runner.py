@@ -21,19 +21,21 @@ class MT_runner(EMOA_runner):
         self.problemset = problemset
         self.caller_path = path
 
-        self.metric_calculator = []
-        self.metric_names = []
+        self.metric_calculator = {}
 
         if "IGD" in metric:
-            self.metric_calculator.append(
-                [[IGD.IGD(p.IGD_ref) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("IGD")
-        if "HV" in metric:
-            self.metric_calculator.append(
-                [[HV.HyperVolume(p.HV_ref) for p in problem.tasks] for problem in self.problemset])
-            self.metric_names.append("HyperVolume")
+            self.metric_calculator["IGD"] = [[IGD.IGD(p.IGD_ref) for p in problem.tasks]
+                                             for problem in self.problemset]
 
-    def run(self):
+        if "HV" in metric:
+            self.metric_calculator["HV"] = [[HV.HyperVolume(p.HV_ref) for p in problem.tasks]
+                                            for problem in self.problemset]
+
+        if "normalized_IGD" in metric:
+            self.metric_calculator["normalized_IGD"] = [[IGD.normalized_IGD(p.IGD_ref) for p in problem.tasks]
+                                                        for problem in self.problemset]
+
+    def run_MT(self):
 
         self.load_params()
 
@@ -73,16 +75,16 @@ class MT_runner(EMOA_runner):
                 solver.output_log(path, trial + 1)
 
                 for i, (obj, nd_obj) in enumerate(zip(solver.get_objectives(), solver.get_NDsolution())):
+
                     final_objs[i].append(obj)
                     final_nd_objs[i].append(nd_obj)
-
 
             # finish running algorithm
             end_time = datetime.now()
             computational_time = end_time - start_time
 
             # postprocessing
-            # update and save times
+            # update and save computational times
             self.params.update({"start_time": start_time.isoformat()})
             self.params.update({"end_time": end_time.isoformat()})
             self.params.update(
@@ -92,8 +94,9 @@ class MT_runner(EMOA_runner):
                 with open(F'{task_path}/setting_log.json', 'w') as f:
                     json.dump(self.params, f, indent=0)
 
+            print(f'{"metric calculating...":^50}')
             # calculate and show metrics
-            for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
+            for idx, (calculator, metric_name) in enumerate(self.metric_calculator.items()):
                 for task_no in range(len(task)):
                     if metric_name == "HyperVolume":
                         if "normalize_objective" in dir(task[task_no]):
@@ -105,12 +108,11 @@ class MT_runner(EMOA_runner):
                             metric[idx, task_no] = [
                                 *map(lambda p:calculator[prob_no][task_no]
                                              .compute(p), final_nd_objs)]
-
                     else:
                         metric[idx, task_no] = [
                             *map(calculator[prob_no][task_no].compute, final_objs[task_no])]
 
-            for i, name in enumerate(self.metric_names):
+            for i, name in enumerate(self.metric_calculator.keys()):
                 print(f'{name:^50}')
 
                 print(f'{" median ":-^50}')
@@ -127,11 +129,11 @@ class MT_runner(EMOA_runner):
 
             print(f'  {prob.problem_name} Finished  '.center(50, '*'), "\n\n")
 
-        for name, result in zip(self.metric_names, results):
+        for name, result in zip(self.metric_calculator.keys(), results):
             np.savetxt(f'{parent_path}/all_{name}_results.csv',
                        result.reshape(-1, 2), delimiter=',')
 
-    def run_tracing(self):
+    def run_MT_tracing(self):
 
         self.load_params()
 
@@ -174,7 +176,6 @@ class MT_runner(EMOA_runner):
                     final_objs[i].append(obj)
                     final_nd_objs[i].append(nd_obj)
 
-
             # finish running algorithm
             end_time = datetime.now()
             computational_time = end_time - start_time
@@ -191,7 +192,7 @@ class MT_runner(EMOA_runner):
                     json.dump(self.params, f, indent=0)
 
             # calculate and show metrics
-            for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator, self.metric_names)):
+            for idx, (calculator, metric_name) in enumerate(self.metric_calculator.items()):
                 for task_no in range(len(task)):
                     if metric_name == "HyperVolume":
                         if "normalize_objective" in dir(task[task_no]):
@@ -208,7 +209,7 @@ class MT_runner(EMOA_runner):
                         metric[idx, task_no] = [
                             *map(calculator[prob_no][task_no].compute, final_objs[task_no])]
 
-            for i, name in enumerate(self.metric_names):
+            for i, name in enumerate(self.metric_calculator.keys()):
                 print(f'{name:^50}')
 
                 print(f'{" median ":-^50}')
@@ -225,6 +226,6 @@ class MT_runner(EMOA_runner):
 
             print(f'  {prob.problem_name} Finished  '.center(50, '*'), "\n\n")
 
-        for name, result in zip(self.metric_names, results):
+        for name, result in zip(self.metric_calculator.keys(), results):
             np.savetxt(f'{parent_path}/all_{name}_results.csv',
                        result.reshape(-1, 2), delimiter=',')
