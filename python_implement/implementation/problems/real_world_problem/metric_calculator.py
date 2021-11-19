@@ -61,7 +61,7 @@ class calculator:
                 obj = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
 
                 # calculate and show metrics
-                for idx, (calculator, metric_name) in enumerate(zip(self.metric_calculator.items())):
+                for idx, (metric_name, calculator) in enumerate(zip(self.metric_calculator.items())):
 
                     for task_no in range(2):
                         if metric_name == "HyperVolume" and "normalize_objective" in dir(task[task_no]):
@@ -80,7 +80,7 @@ class calculator:
             for t in range(len(task)):
                 print(f'{task[t].problem_name:^50}')
 
-                for met, data in zip(self.metric_names, metric[:, t]):
+                for met, data in zip(self.metric_calculator.keys(), metric[:, t]):
 
                     print(f'{met:-^50}')
 
@@ -101,7 +101,7 @@ class calculator:
 
                 obj = np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"]
 
-                for idx, (calculator, metric_name) in enumerate(zip(self.single_calculator, self.metric_calculator.keys())):
+                for idx, (metric_name, calculator) in enumerate(zip(self.single_calculator, self.metric_calculator.keys())):
 
                     if metric_name == "HyperVolume":
                         metric[idx, i] = [*map(lambda p:calculator[prob_no].compute
@@ -114,7 +114,7 @@ class calculator:
             print(f'{"*":*^50}')
 
             print(f'{task.problem_name:^50}')
-            for met, data in zip(self.metric_names, metric):
+            for met, data in zip(self.metric_calculator.keys(), metric):
 
                 print(f'{met:-^50}')
 

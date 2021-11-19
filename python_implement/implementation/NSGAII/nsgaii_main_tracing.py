@@ -44,7 +44,7 @@ class NSGAII_tracing(NSGAII):
 
             self.offs["variables"][...] = self.mutation(self.crossover(parents))
             self.offs["objectives"][...] = self.eval_method(self.offs["variables"])
-            self._update(self.offs, np.ones(self.noff))
+            self.trace_log.append(self._update(self.offs, np.ones(self.noff)))
 
             self.logger()
 
@@ -59,6 +59,8 @@ class NSGAII_tracing(NSGAII):
             self.logger()
 
         self.neval = max_eval
+        
+        return self.trace_log
 
     def _update(self, offs, inter_cross):
 

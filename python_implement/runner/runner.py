@@ -92,7 +92,7 @@ class EMOA_runner:
 
             print(f'{"metric calculating...":^50}')
             # calculate and show metrics
-            for idx, (calculator, metric_name) in enumerate(self.metric_calculator.items()):
+            for idx, (metric_name, calculator) in enumerate(self.metric_calculator.items()):
 
                 if metric_name == "HyperVolume":
                     if "normalize_objective" in dir(p):
@@ -175,7 +175,7 @@ class EMOA_runner:
 
             print(f'{"metric calculating...":^50}')
             # calculate and show metrics
-            for idx, (calculator, metric_name) in enumerate(self.metric_calculator.items()):
+            for idx, (metric_name, calculator) in enumerate(self.metric_calculator.items()):
 
                 if metric_name == "HyperVolume":
                     if "normalize_objective" in dir(p):
@@ -187,7 +187,7 @@ class EMOA_runner:
                 else:
                     metric[idx] = [*map(calculator[prob_no].compute, final_objs)]
 
-            for i, name in enumerate(self.metric_names):
+            for i, name in enumerate(self.metric_calculator.keys()):
                 print(f'{name:^50}')
 
                 print(f'{" median ":-^50}')
@@ -202,5 +202,5 @@ class EMOA_runner:
 
             print(f'  {p.problem_name} Finished  '.center(50, '*'), '\n\n')
 
-        for name, result in zip(self.metric_names, results):
+        for name, result in zip(self.metric_calculator.keys(), results):
             np.savetxt(f'{parent_path}/all_{name}_results.csv', result, delimiter = ',')
