@@ -28,7 +28,7 @@ class RE33(RE_base):
 
         super().__init__()
 
-        self.problem_name = 'Disc breke design'
+        self.problem_name = 'Disc brake design'
 
         self.n_objectives = 3
         self.ndim = 4

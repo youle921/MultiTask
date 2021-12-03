@@ -113,4 +113,4 @@ for k in key:
     igd_ax.set(xlabel = "Number of Generations", ylabel = "IGD")
     igd_ax.legend(framealpha = 0.3)
 
-    # igd_fig.savefig(f'{k}_normalized_IGD_50gen.svg', bbox_inches = "tight", transparent = True)
+    igd_fig.savefig(f'{k}_normalized_IGD_50gen.svg', bbox_inches = "tight", transparent = True)

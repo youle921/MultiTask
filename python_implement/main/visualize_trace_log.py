@@ -20,7 +20,7 @@ for n, pname in zip(plain_name, prob_name):
     fig = plt.figure(figsize = (9, 4.5 + 1/16))
 
     for i, alg in enumerate(names):
-        
+
         if "NSGA-II" in alg:
             ratio = np.loadtxt(f'{alg}/{n}/trial1_trace_log.csv', delimiter = ",")[:49]
         else:
@@ -35,4 +35,4 @@ for n, pname in zip(plain_name, prob_name):
     fig.suptitle(n, fontsize = 13)
     fig.tight_layout()
 
-    # fig.savefig(f'{n}_trace_log.svg')
+    fig.savefig(f'{n}_trace_log.svg')

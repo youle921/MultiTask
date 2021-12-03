@@ -12,7 +12,7 @@ class visualizer:
         self.problemset = get_prob_pairs()
         self.problems = all_probs
 
-    def visualization(self, parent_path):
+    def visualization(self, parent_path, normalize = False):
 
         for prob, prob_no in zip(self.problemset, range(len(self.problemset))):
 
@@ -24,11 +24,20 @@ class visualizer:
             for i in range(1):
 
                 objs = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
-                metrics = [np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
+                if normalize:
+                    metrics = [np.loadtxt(f'{path}/normalized_IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
+                else:
+                    metrics = [np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
 
                 for n, (obj, met) in enumerate(zip(objs, metrics)):
-                    
+
                     pf = task[n].IGD_ref[task[n].IGD_ref[:, 0].argsort()]
+                    if normalize:
+                        ideal = pf.min(axis = 0)
+                        nadir = pf.max(axis = 0)
+
+                        pf = (pf - nadir) / (ideal - nadir)
+                        obj = (obj - nadir) / (ideal - nadir)
 
                     for g, (obj_, met_) in enumerate(zip(obj[:50], met)):
 
@@ -38,25 +47,28 @@ class visualizer:
 
                         if obj_.shape[1] > 3:
                             return
-                        
+
                         elif obj_.shape[1] == 2:
-                            
+
                             ax = fig.add_subplot(111, xmargin = 0.1, ymargin = 0.1)
                             ax.scatter(*obj_.T, label = "Population")
                             ax.plot(pf[:, 0], pf[:, 1], c = "k", label = "Pareto Front")
-                            
+
                         elif obj_.shape[1] == 3:
-                            
+
                             ax = fig.add_subplot(111, projection = '3d')
                             ax.scatter(*obj_.T, alpha = 1, label = "Population")
                             ax.scatter(*pf.T, color = "k", alpha = 1, label = "Pareto Front")
 
                         ax.legend()
                         plt.ioff()
-                        plt.savefig(f'{paths[n]}/gen{g + 1}_pop.png', dpi = 720)
+                        if normalize:
+                            plt.savefig(f'{paths[n]}/normalized_gen_{g + 1}_pop.png', dpi = 720)
+                        else:
+                            plt.savefig(f'{paths[n]}/gen{g + 1}_pop.png', dpi = 720)
                         plt.close()
 
-    def single_visualization(self, parent_path):
+    def single_visualization(self, parent_path, normalize = False):
 
         for task, prob_no in zip(self.problems, range(len(self.problems))):
 
@@ -65,9 +77,19 @@ class visualizer:
             for i in range(1):
 
                 obj = np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"]
-                metrics = np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",")
-                
+                if normalize:
+                    metrics = np.loadtxt(f'{path}/normalized_IGD_log_trial{i + 1}.csv', delimiter = ",")
+                else:
+                    metrics = np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",")
+
                 pf = task.IGD_ref[task.IGD_ref[:, 0].argsort()]
+
+                if normalize:
+                    ideal = pf.min(axis = 0)
+                    nadir = pf.max(axis = 0)
+
+                    pf = (pf - nadir) / (ideal - nadir)
+                    obj = (obj - nadir) / (ideal - nadir)
 
                 for g, (obj_, met_) in enumerate(zip(obj[:50], metrics)):
 
@@ -77,25 +99,28 @@ class visualizer:
 
                     if obj_.shape[1] > 3:
                         return
-                    
+
                     elif obj_.shape[1] == 2:
-                        
+
                         ax = fig.add_subplot(111, xmargin = 0.1, ymargin = 0.1)
                         ax.scatter(*obj_.T, label = "Population")
                         ax.plot(pf[:, 0], pf[:, 1], c = "k", label = "Pareto Front")
-                        
+
                     elif obj_.shape[1] == 3:
-                        
+
                         ax = fig.add_subplot(111, projection = '3d')
                         ax.scatter(*obj_.T, alpha = 1, label = "Population")
                         ax.scatter(*pf.T, color = "k", alpha = 1, label = "Pareto Front")
 
                     ax.legend()
                     plt.ioff()
-                    plt.savefig(f'{path}/gen{g + 1}_pop.png', dpi = 720)
+                    if normalize:
+                        plt.savefig(f'{path}/normalized_gen{g + 1}_pop.png', dpi = 720)
+                    else:
+                        plt.savefig(f'{path}/gen{g + 1}_pop.png', dpi = 720)
                     plt.close()
 
-    def visualization_fix_range(self, parent_path):
+    def visualization_fix_range(self, parent_path, normalize = False):
 
         for prob, prob_no in zip(self.problemset, range(len(self.problemset))):
 
@@ -107,12 +132,23 @@ class visualizer:
             for i in range(1):
 
                 objs = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
-                metrics = [np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
+
+                if normalize:
+                    metrics = [np.loadtxt(f'{path}/normalized_IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
+                else:
+                    metrics = [np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",") for path in paths]
 
                 for n, (obj, met) in enumerate(zip(objs, metrics)):
-                    
+
                     pf = task[n].IGD_ref[task[n].IGD_ref[:, 0].argsort()]
-                    
+
+                    if normalize:
+                        ideal = pf.min(axis = 0)
+                        nadir = pf.max(axis = 0)
+
+                        pf = (pf - nadir) / (ideal - nadir)
+                        obj = (obj - nadir) / (ideal - nadir)
+
                     width = pf.max(axis = 0) * 0.1
                     if pf.shape[1] == 2:
                         xmin, ymin = pf.min(axis = 0) - width
@@ -129,30 +165,32 @@ class visualizer:
 
                         if obj_.shape[1] > 3:
                             return
-                        
+
                         elif obj_.shape[1] == 2:
-                            
+
                             ax = fig.add_subplot()
                             ax.scatter(*obj_.T, label = "Population")
                             ax.plot(pf[:, 0], pf[:, 1], c = "k", label = "Pareto Front")
                             ax.set(xlim = (xmin, xmax), ylim = (ymin, ymax))
 
                         elif obj_.shape[1] == 3:
-                            
+
                             ax = fig.add_subplot(111, projection = '3d')
                             ax.scatter(*obj_.T, alpha = 1, label = "Population")
                             ax.scatter(*pf.T, color = "k", alpha = 1, label = "Pareto Front")
-                            
+
                             ax.set_xlim3d(xmin, xmax)
                             ax.set_ylim3d(ymin, ymax)
                             ax.set_zlim3d(zmin, zmax)
 
                         ax.legend()
                         plt.ioff()
-                        plt.savefig(f'{paths[n]}/gen{g + 1}_pop_fixed.png', dpi = 720)
+                        if normalize:
+                            plt.savefig(f'{paths[n]}/normalized_fixed_gen{g + 1}_pop.png', dip = 720)
+                        plt.savefig(f'{paths[n]}/fixed_gen{g + 1}_pop.png', dpi = 720)
                         plt.close()
 
-    def single_visualization_fix_range(self, parent_path):
+    def single_visualization_fix_range(self, parent_path, normalize = False):
 
         for task, prob_no in zip(self.problems, range(len(self.problems))):
 
@@ -161,18 +199,29 @@ class visualizer:
             for i in range(1):
 
                 obj = np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"]
-                metrics = np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",")
-                
+
+                if normalize:
+                    metrics = np.loadtxt(f'{path}/normalized_IGD_log_trial{i + 1}.csv', delimiter = ",")
+                else:
+                    metrics = np.loadtxt(f'{path}/IGD_log_trial{i + 1}.csv', delimiter = ",")
+
                 pf = task.IGD_ref[task.IGD_ref[:, 0].argsort()]
-                
+
+                if normalize:
+                    ideal = pf.min(axis = 0)
+                    nadir = pf.max(axis = 0)
+
+                    pf = (pf - nadir) / (ideal - nadir)
+                    obj = (obj - nadir) / (ideal - nadir)
+
                 width = pf.max(axis = 0) * 0.1
+
                 if pf.shape[1] == 2:
                     xmin, ymin = pf.min(axis = 0) - width
                     xmax, ymax = pf.max(axis = 0) + width
                 elif pf.shape[1] == 3:
                     xmin, ymin, zmin = pf.min(axis = 0) - width
                     xmax, ymax, zmax = pf.max(axis = 0) + width
-
 
                 for g, (obj_, met_) in enumerate(zip(obj[:50], metrics)):
 
@@ -182,25 +231,27 @@ class visualizer:
 
                     if obj_.shape[1] > 3:
                         return
-                    
+
                     elif obj_.shape[1] == 2:
-                        
+
                         ax = fig.add_subplot(111)
                         ax.scatter(*obj_.T, label = "Population")
                         ax.plot(pf[:, 0], pf[:, 1], c = "k", label = "Pareto Front")
                         ax.set(xlim = (xmin, xmax), ylim = (ymin, ymax))
-                        
+
                     elif obj_.shape[1] == 3:
-                        
+
                         ax = fig.add_subplot(111, projection = '3d')
                         ax.scatter(*obj_.T, alpha = 1, label = "Population")
                         ax.scatter(*pf.T, color = "k", alpha = 1, label = "Pareto Front")
-                        
+
                         ax.set_xlim3d(xmin, xmax)
                         ax.set_ylim3d(ymin, ymax)
                         ax.set_zlim3d(zmin, zmax)
 
                     ax.legend()
                     plt.ioff()
-                    plt.savefig(f'{path}/gen{g + 1}_pop_fixed.png', dpi = 720)
+                    if normalize:
+                        plt.savefig(f'{path}/normalized_fixed_gen{g + 1}_pop.png', dpi = 720)
+                    plt.savefig(f'{path}/fixed_gen{g + 1}_pop.png', dpi = 720)
                     plt.close()
