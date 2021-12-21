@@ -96,7 +96,7 @@ class MT_runner(EMOA_runner):
 
             print(f'{"metric calculating...":^50}')
             # calculate and show metrics
-            for idx, (calculator, metric_name) in enumerate(self.metric_calculator.items()):
+            for idx, (metric_name, calculator) in enumerate(self.metric_calculator.items()):
                 for task_no in range(len(task)):
                     if metric_name == "HyperVolume":
                         if "normalize_objective" in dir(task[task_no]):

@@ -52,7 +52,7 @@ class calculator:
 
             # preprocessing
             task = prob.tasks
-            metric = np.empty([len(self.metric_calculator), len(task), 31, 1000])
+            metric = np.empty([len(self.metric_calculator), len(task), 31, 50])
 
             paths = [f'{parent_path}/{prob.problem_name}_{t.problem_name}' for t in task]
 
@@ -61,7 +61,7 @@ class calculator:
                 obj = [np.load(f'{path}/trial{i + 1}_objectives.npz')["arr_0"] for path in paths]
 
                 # calculate and show metrics
-                for idx, (metric_name, calculator) in enumerate(zip(self.metric_calculator.items())):
+                for idx, (metric_name, calculator) in enumerate(self.metric_calculator.items()):
 
                     for task_no in range(2):
                         if metric_name == "HyperVolume" and "normalize_objective" in dir(task[task_no]):
@@ -85,7 +85,7 @@ class calculator:
                     print(f'{met:-^50}')
 
                     print(f'5,000 eval: {np.median(data[:, 49]):.4e}')
-                    print(f'20,000 eval: {np.median(data[:, 199]):.4e}')
+                    # print(f'20,000 eval: {np.median(data[:, 199]):.4e}')
 
                     np.savetxt(f'{paths[t]}/all_{met}_log.csv', np.vstack([np.median(data, axis = 0), data.std(axis = 0)]).T, delimiter = ",")
 
