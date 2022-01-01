@@ -20,7 +20,24 @@ def get_prob_pairs(prob_list=None):
 
     return p_set
 
-
 def get_random_prob_pairs(prob_list):
     np.random.shuffle(prob_list)
     return get_prob_pairs(prob_list)
+
+def get_hc_problem_set():
+
+    p_set = [problem_set([t1, RE24.RE24()]) for t1 in all_probs]
+    p_set.pop(3)
+    for t in p_set:
+        t.problem_name = f'with_{t.tasks[0].problem_name}'
+
+    return p_set
+
+def get_sr_prob_pairs():
+
+    p_set = [problem_set([t1, RE35.RE35()]) for t1 in all_probs]
+    p_set.pop(9)
+    for t in p_set:
+        t.problem_name = f'with_{t.tasks[0].problem_name}'
+
+    return p_set

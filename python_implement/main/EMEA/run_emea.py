@@ -7,6 +7,6 @@ from implementation.problems.real_world_problem import get_prob_pairs, get_rando
 from implementation.EMEA import EMEA
 from runner.MT_runner import MT_runner
 
-task_list = get_prob_pairs()
-runner = MT_runner(EMEA, task_list, os.path.join(__file__, '..'), ["normalized_IGD"])
-runner.run_MT()
+# task_list = get_prob_pairs()
+# runner = MT_runner(EMEA, task_list, os.path.join(__file__, '..'), ["normalized_IGD"])
+# runner.run_MT()
